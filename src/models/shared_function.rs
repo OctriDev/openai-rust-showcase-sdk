@@ -103,11 +103,39 @@ impl std::fmt::Display for FunctionCallOutputItemParamTypeEnum {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum FunctionCallOutputItemParamOutput {
     String(String),
     ItemArray(Vec<FunctionCallOutputItemParamOutputItem>),
+}
+
+impl<'de> serde::Deserialize<'de> for FunctionCallOutputItemParamOutput {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Vec<FunctionCallOutputItemParamOutputItem>>(value.clone())
+        {
+            let candidate = Self::ItemArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no FunctionCallOutputItemParamOutput branch accepts this payload",
+            )
+        })
+    }
 }
 
 /// The output of a function tool call.
@@ -508,30 +536,4 @@ impl FunctionShellCall {
             created_by: None,
         }
     }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum FunctionShellCallEnvironment {
-    LocalEnvironmentResource(Box<LocalEnvironmentResource>),
-    ContainerReferenceResource(Box<ContainerReferenceResource>),
-    /// A member whose `type` names no branch this SDK knows, kept as received.
-    #[serde(deserialize_with = "FunctionShellCallEnvironment::unknown_member")]
-    Unknown(serde_json::Value),
-}
-
-impl FunctionShellCallEnvironment {
-    fn unknown_member<'de, D: serde::Deserializer<'de>>(
-        deserializer: D,
-    ) -> Result<serde_json::Value, D::Error> {
-        crate::client::unknown_union_member(deserializer, "type", &["local", "container_reference"])
-    }
-}
-
-/// The type of the item. Always `shell_call`.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum FunctionShellCallItemParamTypeEnum {
-    #[serde(rename = "shell_call")]
-    #[default]
-    ShellCall,
 }

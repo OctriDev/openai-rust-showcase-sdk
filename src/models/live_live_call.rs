@@ -4,7 +4,7 @@
 // live_live_call domain models
 
 /// Accept an incoming SIP call with Live startup configuration.
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct LiveCallAcceptRequest {
     /// Model and startup configuration for the Live session that answers the incoming SIP call.
     pub session: LiveCallAcceptSession,
@@ -62,7 +62,7 @@ impl std::fmt::Display for LiveCallAcceptSessionTypeEnum {
 }
 
 /// Startup configuration for accepting an incoming Live SIP call. Follow the [Live prompting guide](https://developers.openai.com/api/docs/guides/live-prompting) when writing frontend and backend instructions.
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct LiveCallAcceptSession {
     /// The Live model to use for the accepted call.
     pub model: ModelIdsLive,
@@ -99,16 +99,14 @@ pub struct LiveCallAcceptSession {
 
 impl LiveCallAcceptSession {
     pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
-        if let Some(string_value) = self.model.as_string_wire_value() {
-            crate::validation::validate_length(
-                "model",
-                string_value,
-                crate::validation::LengthOpts {
-                    min: Some(1),
-                    ..Default::default()
-                },
-            )?;
-        }
+        crate::validation::validate_length(
+            "model",
+            &self.model,
+            crate::validation::LengthOpts {
+                min: Some(1),
+                ..Default::default()
+            },
+        )?;
         if let Some(value) = self.triggers.as_ref() {
             crate::validation::validate_items(
                 "triggers",

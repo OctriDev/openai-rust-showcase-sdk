@@ -50,7 +50,7 @@ impl CreateAssistantRequestToolResourcesFileSearchVectorStoresItemChunkingStrate
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum CreateAssistantRequestToolResourcesFileSearchVectorStoresItemChunkingStrategy {
     AutoChunkingStrategy(
@@ -59,6 +59,30 @@ pub enum CreateAssistantRequestToolResourcesFileSearchVectorStoresItemChunkingSt
     StaticChunkingStrategy(
         Box<CreateAssistantRequestToolResourcesFileSearchVectorStoresItemChunkingStrategyVariant1>,
     ),
+}
+
+impl<'de> serde::Deserialize<'de>
+    for CreateAssistantRequestToolResourcesFileSearchVectorStoresItemChunkingStrategy
+{
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<Box<CreateAssistantRequestToolResourcesFileSearchVectorStoresItemChunkingStrategyVariant0>>(value.clone()) {
+            let candidate = Self::AutoChunkingStrategy(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<CreateAssistantRequestToolResourcesFileSearchVectorStoresItemChunkingStrategyVariant1>>(value.clone()) {
+            let candidate = Self::StaticChunkingStrategy(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| serde::de::Error::custom("no CreateAssistantRequestToolResourcesFileSearchVectorStoresItemChunkingStrategy branch accepts this payload"))
+    }
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -134,11 +158,37 @@ impl std::fmt::Display for CreateMessageRequestRoleEnum {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum CreateMessageRequestContent {
     String(String),
     ItemArray(Vec<CreateMessageRequestContentItem>),
+}
+
+impl<'de> serde::Deserialize<'de> for CreateMessageRequestContent {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Vec<CreateMessageRequestContentItem>>(value.clone())
+        {
+            let candidate = Self::ItemArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom("no CreateMessageRequestContent branch accepts this payload")
+        })
+    }
 }
 
 /// Required object value serialized in the `attachments[]` wire field.
@@ -461,45 +511,5 @@ impl<'de> serde::Deserialize<'de> for TruncationObjectTypeEnum {
 impl std::fmt::Display for TruncationObjectTypeEnum {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
-    }
-}
-
-/// Optional API value serialized in the `truncation_strategy` wire field.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct CreateRunRequestTruncationStrategy {
-    /// The truncation strategy to use for the thread. The default is `auto`. If set to `last_messages`, the thread will be truncated to the n most recent messages in the thread. When set to `auto`, messages in the middle of the thread will be dropped to fit the context length of the model, `max_prompt_tokens`.
-    #[serde(rename = "type")]
-    pub type_: TruncationObjectTypeEnum,
-    /// Optional API value serialized in the `last_messages` wire field.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub last_messages: Option<Option<i64>>,
-}
-
-impl CreateRunRequestTruncationStrategy {
-    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
-        if let Some(Some(value)) = self.last_messages.as_ref() {
-            crate::validation::validate_range(
-                "last_messages",
-                *value as f64,
-                crate::validation::RangeOpts {
-                    min: Some(1_f64),
-                    ..Default::default()
-                },
-            )?;
-        }
-        Ok(())
-    }
-
-    pub fn new(type_: TruncationObjectTypeEnum) -> Result<Self, crate::errors::SdkError> {
-        let value = Self {
-            type_,
-            last_messages: None,
-        };
-        value.validate_constraints()?;
-        Ok(value)
     }
 }

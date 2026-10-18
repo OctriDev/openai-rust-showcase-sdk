@@ -211,6 +211,17 @@ impl AssistantsNamespace {
     ) -> Result<ListMessagesResponse, crate::errors::SdkError> {
         crate::methods::assistants::list_messages(&self.config, params, options)
     }
+    /// Lists messages belonging to a thread. Use `run_id` to filter by the run that generated the messages and `order` to control their creation-time order. Use `after` or `before` cursors to navigate the results.
+    ///
+    /// Returns a list of messages for a given thread.
+    pub fn list_messages_paginated(
+        &self,
+        params: crate::methods::assistants::ListMessagesParams,
+        options: Option<&crate::client::RequestOptions>,
+        yield_fn: impl FnMut(&MessageObject) -> bool,
+    ) -> Result<(), crate::errors::SdkError> {
+        crate::methods::assistants::list_messages_paginated(&self.config, params, options, yield_fn)
+    }
     /// Creates a message in a thread. Provide the message `role` and `content`, and optionally include file attachments or metadata. Use this operation to add a user or assistant message to an existing conversation thread.
     ///
     /// Create a message.
@@ -349,6 +360,22 @@ impl AssistantsNamespace {
     ) -> Result<ListRunStepsResponse, crate::errors::SdkError> {
         crate::methods::assistants::list_run_steps(&self.config, params, options)
     }
+    /// Lists the steps belonging to a run on a thread. Use cursor parameters to page through the steps, and set `order` to control their order by creation time.
+    ///
+    /// Returns a list of run steps belonging to a run.
+    pub fn list_run_steps_paginated(
+        &self,
+        params: crate::methods::assistants::ListRunStepsParams,
+        options: Option<&crate::client::RequestOptions>,
+        yield_fn: impl FnMut(&RunStepObject) -> bool,
+    ) -> Result<(), crate::errors::SdkError> {
+        crate::methods::assistants::list_run_steps_paginated(
+            &self.config,
+            params,
+            options,
+            yield_fn,
+        )
+    }
     /// Retrieves a specific step from a run on a thread. Use `include[]` to request file search result content when the step contains file search tool calls.
     ///
     /// Retrieves a run step.
@@ -456,7 +483,7 @@ impl AudioNamespace {
         &self,
         params: crate::methods::audio::CreateTranscriptionParams,
         options: Option<&crate::client::RequestOptions>,
-    ) -> Result<crate::methods::audio::CreateTranscriptionResponse, crate::errors::SdkError> {
+    ) -> Result<CreateTranscriptionResponse, crate::errors::SdkError> {
         crate::methods::audio::create_transcription(&self.config, params, options)
     }
     /// Transcribes an audio file and returns the transcript in a selected format or as a stream of transcript events. Provide the audio `file` and `model`, then use options such as `language`, `prompt`, or `timestamp_granularities` to guide or shape the output. Use multipart form data and include enough file metadata for the audio format to be identified.
@@ -479,7 +506,7 @@ impl AudioNamespace {
         &self,
         params: crate::methods::audio::CreateTranslationParams,
         options: Option<&crate::client::RequestOptions>,
-    ) -> Result<crate::methods::audio::CreateTranslationResponse, crate::errors::SdkError> {
+    ) -> Result<CreateTranslationResponse, crate::errors::SdkError> {
         crate::methods::audio::create_translation(&self.config, params, options)
     }
     /// Creates a voice consent recording by uploading its audio file with a label and language tag. Provide `name`, `recording`, and `language`, and send the recording as multipart form data in a supported audio format. The response includes the new recording's identifier and creation timestamp.
@@ -4783,6 +4810,28 @@ impl VectorStoresNamespace {
             options,
         )
     }
+    /// Lists vector stores, which are collections of processed files that you can use with the `file_search` tool. Use the cursor parameters to move forward or backward through the results, and set `order` to control sorting by creation time.
+    ///
+    /// Returns a list of vector stores.
+    pub fn list_paginated(
+        &self,
+        limit: Option<i64>,
+        order: Option<crate::methods::vector_stores::ListVectorStoresEnum>,
+        after: Option<String>,
+        before: Option<String>,
+        options: Option<&crate::client::RequestOptions>,
+        yield_fn: impl FnMut(&VectorStoreObject) -> bool,
+    ) -> Result<(), crate::errors::SdkError> {
+        crate::methods::vector_stores::list_vector_stores_paginated(
+            &self.config,
+            limit,
+            order,
+            after,
+            before,
+            options,
+            yield_fn,
+        )
+    }
     /// Creates a vector store to collect processed files for use with the `file_search` tool. Supply `file_ids` to add files at creation, and optionally set a name, description, expiration policy, chunking strategy, or metadata.
     ///
     /// Create a vector store.
@@ -4889,6 +4938,22 @@ impl VectorStoresNamespace {
             options,
         )
     }
+    /// Lists the files in a vector store file batch. Use `filter` to limit results by processing status and the cursor parameters to navigate through the batch's files.
+    ///
+    /// Returns a list of vector store files in a batch.
+    pub fn list_files_in_batch_paginated(
+        &self,
+        params: crate::methods::vector_stores::ListFilesInVectorStoreBatchParams,
+        options: Option<&crate::client::RequestOptions>,
+        yield_fn: impl FnMut(&VectorStoreFileObject) -> bool,
+    ) -> Result<(), crate::errors::SdkError> {
+        crate::methods::vector_stores::list_files_in_vector_store_batch_paginated(
+            &self.config,
+            params,
+            options,
+            yield_fn,
+        )
+    }
     /// Lists files attached to a vector store, with pagination and an optional status filter. Use `after` or `before` to navigate the list, and `filter` to select files by processing status.
     ///
     /// Returns a list of vector store files.
@@ -4898,6 +4963,22 @@ impl VectorStoresNamespace {
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListVectorStoreFilesResponse, crate::errors::SdkError> {
         crate::methods::vector_stores::list_vector_store_files(&self.config, params, options)
+    }
+    /// Lists files attached to a vector store, with pagination and an optional status filter. Use `after` or `before` to navigate the list, and `filter` to select files by processing status.
+    ///
+    /// Returns a list of vector store files.
+    pub fn list_files_paginated(
+        &self,
+        params: crate::methods::vector_stores::ListVectorStoreFilesParams,
+        options: Option<&crate::client::RequestOptions>,
+        yield_fn: impl FnMut(&VectorStoreFileObject) -> bool,
+    ) -> Result<(), crate::errors::SdkError> {
+        crate::methods::vector_stores::list_vector_store_files_paginated(
+            &self.config,
+            params,
+            options,
+            yield_fn,
+        )
     }
     /// Creates an attachment between a file and a vector store. Supply the file's `file_id` and optionally configure `chunking_strategy` or attach `attributes`; use file batches for multi-file ingestion. The response includes the attached file's processing status.
     ///

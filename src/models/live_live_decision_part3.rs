@@ -3,6 +3,37 @@
 
 // live_live_decision domain models (part 3)
 
+impl LiveDecisionScoreQuestionParamTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Score => "score",
+        }
+    }
+}
+
+impl std::fmt::Display for LiveDecisionScoreQuestionParamTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LiveDecisionScoreQuestionParamTypeEnum::Score => f.write_str("score"),
+        }
+    }
+}
+
+/// Typed representation of the `LiveDecisionScoreQuestionParam` API schema.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct LiveDecisionScoreQuestionParam {
+    /// Required enumerated value serialized in the `type` wire field.
+    #[serde(rename = "type")]
+    pub type_: LiveDecisionScoreQuestionParamTypeEnum,
+    /// Optional `string` value serialized in the `name` wire field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    /// Required `string` value serialized in the `instructions` wire field.
+    pub instructions: String,
+    /// Required array value serialized in the `levels` wire field.
+    pub levels: Vec<LiveDecisionScoreLevelParam>,
+}
+
 impl LiveDecisionScoreQuestionParam {
     pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
         crate::validation::validate_items(
@@ -122,11 +153,39 @@ impl std::fmt::Display for LiveDecisionStoredInputItemParamRoleEnum {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum LiveDecisionStoredInputItemParamContent {
     String(String),
     ItemArray(Vec<LiveDecisionStoredInputItemParamContentItem>),
+}
+
+impl<'de> serde::Deserialize<'de> for LiveDecisionStoredInputItemParamContent {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Vec<LiveDecisionStoredInputItemParamContentItem>>(
+            value.clone(),
+        ) {
+            let candidate = Self::ItemArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no LiveDecisionStoredInputItemParamContent branch accepts this payload",
+            )
+        })
+    }
 }
 
 /// Typed representation of the `LiveDecisionStoredInputItemParam` API schema.

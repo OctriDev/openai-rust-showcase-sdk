@@ -3,12 +3,45 @@
 
 // moderations domain models
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum CreateModerationRequestInput {
     String(String),
     StringArray(Vec<String>),
     ItemArray(Vec<CreateModerationRequestInputItem>),
+}
+
+impl<'de> serde::Deserialize<'de> for CreateModerationRequestInput {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Vec<String>>(value.clone()) {
+            let candidate = Self::StringArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Vec<CreateModerationRequestInputItem>>(value.clone())
+        {
+            let candidate = Self::ItemArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom("no CreateModerationRequestInput branch accepts this payload")
+        })
+    }
 }
 
 /// Typed representation of the `CreateModerationRequest` API schema.
@@ -133,11 +166,41 @@ impl CreateModerationRequestInputItemVariant1 {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum CreateModerationRequestInputItem {
     ImageUrl(Box<CreateModerationRequestInputItemVariant0>),
     Text(Box<CreateModerationRequestInputItemVariant1>),
+}
+
+impl<'de> serde::Deserialize<'de> for CreateModerationRequestInputItem {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) =
+            serde_json::from_value::<Box<CreateModerationRequestInputItemVariant0>>(value.clone())
+        {
+            let candidate = Self::ImageUrl(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<CreateModerationRequestInputItemVariant1>>(value.clone())
+        {
+            let candidate = Self::Text(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no CreateModerationRequestInputItem branch accepts this payload",
+            )
+        })
+    }
 }
 
 /// A list of the categories, and whether they are flagged or not.
@@ -449,57 +512,6 @@ pub enum CreateModerationResponseResultsItemCategoryAppliedInputTypesHarassmentt
 }
 
 impl CreateModerationResponseResultsItemCategoryAppliedInputTypesHarassmentthreateningItemEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Text => "text",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize
-    for CreateModerationResponseResultsItemCategoryAppliedInputTypesHarassmentthreateningItemEnum
-{
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de>
-    for CreateModerationResponseResultsItemCategoryAppliedInputTypesHarassmentthreateningItemEnum
-{
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "text" => Self::Text,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display
-    for CreateModerationResponseResultsItemCategoryAppliedInputTypesHarassmentthreateningItemEnum
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-/// Required enumerated value serialized in the `illicit[]` wire field.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum CreateModerationResponseResultsItemCategoryAppliedInputTypesIllicitItemEnum {
-    #[default]
-    Text,
-    Unknown(String),
-}
-
-impl CreateModerationResponseResultsItemCategoryAppliedInputTypesIllicitItemEnum {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Text => "text",

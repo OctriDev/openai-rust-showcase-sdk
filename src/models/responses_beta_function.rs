@@ -103,11 +103,39 @@ impl std::fmt::Display for BetaFunctionCallOutputItemParamTypeEnum {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum BetaFunctionCallOutputItemParamOutput {
     String(String),
     ItemArray(Vec<BetaFunctionCallOutputItemParamOutputItem>),
+}
+
+impl<'de> serde::Deserialize<'de> for BetaFunctionCallOutputItemParamOutput {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Vec<BetaFunctionCallOutputItemParamOutputItem>>(value.clone())
+        {
+            let candidate = Self::ItemArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no BetaFunctionCallOutputItemParamOutput branch accepts this payload",
+            )
+        })
+    }
 }
 
 /// The output of a function tool call.
@@ -502,21 +530,5 @@ impl BetaFunctionShellCallEnvironment {
         deserializer: D,
     ) -> Result<serde_json::Value, D::Error> {
         crate::client::unknown_union_member(deserializer, "type", &["local", "container_reference"])
-    }
-}
-
-/// The type of the item. Always `shell_call`.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum BetaFunctionShellCallItemParamTypeEnum {
-    #[serde(rename = "shell_call")]
-    #[default]
-    ShellCall,
-}
-
-impl BetaFunctionShellCallItemParamTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::ShellCall => "shell_call",
-        }
     }
 }

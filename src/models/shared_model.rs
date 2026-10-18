@@ -5,64 +5,6 @@
 
 pub type ModelIdsShared = String;
 
-/// Deprecated. Use `prompt_cache_options.ttl` instead.
-///
-/// The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours. [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
-/// This field expresses a maximum retention policy, while
-/// `prompt_cache_options.ttl` expresses a minimum cache lifetime. The two
-/// fields are independent and do not interact.
-/// For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
-///
-/// For older models that support both `in_memory` and `24h`, the default depends on your organization's data retention policy:
-///   \- Organizations without ZDR enabled default to `24h`.
-///   \- Organizations with ZDR enabled default to `in_memory` when `prompt_cache_retention` is not specified.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum ModelResponsePropertiesPromptCacheRetention {
-    #[default]
-    InMemory,
-    _24h,
-    Unknown(String),
-}
-
-impl ModelResponsePropertiesPromptCacheRetention {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::InMemory => "in_memory",
-            Self::_24h => "24h",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for ModelResponsePropertiesPromptCacheRetention {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for ModelResponsePropertiesPromptCacheRetention {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "in_memory" => Self::InMemory,
-            "24h" => Self::_24h,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for ModelResponsePropertiesPromptCacheRetention {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
 /// Typed representation of the `ModelResponseProperties` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct ModelResponseProperties {

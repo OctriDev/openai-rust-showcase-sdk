@@ -63,77 +63,6 @@ impl std::fmt::Display for AudioResponseFormat {
     }
 }
 
-/// Required enumerated value serialized in the `voice` wire field.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum CreateSpeechRequestVoiceVariant0 {
-    #[default]
-    Fable,
-    Onyx,
-    Nova,
-    Unknown(String),
-}
-
-impl CreateSpeechRequestVoiceVariant0 {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Fable => "fable",
-            Self::Onyx => "onyx",
-            Self::Nova => "nova",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for CreateSpeechRequestVoiceVariant0 {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for CreateSpeechRequestVoiceVariant0 {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "fable" => Self::Fable,
-            "onyx" => Self::Onyx,
-            "nova" => Self::Nova,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for CreateSpeechRequestVoiceVariant0 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-/// Custom voice reference.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct CreateSpeechRequestVoiceVariant1 {
-    /// The custom voice ID, e.g. `voice_1234`.
-    pub id: String,
-}
-
-impl CreateSpeechRequestVoiceVariant1 {
-    pub fn new(id: String) -> Self {
-        Self { id }
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum CreateSpeechRequestVoice {
-    Object(Box<CreateSpeechRequestVoiceVariant0>),
-    Object2(Box<CreateSpeechRequestVoiceVariant1>),
-}
-
 /// The format to audio in. Supported formats are `mp3`, `opus`, `aac`, `flac`, `wav`, and `pcm`.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub enum CreateSpeechRequestResponseFormatEnum {
@@ -318,6 +247,88 @@ impl CreateSpeechRequest {
     }
 }
 
+/// Required enumerated value serialized in the `voice` wire field.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum CreateSpeechRequestVoiceVariant1Enum {
+    #[default]
+    Fable,
+    Onyx,
+    Nova,
+    Unknown(String),
+}
+
+impl CreateSpeechRequestVoiceVariant1Enum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Fable => "fable",
+            Self::Onyx => "onyx",
+            Self::Nova => "nova",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for CreateSpeechRequestVoiceVariant1Enum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for CreateSpeechRequestVoiceVariant1Enum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "fable" => Self::Fable,
+            "onyx" => Self::Onyx,
+            "nova" => Self::Nova,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for CreateSpeechRequestVoiceVariant1Enum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+/// Custom voice reference.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct CreateSpeechRequestVoiceVariant2 {
+    /// The custom voice ID, e.g. `voice_1234`.
+    pub id: String,
+}
+
+impl CreateSpeechRequestVoiceVariant2 {
+    pub fn new(id: String) -> Self {
+        Self { id }
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(untagged)]
+pub enum CreateSpeechRequestVoice {
+    VoiceIdsShared(Box<VoiceIdsShared>),
+    Literal(CreateSpeechRequestVoiceVariant1Enum),
+    Object(Box<CreateSpeechRequestVoiceVariant2>),
+}
+
+impl CreateSpeechRequestVoice {
+    pub fn as_string_wire_value(&self) -> Option<&str> {
+        match self {
+            Self::VoiceIdsShared(value) => Some(value.as_str()),
+            Self::Literal(value) => Some(value.as_str()),
+            _ => None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 #[serde(untagged)]
 pub enum CreateSpeechResponseStreamEvent {
@@ -388,54 +399,122 @@ impl std::fmt::Display for CreateTranscriptionRequestTimestampGranularitiesItemE
     }
 }
 
-/// Automatically set chunking parameters based on the audio. Must be set to `"auto"`.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum CreateTranscriptionRequestChunkingStrategyVariant0Enum {
-    #[default]
-    Auto,
-    Unknown(String),
-}
-
-impl CreateTranscriptionRequestChunkingStrategyVariant0Enum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Auto => "auto",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for CreateTranscriptionRequestChunkingStrategyVariant0Enum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for CreateTranscriptionRequestChunkingStrategyVariant0Enum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "auto" => Self::Auto,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for CreateTranscriptionRequestChunkingStrategyVariant0Enum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
+/// Typed representation of the `CreateTranscriptionRequest` API schema.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum CreateTranscriptionRequestChunkingStrategy {
-    Auto(CreateTranscriptionRequestChunkingStrategyVariant0Enum),
-    VadConfig(Box<VadConfig>),
+pub struct CreateTranscriptionRequest {
+    /// The audio file object (not file name) to transcribe, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+    /// The request must include enough format metadata for the file to be identified. We recommend an extension-bearing filename and an appropriate content type.
+    pub file: crate::client::Base64Bytes,
+    /// ID of the model to use. The options are `gpt-transcribe`, `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `whisper-1` (which is powered by our open source Whisper V2 model), and `gpt-4o-transcribe-diarize`.
+    pub model: String,
+    /// The language of the input audio. Supplying the input language in [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) (e.g. `en`) format will improve accuracy and latency.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub language: Option<String>,
+    /// Possible languages of the input audio, in [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) format. Supported by `gpt-transcribe`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub languages: Option<Vec<String>>,
+    /// Words or phrases to guide transcription of the input audio. Supported by `gpt-transcribe`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub keywords: Option<Vec<String>>,
+    /// An optional text to guide the model's style or continue a previous audio segment. The [prompt](https://developers.openai.com/api/docs/guides/speech-to-text#prompting) should match the audio language. This field is not supported when using `gpt-4o-transcribe-diarize`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub prompt: Option<String>,
+    /// The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, `vtt`, or `diarized_json`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only supported format is `json`. For `gpt-4o-transcribe-diarize`, the supported formats are `json`, `text`, and `diarized_json`, with `diarized_json` required to receive speaker annotations.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub response_format: Option<AudioResponseFormat>,
+    /// The sampling temperature, between 0 and 1\. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. If set to 0, the model will use [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically increase the temperature until certain thresholds are hit.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub temperature: Option<f64>,
+    /// Additional information to include in the transcription response.
+    /// `logprobs` will return the log probabilities of the tokens in the
+    /// response to understand the model's confidence in the transcription.
+    /// `logprobs` only works with response_format set to `json` and only with
+    /// the models `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`, and `gpt-4o-mini-transcribe-2025-12-15`. This field is not supported when using `gpt-4o-transcribe-diarize`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub include: Option<Vec<TranscriptionInclude>>,
+    /// The timestamp granularities to populate for this transcription. `response_format` must be set `verbose_json` to use timestamp granularities. Either or both of these options are supported: `word`, or `segment`. Note: There is no additional latency for segment timestamps, but generating word timestamps incurs additional latency.
+    /// This option is not available for `gpt-4o-transcribe-diarize`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub timestamp_granularities:
+        Option<Vec<CreateTranscriptionRequestTimestampGranularitiesItemEnum>>,
+    /// Optional `boolean` value serialized in the `stream` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub stream: Option<Option<bool>>,
+    /// Controls how the audio is cut into chunks. When set to `"auto"`, the server first normalizes loudness and then uses voice activity detection (VAD) to choose boundaries. `server_vad` object can be provided to tweak VAD detection parameters manually. If unset, the audio is transcribed as a single block. Required when using `gpt-4o-transcribe-diarize` for inputs longer than 30 seconds.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub chunking_strategy: Option<Option<CreateTranscriptionRequestChunkingStrategy>>,
+    /// Optional list of speaker names that correspond to the audio samples provided in `known_speaker_references[]`. Each entry should be a short identifier (for example `customer` or `agent`). Up to 4 speakers are supported.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub known_speaker_names: Option<Vec<String>>,
+    /// Optional list of audio samples (as [data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs)) that contain known speaker references matching `known_speaker_names[]`. Each sample must be between 2 and 10 seconds, and can use any of the same input audio formats supported by `file`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub known_speaker_references: Option<Vec<String>>,
+}
+
+impl CreateTranscriptionRequest {
+    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
+        if let Some(value) = self.languages.as_ref() {
+            crate::validation::validate_items(
+                "languages",
+                value.as_slice(),
+                crate::validation::LengthOpts {
+                    min: Some(1),
+                    ..Default::default()
+                },
+            )?;
+        }
+        if let Some(value) = self.known_speaker_names.as_ref() {
+            crate::validation::validate_items(
+                "known_speaker_names",
+                value.as_slice(),
+                crate::validation::LengthOpts {
+                    max: Some(4),
+                    ..Default::default()
+                },
+            )?;
+        }
+        if let Some(value) = self.known_speaker_references.as_ref() {
+            crate::validation::validate_items(
+                "known_speaker_references",
+                value.as_slice(),
+                crate::validation::LengthOpts {
+                    max: Some(4),
+                    ..Default::default()
+                },
+            )?;
+        }
+        Ok(())
+    }
+
+    pub fn new(
+        file: crate::client::Base64Bytes,
+        model: String,
+    ) -> Result<Self, crate::errors::SdkError> {
+        let value = Self {
+            file,
+            model,
+            language: None,
+            languages: None,
+            keywords: None,
+            prompt: None,
+            response_format: None,
+            temperature: None,
+            include: None,
+            timestamp_granularities: None,
+            stream: None,
+            chunking_strategy: None,
+            known_speaker_names: None,
+            known_speaker_references: None,
+        };
+        value.validate_constraints()?;
+        Ok(value)
+    }
 }

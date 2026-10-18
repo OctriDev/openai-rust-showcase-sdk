@@ -3,6 +3,91 @@
 
 // shared domain models (part 6)
 
+/// The top log probability of a token.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct TopLogProb {
+    /// Required `string` value serialized in the `token` wire field.
+    pub token: String,
+    /// Required `number` value serialized in the `logprob` wire field.
+    pub logprob: f64,
+    /// Required array value serialized in the `bytes` wire field.
+    pub bytes: Vec<i64>,
+}
+
+impl TopLogProb {
+    pub fn new(token: String, logprob: f64, bytes: Vec<i64>) -> Self {
+        Self {
+            token,
+            logprob,
+            bytes,
+        }
+    }
+}
+
+/// Specifies the event type. For a type action, this property is always set to `type`.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum TypeParamTypeEnum {
+    #[serde(rename = "type")]
+    #[default]
+    Type,
+}
+
+impl TypeParamTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Type => "type",
+        }
+    }
+}
+
+impl std::fmt::Display for TypeParamTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            TypeParamTypeEnum::Type => f.write_str("type"),
+        }
+    }
+}
+
+/// An action to type in text.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct TypeParam {
+    /// Specifies the event type. For a type action, this property is always set to `type`.
+    #[serde(rename = "type")]
+    pub type_: TypeParamTypeEnum,
+    /// The text to type.
+    pub text: String,
+}
+
+impl TypeParam {
+    pub fn new(type_: TypeParamTypeEnum, text: String) -> Self {
+        Self { type_, text }
+    }
+}
+
+/// The type of the URL citation. Always `url_citation`.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum UrlCitationBodyTypeEnum {
+    #[serde(rename = "url_citation")]
+    #[default]
+    UrlCitation,
+}
+
+impl UrlCitationBodyTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::UrlCitation => "url_citation",
+        }
+    }
+}
+
+impl std::fmt::Display for UrlCitationBodyTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            UrlCitationBodyTypeEnum::UrlCitation => f.write_str("url_citation"),
+        }
+    }
+}
+
 /// A citation for a web resource used to generate a model response.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct UrlCitationBody {

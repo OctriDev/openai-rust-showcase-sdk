@@ -3,6 +3,46 @@
 
 // assistants_create domain models (part 3)
 
+/// Optional API value serialized in the `truncation_strategy` wire field.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct CreateRunRequestTruncationStrategy {
+    /// The truncation strategy to use for the thread. The default is `auto`. If set to `last_messages`, the thread will be truncated to the n most recent messages in the thread. When set to `auto`, messages in the middle of the thread will be dropped to fit the context length of the model, `max_prompt_tokens`.
+    #[serde(rename = "type")]
+    pub type_: TruncationObjectTypeEnum,
+    /// Optional API value serialized in the `last_messages` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub last_messages: Option<Option<i64>>,
+}
+
+impl CreateRunRequestTruncationStrategy {
+    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
+        if let Some(Some(value)) = self.last_messages.as_ref() {
+            crate::validation::validate_range(
+                "last_messages",
+                *value as f64,
+                crate::validation::RangeOpts {
+                    min: Some(1_f64),
+                    ..Default::default()
+                },
+            )?;
+        }
+        Ok(())
+    }
+
+    pub fn new(type_: TruncationObjectTypeEnum) -> Result<Self, crate::errors::SdkError> {
+        let value = Self {
+            type_,
+            last_messages: None,
+        };
+        value.validate_constraints()?;
+        Ok(value)
+    }
+}
+
 /// Typed representation of the `CreateRunRequest` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct CreateRunRequest {
@@ -564,36 +604,5 @@ impl CreateThreadAndRunRequestToolsItem {
             "type",
             &["code_interpreter", "file_search", "function"],
         )
-    }
-}
-
-/// Optional object value serialized in the `code_interpreter` wire field.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct CreateThreadRequestToolResourcesCodeInterpreter {
-    /// A list of [file](https://developers.openai.com/api/reference/resources/files) IDs made available to the `code_interpreter` tool. There can be a maximum of 20 files associated with the tool.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub file_ids: Option<Vec<String>>,
-}
-
-impl CreateThreadRequestToolResourcesCodeInterpreter {
-    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
-        if let Some(value) = self.file_ids.as_ref() {
-            crate::validation::validate_items(
-                "file_ids",
-                value.as_slice(),
-                crate::validation::LengthOpts {
-                    max: Some(20),
-                    ..Default::default()
-                },
-            )?;
-        }
-        Ok(())
-    }
-
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Result<Self, crate::errors::SdkError> {
-        let value = Self { file_ids: None };
-        value.validate_constraints()?;
-        Ok(value)
     }
 }

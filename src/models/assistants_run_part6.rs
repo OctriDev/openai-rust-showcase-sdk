@@ -3,6 +3,58 @@
 
 // assistants_run domain models (part 6)
 
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum RunStreamEventVariant1EventEnum {
+    #[serde(rename = "thread.run.queued")]
+    #[default]
+    ThreadRunQueued,
+}
+
+impl RunStreamEventVariant1EventEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::ThreadRunQueued => "thread.run.queued",
+        }
+    }
+}
+
+impl std::fmt::Display for RunStreamEventVariant1EventEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            RunStreamEventVariant1EventEnum::ThreadRunQueued => f.write_str("thread.run.queued"),
+        }
+    }
+}
+
+/// Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) moves to a `queued` status.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct RunStreamEventVariant1 {
+    pub event: RunStreamEventVariant1EventEnum,
+    /// Represents an execution run on a [thread](https://developers.openai.com/api/docs/assistants/migration).
+    pub data: RunObject,
+}
+
+impl RunStreamEventVariant1 {
+    pub fn new(event: RunStreamEventVariant1EventEnum, data: RunObject) -> Self {
+        Self { event, data }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum RunStreamEventVariant2EventEnum {
+    #[serde(rename = "thread.run.in_progress")]
+    #[default]
+    ThreadRunInProgress,
+}
+
+impl RunStreamEventVariant2EventEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::ThreadRunInProgress => "thread.run.in_progress",
+        }
+    }
+}
+
 impl std::fmt::Display for RunStreamEventVariant2EventEnum {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -296,7 +348,7 @@ impl RunStreamEventVariant9 {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum RunStreamEvent {
     ThreadRunCreated(Box<RunStreamEventVariant0>),
@@ -309,6 +361,86 @@ pub enum RunStreamEvent {
     ThreadRunCancelling(Box<RunStreamEventVariant7>),
     ThreadRunCancelled(Box<RunStreamEventVariant8>),
     ThreadRunExpired(Box<RunStreamEventVariant9>),
+}
+
+impl<'de> serde::Deserialize<'de> for RunStreamEvent {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<Box<RunStreamEventVariant0>>(value.clone()) {
+            let candidate = Self::ThreadRunCreated(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<RunStreamEventVariant1>>(value.clone()) {
+            let candidate = Self::ThreadRunQueued(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<RunStreamEventVariant2>>(value.clone()) {
+            let candidate = Self::ThreadRunInProgress(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<RunStreamEventVariant3>>(value.clone()) {
+            let candidate = Self::ThreadRunRequiresAction(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<RunStreamEventVariant4>>(value.clone()) {
+            let candidate = Self::ThreadRunCompleted(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<RunStreamEventVariant5>>(value.clone()) {
+            let candidate = Self::ThreadRunIncomplete(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<RunStreamEventVariant6>>(value.clone()) {
+            let candidate = Self::ThreadRunFailed(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<RunStreamEventVariant7>>(value.clone()) {
+            let candidate = Self::ThreadRunCancelling(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<RunStreamEventVariant8>>(value.clone()) {
+            let candidate = Self::ThreadRunCancelled(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<RunStreamEventVariant9>>(value.clone()) {
+            let candidate = Self::ThreadRunExpired(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom("no RunStreamEvent branch accepts this payload")
+        })
+    }
 }
 
 /// The type of tool call the output is required for. For now, this is always `function`.
@@ -334,65 +466,5 @@ impl serde::Serialize for RunToolCallObjectTypeEnum {
         S: serde::Serializer,
     {
         serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for RunToolCallObjectTypeEnum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "function" => Self::Function,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for RunToolCallObjectTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-/// The function definition.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct RunToolCallObjectFunction {
-    /// The name of the function.
-    pub name: String,
-    /// The arguments that the model expects you to pass to the function.
-    pub arguments: String,
-}
-
-impl RunToolCallObjectFunction {
-    pub fn new(name: String, arguments: String) -> Self {
-        Self { name, arguments }
-    }
-}
-
-/// Tool call objects
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct RunToolCallObject {
-    /// The ID of the tool call. This ID must be referenced when you submit the tool outputs in using the [Submit tool outputs to run](https://developers.openai.com/api/docs/assistants/migration) endpoint.
-    pub id: String,
-    /// The type of tool call the output is required for. For now, this is always `function`.
-    #[serde(rename = "type")]
-    pub type_: RunToolCallObjectTypeEnum,
-    /// The function definition.
-    pub function: RunToolCallObjectFunction,
-}
-
-impl RunToolCallObject {
-    pub fn new(
-        id: String,
-        type_: RunToolCallObjectTypeEnum,
-        function: RunToolCallObjectFunction,
-    ) -> Self {
-        Self {
-            id,
-            type_,
-            function,
-        }
     }
 }

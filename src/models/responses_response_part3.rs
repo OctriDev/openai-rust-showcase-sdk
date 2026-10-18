@@ -3,6 +3,39 @@
 
 // responses_response domain models (part 3)
 
+impl ResponseQueuedEvent {
+    pub fn new(
+        type_: ResponseQueuedEventTypeEnum,
+        response: Response,
+        sequence_number: i64,
+    ) -> Self {
+        Self {
+            type_,
+            response,
+            sequence_number,
+        }
+    }
+}
+
+/// A detailed breakdown of the input tokens.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct ResponseUsageInputTokensDetails {
+    /// The number of tokens that were retrieved from the cache.
+    /// [More on prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching).
+    pub cached_tokens: i64,
+    /// The number of input tokens that were written to the cache.
+    pub cache_write_tokens: i64,
+}
+
+impl ResponseUsageInputTokensDetails {
+    pub fn new(cached_tokens: i64, cache_write_tokens: i64) -> Self {
+        Self {
+            cached_tokens,
+            cache_write_tokens,
+        }
+    }
+}
+
 /// A detailed breakdown of the output tokens.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct ResponseUsageOutputTokensDetails {

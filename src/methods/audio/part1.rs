@@ -8,27 +8,10 @@ use crate::types::{
     AudioResponseFormat, CreateSpeechRequestResponseFormatEnum,
     CreateSpeechRequestStreamFormatEnum, CreateSpeechRequestVoice, CreateSpeechResponseStreamEvent,
     CreateTranscriptionRequestChunkingStrategy,
-    CreateTranscriptionRequestTimestampGranularitiesItemEnum,
-    CreateTranscriptionResponseDiarizedJson, CreateTranscriptionResponseJson,
-    CreateTranscriptionResponseVerboseJson, CreateTranslationResponseJson,
-    CreateTranslationResponseVerboseJson, TranscriptionInclude,
+    CreateTranscriptionRequestTimestampGranularitiesItemEnum, CreateTranscriptionResponse,
+    TranscriptionInclude,
 };
 use crate::validation::{validate_items, validate_length, validate_range, LengthOpts, RangeOpts};
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum CreateTranscriptionResponse {
-    Json(Box<CreateTranscriptionResponseJson>),
-    DiarizedJson(Box<CreateTranscriptionResponseDiarizedJson>),
-    VerboseJson(Box<CreateTranscriptionResponseVerboseJson>),
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum CreateTranslationResponse {
-    Json(Box<CreateTranslationResponseJson>),
-    VerboseJson(Box<CreateTranslationResponseVerboseJson>),
-}
 
 #[derive(Debug, Clone)]
 pub struct CreateSpeechParams {

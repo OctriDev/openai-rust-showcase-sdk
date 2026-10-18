@@ -3,41 +3,6 @@
 
 // realtime_realtime_session domain models (part 5)
 
-impl serde::Serialize for RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "inf" => Self::Inf,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum RealtimeSessionCreateResponseMaxOutputTokens {
-    Integer(i64),
-    Inf(RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum),
-}
-
 /// A Realtime session configuration object.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct RealtimeSessionCreateResponse {
@@ -430,24 +395,24 @@ impl std::fmt::Display for RealtimeSessionCreateResponseGAIncludeItemEnum {
     }
 }
 
-/// Enables tracing and sets default values for tracing configuration options. Always `auto`.
+/// Optional enumerated value serialized in the `max_output_tokens` wire field.
 #[derive(Debug, Clone, PartialEq, Default)]
-pub enum RealtimeSessionCreateResponseGATracingVariant0Enum {
+pub enum RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum {
     #[default]
-    Auto,
+    Inf,
     Unknown(String),
 }
 
-impl RealtimeSessionCreateResponseGATracingVariant0Enum {
+impl RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum {
     pub fn as_str(&self) -> &str {
         match self {
-            Self::Auto => "auto",
+            Self::Inf => "inf",
             Self::Unknown(value) => value.as_str(),
         }
     }
 }
 
-impl serde::Serialize for RealtimeSessionCreateResponseGATracingVariant0Enum {
+impl serde::Serialize for RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
@@ -456,21 +421,57 @@ impl serde::Serialize for RealtimeSessionCreateResponseGATracingVariant0Enum {
     }
 }
 
-impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateResponseGATracingVariant0Enum {
+impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
         let value = <String as serde::Deserialize>::deserialize(deserializer)?;
         Ok(match value.as_str() {
-            "auto" => Self::Auto,
+            "inf" => Self::Inf,
             _ => Self::Unknown(value),
         })
     }
 }
 
-impl std::fmt::Display for RealtimeSessionCreateResponseGATracingVariant0Enum {
+impl std::fmt::Display for RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(untagged)]
+pub enum RealtimeSessionCreateResponseGAMaxOutputTokens {
+    Integer(i64),
+    Inf(RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum),
+}
+
+impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateResponseGAMaxOutputTokens {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<i64>(value.clone()) {
+            let candidate = Self::Integer(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum,
+        >(value.clone())
+        {
+            let candidate = Self::Inf(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no RealtimeSessionCreateResponseGAMaxOutputTokens branch accepts this payload",
+            )
+        })
     }
 }

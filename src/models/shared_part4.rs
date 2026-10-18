@@ -3,6 +3,151 @@
 
 // shared domain models (part 4)
 
+impl std::fmt::Display for ListOrderParam {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+/// The log probability of a token.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct LogProb {
+    /// Required `string` value serialized in the `token` wire field.
+    pub token: String,
+    /// Required `number` value serialized in the `logprob` wire field.
+    pub logprob: f64,
+    /// Required array value serialized in the `bytes` wire field.
+    pub bytes: Vec<i64>,
+    /// Required array value serialized in the `top_logprobs` wire field.
+    pub top_logprobs: Vec<TopLogProb>,
+}
+
+impl LogProb {
+    pub fn new(
+        token: String,
+        logprob: f64,
+        bytes: Vec<i64>,
+        top_logprobs: Vec<TopLogProb>,
+    ) -> Self {
+        Self {
+            token,
+            logprob,
+            bytes,
+            top_logprobs,
+        }
+    }
+}
+
+/// Required enumerated value serialized in the `type` wire field.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum MCPProtocolErrorTypeEnum {
+    #[serde(rename = "mcp_protocol_error")]
+    #[default]
+    McpProtocolError,
+}
+
+impl MCPProtocolErrorTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::McpProtocolError => "mcp_protocol_error",
+        }
+    }
+}
+
+impl std::fmt::Display for MCPProtocolErrorTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            MCPProtocolErrorTypeEnum::McpProtocolError => f.write_str("mcp_protocol_error"),
+        }
+    }
+}
+
+/// Typed representation of the `MCPProtocolError` API schema.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct MCPProtocolError {
+    /// Required enumerated value serialized in the `type` wire field.
+    #[serde(rename = "type")]
+    pub type_: MCPProtocolErrorTypeEnum,
+    /// Required `integer` value serialized in the `code` wire field.
+    pub code: i64,
+    /// Required `string` value serialized in the `message` wire field.
+    pub message: String,
+}
+
+impl MCPProtocolError {
+    pub fn new(type_: MCPProtocolErrorTypeEnum, code: i64, message: String) -> Self {
+        Self {
+            type_,
+            code,
+            message,
+        }
+    }
+}
+
+pub type Metadata = std::collections::BTreeMap<String, String>;
+
+/// Specifies the event type. For a move action, this property is always set to `move`.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum MoveParamTypeEnum {
+    #[serde(rename = "move")]
+    #[default]
+    Move,
+}
+
+impl MoveParamTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Move => "move",
+        }
+    }
+}
+
+impl std::fmt::Display for MoveParamTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            MoveParamTypeEnum::Move => f.write_str("move"),
+        }
+    }
+}
+
+/// A mouse move action.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct MoveParam {
+    /// Specifies the event type. For a move action, this property is always set to `move`.
+    #[serde(rename = "type")]
+    pub type_: MoveParamTypeEnum,
+    /// The x-coordinate to move to.
+    pub x: i64,
+    /// The y-coordinate to move to.
+    pub y: i64,
+    /// The keys being held while moving the mouse.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub keys: Option<Option<Vec<String>>>,
+}
+
+impl MoveParam {
+    pub fn new(type_: MoveParamTypeEnum, x: i64, y: i64) -> Self {
+        Self {
+            type_,
+            x,
+            y,
+            keys: None,
+        }
+    }
+}
+
+/// Required enumerated value serialized in the `type` wire field.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum OciExternalStorageProviderResponseTypeEnum {
+    #[serde(rename = "oci")]
+    #[default]
+    Oci,
+}
+
 impl OciExternalStorageProviderResponseTypeEnum {
     pub fn as_str(&self) -> &str {
         match self {
@@ -313,26 +458,6 @@ impl std::fmt::Display for OrderEnum {
 
 pub type ParallelToolCalls = bool;
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum PermissionErrorResponseError {
-    Error3(Box<Error3>),
-    String(String),
-}
-
-/// Typed representation of the `PermissionErrorResponse` API schema.
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct PermissionErrorResponse {
-    /// Details about the permission error.
-    pub error: PermissionErrorResponseError,
-}
-
-impl PermissionErrorResponse {
-    pub fn new(error: PermissionErrorResponseError) -> Self {
-        Self { error }
-    }
-}
-
 /// The type of the tool. Always `programmatic_tool_calling`.
 #[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
 pub enum ProgrammaticToolCallingParamTypeEnum {
@@ -365,88 +490,4 @@ pub struct ProgrammaticToolCallingParam {
     /// The type of the tool. Always `programmatic_tool_calling`.
     #[serde(rename = "type")]
     pub type_: ProgrammaticToolCallingParamTypeEnum,
-}
-
-impl ProgrammaticToolCallingParam {
-    pub fn new(type_: ProgrammaticToolCallingParamTypeEnum) -> Self {
-        Self { type_ }
-    }
-}
-
-/// Typed representation of the `ProjectEventTypeEnum` API schema.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum ProjectEventTypeEnum {
-    #[default]
-    BatchCompleted,
-    BatchFailed,
-    BatchExpired,
-    BatchCancelled,
-    ResponseCompleted,
-    ResponseFailed,
-    ResponseCancelled,
-    ResponseIncomplete,
-    EvalRunSucceeded,
-    EvalRunFailed,
-    EvalRunCanceled,
-    FineTuningJobSucceeded,
-    FineTuningJobFailed,
-    FineTuningJobCancelled,
-    RealtimeCallIncoming,
-    VideoCompleted,
-    VideoFailed,
-    AgentEnvironmentReady,
-    AgentEnvironmentFailed,
-    AgentEnvironmentSuspended,
-    AgentEnvironmentExpired,
-    AgentSessionCreated,
-    AgentSessionActionRequired,
-    AgentSessionInProgress,
-    AgentSessionIdle,
-    AgentSessionFailed,
-    SafetyAlertCreated,
-    Unknown(String),
-}
-
-impl ProjectEventTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::BatchCompleted => "batch.completed",
-            Self::BatchFailed => "batch.failed",
-            Self::BatchExpired => "batch.expired",
-            Self::BatchCancelled => "batch.cancelled",
-            Self::ResponseCompleted => "response.completed",
-            Self::ResponseFailed => "response.failed",
-            Self::ResponseCancelled => "response.cancelled",
-            Self::ResponseIncomplete => "response.incomplete",
-            Self::EvalRunSucceeded => "eval.run.succeeded",
-            Self::EvalRunFailed => "eval.run.failed",
-            Self::EvalRunCanceled => "eval.run.canceled",
-            Self::FineTuningJobSucceeded => "fine_tuning.job.succeeded",
-            Self::FineTuningJobFailed => "fine_tuning.job.failed",
-            Self::FineTuningJobCancelled => "fine_tuning.job.cancelled",
-            Self::RealtimeCallIncoming => "realtime.call.incoming",
-            Self::VideoCompleted => "video.completed",
-            Self::VideoFailed => "video.failed",
-            Self::AgentEnvironmentReady => "agent.environment.ready",
-            Self::AgentEnvironmentFailed => "agent.environment.failed",
-            Self::AgentEnvironmentSuspended => "agent.environment.suspended",
-            Self::AgentEnvironmentExpired => "agent.environment.expired",
-            Self::AgentSessionCreated => "agent.session.created",
-            Self::AgentSessionActionRequired => "agent.session.action_required",
-            Self::AgentSessionInProgress => "agent.session.in_progress",
-            Self::AgentSessionIdle => "agent.session.idle",
-            Self::AgentSessionFailed => "agent.session.failed",
-            Self::SafetyAlertCreated => "safety.alert.created",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for ProjectEventTypeEnum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
 }

@@ -117,13 +117,6 @@ impl std::fmt::Display for CodeInterpreterToolTypeEnum {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum CodeInterpreterToolContainer {
-    String(String),
-    AutoCodeInterpreterToolParam(Box<AutoCodeInterpreterToolParam>),
-}
-
 /// A tool that runs Python code to help generate a response to a prompt.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct CodeInterpreterTool {
@@ -311,5 +304,21 @@ impl CodeInterpreterToolCallOutputsItem {
         deserializer: D,
     ) -> Result<serde_json::Value, D::Error> {
         crate::client::unknown_union_member(deserializer, "type", &["logs", "image"])
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(untagged)]
+pub enum CodeInterpreterToolContainer {
+    String(String),
+    AutoCodeInterpreterToolParam(Box<AutoCodeInterpreterToolParam>),
+}
+
+impl CodeInterpreterToolContainer {
+    pub fn as_string_wire_value(&self) -> Option<&str> {
+        match self {
+            Self::String(value) => Some(value.as_str()),
+            _ => None,
+        }
     }
 }

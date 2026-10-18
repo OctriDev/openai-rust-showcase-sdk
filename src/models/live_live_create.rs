@@ -4,7 +4,7 @@
 // live_live_create domain models
 
 /// Create a Live WebRTC session with JSON session configuration and an SDP offer. Follow the [Live prompting guide](https://developers.openai.com/api/docs/guides/live-prompting) before choosing frontend and backend instructions. The request starts the session; do not send session.start on the data channel.
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct LiveCreateRequest {
     /// Startup configuration for the Live session.
     pub session: LiveMediaSessionCreateParams,

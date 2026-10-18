@@ -3,6 +3,106 @@
 
 // responses_beta domain models (part 4)
 
+/// A scroll action.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct BetaScrollParam {
+    /// Specifies the event type. For a scroll action, this property is always set to `scroll`.
+    #[serde(rename = "type")]
+    pub type_: BetaScrollParamTypeEnum,
+    /// The x-coordinate where the scroll occurred.
+    pub x: i64,
+    /// The y-coordinate where the scroll occurred.
+    pub y: i64,
+    /// The horizontal scroll distance.
+    pub scroll_x: i64,
+    /// The vertical scroll distance.
+    pub scroll_y: i64,
+    /// The keys being held while scrolling.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub keys: Option<Option<Vec<String>>>,
+}
+
+impl BetaScrollParam {
+    pub fn new(
+        type_: BetaScrollParamTypeEnum,
+        x: i64,
+        y: i64,
+        scroll_x: i64,
+        scroll_y: i64,
+    ) -> Self {
+        Self {
+            type_,
+            x,
+            y,
+            scroll_x,
+            scroll_y,
+            keys: None,
+        }
+    }
+}
+
+/// A delta of stdout/stderr emitted while a shell call was running.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct BetaShellCallOutputDelta {
+    /// The stdout delta that was emitted.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stdout: Option<String>,
+    /// The stderr delta that was emitted.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stderr: Option<String>,
+}
+
+impl BetaShellCallOutputDelta {
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Self {
+        Self {
+            stdout: None,
+            stderr: None,
+        }
+    }
+}
+
+/// References a skill created with the /v1/skills endpoint.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum BetaSkillReferenceParamTypeEnum {
+    #[serde(rename = "skill_reference")]
+    #[default]
+    SkillReference,
+}
+
+impl BetaSkillReferenceParamTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::SkillReference => "skill_reference",
+        }
+    }
+}
+
+impl std::fmt::Display for BetaSkillReferenceParamTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            BetaSkillReferenceParamTypeEnum::SkillReference => f.write_str("skill_reference"),
+        }
+    }
+}
+
+/// Typed representation of the `BetaSkillReferenceParam` API schema.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct BetaSkillReferenceParam {
+    /// References a skill created with the /v1/skills endpoint.
+    #[serde(rename = "type")]
+    pub type_: BetaSkillReferenceParamTypeEnum,
+    /// The ID of the referenced skill.
+    pub skill_id: String,
+    /// Optional skill version. Use a positive integer or 'latest'. Omit for default.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub version: Option<String>,
+}
+
 impl BetaSkillReferenceParam {
     pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
         crate::validation::validate_length(

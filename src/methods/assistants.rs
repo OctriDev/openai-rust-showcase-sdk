@@ -2,6 +2,7 @@
 // This file is machine-generated from your OpenAPI spec.
 
 mod part1;
+mod part10;
 mod part2;
 mod part3;
 mod part4;
@@ -12,6 +13,7 @@ mod part8;
 mod part9;
 
 pub use part1::*;
+pub use part10::*;
 pub use part2::*;
 pub use part3::*;
 pub use part4::*;

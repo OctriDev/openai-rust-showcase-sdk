@@ -117,13 +117,6 @@ impl std::fmt::Display for BetaCodeInterpreterToolTypeEnum {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum BetaCodeInterpreterToolContainer {
-    String(String),
-    BetaAutoCodeInterpreterToolParam(Box<BetaAutoCodeInterpreterToolParam>),
-}
-
 /// A tool that runs Python code to help generate a response to a prompt.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct BetaCodeInterpreterTool {
@@ -319,5 +312,21 @@ impl BetaCodeInterpreterToolCallOutputsItem {
         deserializer: D,
     ) -> Result<serde_json::Value, D::Error> {
         crate::client::unknown_union_member(deserializer, "type", &["logs", "image"])
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(untagged)]
+pub enum BetaCodeInterpreterToolContainer {
+    String(String),
+    BetaAutoCodeInterpreterToolParam(Box<BetaAutoCodeInterpreterToolParam>),
+}
+
+impl BetaCodeInterpreterToolContainer {
+    pub fn as_string_wire_value(&self) -> Option<&str> {
+        match self {
+            Self::String(value) => Some(value.as_str()),
+            _ => None,
+        }
     }
 }

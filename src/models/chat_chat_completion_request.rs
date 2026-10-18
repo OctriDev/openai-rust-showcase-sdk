@@ -3,11 +3,40 @@
 
 // chat_chat_completion_request domain models
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum ChatCompletionRequestAssistantMessageContent {
     String(String),
     PartArray(Vec<ChatCompletionRequestAssistantMessageContentPart>),
+}
+
+impl<'de> serde::Deserialize<'de> for ChatCompletionRequestAssistantMessageContent {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            Vec<ChatCompletionRequestAssistantMessageContentPart>,
+        >(value.clone())
+        {
+            let candidate = Self::PartArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no ChatCompletionRequestAssistantMessageContent branch accepts this payload",
+            )
+        })
+    }
 }
 
 /// The role of the messages author, in this case `assistant`.
@@ -139,13 +168,41 @@ impl ChatCompletionRequestAssistantMessageContentPart {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum ChatCompletionRequestDeveloperMessageContent {
     String(String),
     ChatCompletionRequestMessageContentPartTextArray(
         Vec<ChatCompletionRequestMessageContentPartText>,
     ),
+}
+
+impl<'de> serde::Deserialize<'de> for ChatCompletionRequestDeveloperMessageContent {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Vec<ChatCompletionRequestMessageContentPartText>>(
+            value.clone(),
+        ) {
+            let candidate = Self::ChatCompletionRequestMessageContentPartTextArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no ChatCompletionRequestDeveloperMessageContent branch accepts this payload",
+            )
+        })
+    }
 }
 
 /// The role of the messages author, in this case `developer`.
@@ -464,54 +521,4 @@ pub struct ChatCompletionRequestMessageContentPartFile {
     /// Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL from the request's `prompt_cache_options.ttl`; the boundary is not rounded to a token block.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub prompt_cache_breakpoint: Option<PromptCacheBreakpointParam>,
-}
-
-impl ChatCompletionRequestMessageContentPartFile {
-    pub fn new(
-        type_: ChatCompletionRequestMessageContentPartFileTypeEnum,
-        file: ChatCompletionRequestMessageContentPartFileFile,
-    ) -> Self {
-        Self {
-            type_,
-            file,
-            prompt_cache_breakpoint: None,
-        }
-    }
-}
-
-/// The type of the content part.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum ChatCompletionRequestMessageContentPartImageTypeEnum {
-    #[serde(rename = "image_url")]
-    #[default]
-    ImageUrl,
-}
-
-impl ChatCompletionRequestMessageContentPartImageTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::ImageUrl => "image_url",
-        }
-    }
-}
-
-impl std::fmt::Display for ChatCompletionRequestMessageContentPartImageTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ChatCompletionRequestMessageContentPartImageTypeEnum::ImageUrl => {
-                f.write_str("image_url")
-            }
-        }
-    }
-}
-
-/// Specifies the detail level of the image. Learn more in the [Vision guide](https://developers.openai.com/api/docs/guides/images-vision#choose-an-image-detail-level).
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum ChatCompletionRequestMessageContentPartImageImageUrlDetailEnum {
-    #[default]
-    Auto,
-    Low,
-    High,
-    Original,
-    Unknown(String),
 }

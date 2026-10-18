@@ -30,66 +30,7 @@ pub type Input = Vec<LiveInitialItem>;
 
 pub type Instructions = String;
 
-/// Required enumerated value serialized in the `model` wire field.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum ModelIdsLiveVariant1Enum {
-    #[default]
-    GptLive1,
-    Unknown(String),
-}
-
-impl ModelIdsLiveVariant1Enum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::GptLive1 => "gpt-live-1",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for ModelIdsLiveVariant1Enum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for ModelIdsLiveVariant1Enum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "gpt-live-1" => Self::GptLive1,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for ModelIdsLiveVariant1Enum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum ModelIdsLive {
-    String(String),
-    GptLive1(ModelIdsLiveVariant1Enum),
-}
-
-impl ModelIdsLive {
-    pub fn as_string_wire_value(&self) -> Option<&str> {
-        match self {
-            Self::String(value) => Some(value.as_str()),
-            Self::GptLive1(value) => Some(value.as_str()),
-        }
-    }
-}
+pub type ModelIdsLive = String;
 
 pub type PropertiesStore = bool;
 

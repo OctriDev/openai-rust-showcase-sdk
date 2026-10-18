@@ -3,115 +3,6 @@
 
 // realtime_realtime_session domain models (part 4)
 
-/// Realtime session object configuration.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct RealtimeSessionCreateRequestGA {
-    /// The type of session to create. Always `realtime` for the Realtime API.
-    #[serde(rename = "type")]
-    pub type_: RealtimeSessionCreateRequestGATypeEnum,
-    /// The set of modalities the model can respond with. It defaults to `["audio"]`, indicating
-    /// that the model will respond with audio plus a transcript. `["text"]` can be used to make
-    /// the model respond with text only. It is not possible to request both `text` and `audio` at the same time.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub output_modalities: Option<Vec<RealtimeSessionCreateRequestGAOutputModalitiesItemEnum>>,
-    /// The Realtime model used for this session.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub model: Option<String>,
-    /// The default system instructions (i.e. system message) prepended to model calls. This field allows the client to guide the model on desired responses. The model can be instructed on response content and format, (e.g. "be extremely succinct", "act friendly", "here are examples of good responses") and on audio behavior (e.g. "talk quickly", "inject emotion into your voice", "laugh frequently"). The instructions are not guaranteed to be followed by the model, but they provide guidance to the model on the desired behavior.
-    ///
-    /// Note that the server sets default instructions which will be used if this field is not set and are visible in the `session.created` event at the start of the session.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub instructions: Option<String>,
-    /// Configuration for input and output audio.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub audio: Option<RealtimeSessionCreateRequestGAAudio>,
-    /// Additional fields to include in server outputs.
-    ///
-    /// `item.input_audio_transcription.logprobs`: Include logprobs for input audio transcription.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub include: Option<Vec<RealtimeSessionCreateRequestGAIncludeItemEnum>>,
-    /// Realtime API can write session traces to the [Traces Dashboard](https://platform.openai.com/logs?api=traces). Set to null to disable tracing. Once
-    /// tracing is enabled for a session, the configuration cannot be modified.
-    ///
-    /// `auto` will create a trace for the session with default values for the
-    /// workflow name, group id, and metadata.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub tracing: Option<Option<RealtimeSessionCreateRequestGATracing>>,
-    /// Tools available to the model.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tools: Option<Vec<RealtimeSessionCreateRequestGAToolsItem>>,
-    /// How the model chooses tools. Provide one of the string modes or force a specific
-    /// function/MCP tool.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tool_choice: Option<RealtimeSessionCreateRequestGAToolChoice>,
-    /// Whether the model may call multiple tools in parallel. Only supported by
-    /// reasoning Realtime models such as `gpt-realtime-2`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub parallel_tool_calls: Option<bool>,
-    /// Configuration for reasoning-capable Realtime models such as `gpt-realtime-2`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub reasoning: Option<RealtimeReasoning>,
-    /// Maximum number of output tokens for a single assistant response,
-    /// inclusive of tool calls. Provide an integer between 1 and 4096 to
-    /// limit output tokens, or `inf` for the maximum available tokens for a
-    /// given model. Defaults to `inf`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub max_output_tokens: Option<RealtimeSessionCreateRequestGAMaxOutputTokens>,
-    /// When the number of tokens in a conversation exceeds the model's input token limit, the conversation be truncated, meaning messages (starting from the oldest) will not be included in the model's context. A 32k context model with 4,096 max output tokens can only include 28,224 tokens in the context before truncation occurs.
-    ///
-    /// Clients can configure truncation behavior to truncate with a lower max token limit, which is an effective way to control token usage and cost.
-    ///
-    /// Truncation will reduce the number of cached tokens on the next turn (busting the cache), since messages are dropped from the beginning of the context. However, clients can also configure truncation to retain messages up to a fraction of the maximum context size, which will reduce the need for future truncations and thus improve the cache rate.
-    ///
-    /// Truncation can be disabled entirely, which means the server will never truncate but would instead return an error if the conversation exceeds the model's input token limit.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub truncation: Option<RealtimeTruncation>,
-    /// Reference to a prompt template and its variables.
-    /// [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub prompt: Option<Option<Prompt>>,
-}
-
-impl RealtimeSessionCreateRequestGA {
-    pub fn new(type_: RealtimeSessionCreateRequestGATypeEnum) -> Self {
-        Self {
-            type_,
-            output_modalities: None,
-            model: None,
-            instructions: None,
-            audio: None,
-            include: None,
-            tracing: None,
-            tools: None,
-            tool_choice: None,
-            parallel_tool_calls: None,
-            reasoning: None,
-            max_output_tokens: None,
-            truncation: None,
-            prompt: None,
-        }
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum RealtimeSessionCreateRequestGAToolChoice {
-    ToolChoiceOptions(ToolChoiceOptions),
-    ToolChoiceFunction(Box<ToolChoiceFunction>),
-    ToolChoiceMCP(Box<ToolChoiceMCP>),
-    /// A member whose `type` names no branch this SDK knows, kept as received.
-    #[serde(deserialize_with = "RealtimeSessionCreateRequestGAToolChoice::unknown_member")]
-    Unknown(serde_json::Value),
-}
-
 impl RealtimeSessionCreateRequestGAToolChoice {
     fn unknown_member<'de, D: serde::Deserializer<'de>>(
         deserializer: D,
@@ -129,11 +20,126 @@ impl RealtimeSessionCreateRequestGAToolChoice {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum RealtimeSessionCreateRequestGAToolsItem {
     RealtimeFunctionTool(Box<RealtimeFunctionTool>),
     MCPTool(Box<MCPTool>),
+}
+
+impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateRequestGAToolsItem {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<Box<RealtimeFunctionTool>>(value.clone()) {
+            let candidate = Self::RealtimeFunctionTool(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<MCPTool>>(value.clone()) {
+            let candidate = Self::MCPTool(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no RealtimeSessionCreateRequestGAToolsItem branch accepts this payload",
+            )
+        })
+    }
+}
+
+/// Default tracing mode for the session.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum RealtimeSessionCreateRequestTracingVariant0Enum {
+    #[default]
+    Auto,
+    Unknown(String),
+}
+
+impl RealtimeSessionCreateRequestTracingVariant0Enum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Auto => "auto",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for RealtimeSessionCreateRequestTracingVariant0Enum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateRequestTracingVariant0Enum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "auto" => Self::Auto,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for RealtimeSessionCreateRequestTracingVariant0Enum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+/// Granular configuration for tracing.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct RealtimeSessionCreateRequestTracingVariant1 {
+    /// The name of the workflow to attach to this trace. This is used to
+    /// name the trace in the traces dashboard.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub workflow_name: Option<String>,
+    /// The group id to attach to this trace to enable filtering and
+    /// grouping in the traces dashboard.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub group_id: Option<String>,
+    /// The arbitrary metadata to attach to this trace to enable
+    /// filtering in the traces dashboard.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<serde_json::Value>,
+}
+
+impl RealtimeSessionCreateRequestTracingVariant1 {
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Self {
+        Self {
+            workflow_name: None,
+            group_id: None,
+            metadata: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(untagged)]
+pub enum RealtimeSessionCreateRequestTracing {
+    Auto(RealtimeSessionCreateRequestTracingVariant0Enum),
+    TracingConfiguration(Box<RealtimeSessionCreateRequestTracingVariant1>),
+}
+
+impl RealtimeSessionCreateRequestTracing {
+    pub fn as_string_wire_value(&self) -> Option<&str> {
+        match self {
+            Self::Auto(value) => Some(value.as_str()),
+            _ => None,
+        }
+    }
 }
 
 /// Required enumerated value serialized in the `include[]` wire field.
@@ -356,86 +362,6 @@ impl RealtimeSessionCreateResponseAudio {
     }
 }
 
-/// Default tracing mode for the session.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum RealtimeSessionCreateResponseTracingVariant0Enum {
-    #[default]
-    Auto,
-    Unknown(String),
-}
-
-impl RealtimeSessionCreateResponseTracingVariant0Enum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Auto => "auto",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for RealtimeSessionCreateResponseTracingVariant0Enum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateResponseTracingVariant0Enum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "auto" => Self::Auto,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for RealtimeSessionCreateResponseTracingVariant0Enum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-/// Granular configuration for tracing.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct RealtimeSessionCreateResponseTracingVariant1 {
-    /// The name of the workflow to attach to this trace. This is used to
-    /// name the trace in the traces dashboard.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub workflow_name: Option<String>,
-    /// The group id to attach to this trace to enable filtering and
-    /// grouping in the traces dashboard.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub group_id: Option<String>,
-    /// The arbitrary metadata to attach to this trace to enable
-    /// filtering in the traces dashboard.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<serde_json::Value>,
-}
-
-impl RealtimeSessionCreateResponseTracingVariant1 {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        Self {
-            workflow_name: None,
-            group_id: None,
-            metadata: None,
-        }
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum RealtimeSessionCreateResponseTracing {
-    Auto(RealtimeSessionCreateResponseTracingVariant0Enum),
-    TracingConfiguration(Box<RealtimeSessionCreateResponseTracingVariant1>),
-}
-
 /// Configuration for turn detection. Can be set to `null` to turn off. Server
 /// VAD means that the model will detect the start and end of speech based on
 /// audio volume and respond at the end of user speech.
@@ -486,5 +412,69 @@ impl RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum {
             Self::Inf => "inf",
             Self::Unknown(value) => value.as_str(),
         }
+    }
+}
+
+impl serde::Serialize for RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "inf" => Self::Inf,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(untagged)]
+pub enum RealtimeSessionCreateResponseMaxOutputTokens {
+    Integer(i64),
+    Inf(RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum),
+}
+
+impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateResponseMaxOutputTokens {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<i64>(value.clone()) {
+            let candidate = Self::Integer(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum,
+        >(value.clone())
+        {
+            let candidate = Self::Inf(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no RealtimeSessionCreateResponseMaxOutputTokens branch accepts this payload",
+            )
+        })
     }
 }

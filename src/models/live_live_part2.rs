@@ -3,6 +3,54 @@
 
 // live_live domain models (part 2)
 
+/// Typed representation of the `LiveFileSearchToolInputParam` API schema.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct LiveFileSearchToolInputParam {
+    /// Required enumerated value serialized in the `type` wire field.
+    #[serde(rename = "type")]
+    pub type_: LiveFileSearchToolInputParamTypeEnum,
+}
+
+impl LiveFileSearchToolInputParam {
+    pub fn new(type_: LiveFileSearchToolInputParamTypeEnum) -> Self {
+        Self { type_ }
+    }
+}
+
+/// Required enumerated value serialized in the `type` wire field.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum LiveImageGenerationToolInputParamTypeEnum {
+    #[serde(rename = "image_generation")]
+    #[default]
+    ImageGeneration,
+}
+
+impl LiveImageGenerationToolInputParamTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::ImageGeneration => "image_generation",
+        }
+    }
+}
+
+impl std::fmt::Display for LiveImageGenerationToolInputParamTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LiveImageGenerationToolInputParamTypeEnum::ImageGeneration => {
+                f.write_str("image_generation")
+            }
+        }
+    }
+}
+
+/// Typed representation of the `LiveImageGenerationToolInputParam` API schema.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct LiveImageGenerationToolInputParam {
+    /// Required enumerated value serialized in the `type` wire field.
+    #[serde(rename = "type")]
+    pub type_: LiveImageGenerationToolInputParamTypeEnum,
+}
+
 impl LiveImageGenerationToolInputParam {
     pub fn new(type_: LiveImageGenerationToolInputParamTypeEnum) -> Self {
         Self { type_ }

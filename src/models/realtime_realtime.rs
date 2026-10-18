@@ -126,12 +126,49 @@ impl RealtimeAudioFormatsVariant2 {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum RealtimeAudioFormats {
     PCMAudioFormat(Box<RealtimeAudioFormatsVariant0>),
     PCMUAudioFormat(Box<RealtimeAudioFormatsVariant1>),
     PCMAAudioFormat(Box<RealtimeAudioFormatsVariant2>),
+}
+
+impl<'de> serde::Deserialize<'de> for RealtimeAudioFormats {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) =
+            serde_json::from_value::<Box<RealtimeAudioFormatsVariant0>>(value.clone())
+        {
+            let candidate = Self::PCMAudioFormat(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<RealtimeAudioFormatsVariant1>>(value.clone())
+        {
+            let candidate = Self::PCMUAudioFormat(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<RealtimeAudioFormatsVariant2>>(value.clone())
+        {
+            let candidate = Self::PCMAAudioFormat(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom("no RealtimeAudioFormats branch accepts this payload")
+        })
+    }
 }
 
 /// The type of the tool, i.e. `function`.
@@ -455,47 +492,6 @@ impl RealtimeTruncationVariant1TokenLimits {
     pub fn new() -> Result<Self, crate::errors::SdkError> {
         let value = Self {
             post_instructions: None,
-        };
-        value.validate_constraints()?;
-        Ok(value)
-    }
-}
-
-/// Retain a fraction of the conversation tokens when the conversation exceeds the input token limit. This allows you to amortize truncations across multiple turns, which can help improve cached token usage.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct RealtimeTruncationVariant1 {
-    /// Use retention ratio truncation.
-    #[serde(rename = "type")]
-    pub type_: RealtimeTruncationVariant1TypeEnum,
-    /// Fraction of post-instruction conversation tokens to retain (`0.0` \- `1.0`) when the conversation exceeds the input token limit. Setting this to `0.8` means that messages will be dropped until 80% of the maximum allowed tokens are used. This helps reduce the frequency of truncations and improve cache rates.
-    pub retention_ratio: f64,
-    /// Optional custom token limits for this truncation strategy. If not provided, the model's default token limits will be used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub token_limits: Option<RealtimeTruncationVariant1TokenLimits>,
-}
-
-impl RealtimeTruncationVariant1 {
-    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
-        crate::validation::validate_range(
-            "retention_ratio",
-            self.retention_ratio,
-            crate::validation::RangeOpts {
-                min: Some(0_f64),
-                max: Some(1_f64),
-                ..Default::default()
-            },
-        )?;
-        Ok(())
-    }
-
-    pub fn new(
-        type_: RealtimeTruncationVariant1TypeEnum,
-        retention_ratio: f64,
-    ) -> Result<Self, crate::errors::SdkError> {
-        let value = Self {
-            type_,
-            retention_ratio,
-            token_limits: None,
         };
         value.validate_constraints()?;
         Ok(value)

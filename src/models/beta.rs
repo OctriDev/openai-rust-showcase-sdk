@@ -3,11 +3,33 @@
 
 // beta domain models
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum BetaContent {
     BetaInputContent(Box<BetaInputContent>),
     BetaOutputContent(Box<BetaOutputContent>),
+}
+
+impl<'de> serde::Deserialize<'de> for BetaContent {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<Box<BetaInputContent>>(value.clone()) {
+            let candidate = Self::BetaInputContent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<BetaOutputContent>>(value.clone()) {
+            let candidate = Self::BetaOutputContent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| serde::de::Error::custom("no BetaContent branch accepts this payload"))
+    }
 }
 
 /// An error payload that was emitted for a streaming error event.

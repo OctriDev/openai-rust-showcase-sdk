@@ -3,6 +3,39 @@
 
 // audio domain models (part 3)
 
+impl CreateVoiceFromConsentRequestTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::AudioSample => "audio_sample",
+        }
+    }
+}
+
+impl std::fmt::Display for CreateVoiceFromConsentRequestTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            CreateVoiceFromConsentRequestTypeEnum::AudioSample => f.write_str("audio_sample"),
+        }
+    }
+}
+
+/// Creates a voice from a consent recording and an audio sample. Requires multipart/form-data.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct CreateVoiceFromConsentRequest {
+    /// The voice creation method. Defaults to `audio_sample` when omitted.
+    #[serde(rename = "type", skip_serializing_if = "Option::is_none")]
+    pub type_: Option<CreateVoiceFromConsentRequestTypeEnum>,
+    /// The name of the new voice.
+    pub name: String,
+    /// The sample audio recording file. Maximum size is 10 MiB.
+    ///
+    /// Supported MIME types:
+    /// `audio/mpeg`, `audio/wav`, `audio/x-wav`, `audio/ogg`, `audio/aac`, `audio/flac`, `audio/webm`, `audio/mp4`.
+    pub audio_sample: crate::client::Base64Bytes,
+    /// The consent recording ID (for example, `cons_1234`).
+    pub consent: String,
+}
+
 impl CreateVoiceFromConsentRequest {
     pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
         crate::validation::validate_length(
@@ -472,53 +505,6 @@ impl TranscriptTextDoneEventLogprobsItem {
             token: None,
             logprob: None,
             bytes: None,
-        }
-    }
-}
-
-/// Emitted when the transcription is complete. Contains the complete transcription text. Only emitted when you [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create) with the `Stream` parameter set to `true`.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct TranscriptTextDoneEvent {
-    /// The type of the event. Always `transcript.text.done`.
-    #[serde(rename = "type")]
-    pub type_: TranscriptTextDoneEventTypeEnum,
-    /// The text that was transcribed.
-    pub text: String,
-    /// The languages detected in the audio. Returned by `gpt-transcribe`. An empty array indicates that no language could be reliably detected.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub languages: Option<Vec<TranscriptionLanguage>>,
-    /// The log probabilities of the individual tokens in the transcription. Only included if you [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create) with the `include[]` parameter set to `logprobs`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub logprobs: Option<Vec<TranscriptTextDoneEventLogprobsItem>>,
-    /// Usage statistics for models billed by token usage.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub usage: Option<TranscriptTextUsageTokens>,
-}
-
-impl TranscriptTextDoneEvent {
-    pub fn new(type_: TranscriptTextDoneEventTypeEnum, text: String) -> Self {
-        Self {
-            type_,
-            text,
-            languages: None,
-            logprobs: None,
-            usage: None,
-        }
-    }
-}
-
-/// The type of the event. Always `transcript.text.segment`.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum TranscriptTextSegmentEventTypeEnum {
-    #[serde(rename = "transcript.text.segment")]
-    #[default]
-    TranscriptTextSegment,
-}
-
-impl TranscriptTextSegmentEventTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::TranscriptTextSegment => "transcript.text.segment",
         }
     }
 }

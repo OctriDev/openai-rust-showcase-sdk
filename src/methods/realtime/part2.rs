@@ -12,6 +12,7 @@ use crate::types::{
     RealtimeSessionCreateRequestTracing, RealtimeSessionCreateRequestTurnDetection,
     RealtimeSessionCreateResponse, RealtimeTranscriptionSessionCreateRequestIncludeItemEnum,
     RealtimeTranscriptionSessionCreateRequestInputAudioFormatEnum,
+    RealtimeTranscriptionSessionCreateRequestInputAudioNoiseReduction,
     RealtimeTranscriptionSessionCreateRequestTurnDetection,
     RealtimeTranscriptionSessionCreateResponse,
     RealtimeTranslationClientSecretCreateRequestExpiresAfter,
@@ -340,7 +341,8 @@ pub fn create_realtime_session(
 #[derive(Debug, Clone, Default)]
 pub struct CreateRealtimeTranscriptionSessionParams {
     pub turn_detection: Option<RealtimeTranscriptionSessionCreateRequestTurnDetection>,
-    pub input_audio_noise_reduction: Option<serde_json::Value>,
+    pub input_audio_noise_reduction:
+        Option<RealtimeTranscriptionSessionCreateRequestInputAudioNoiseReduction>,
     pub input_audio_format: Option<RealtimeTranscriptionSessionCreateRequestInputAudioFormatEnum>,
     pub input_audio_transcription: Option<AudioTranscription>,
     pub include: Option<Vec<RealtimeTranscriptionSessionCreateRequestIncludeItemEnum>>,
