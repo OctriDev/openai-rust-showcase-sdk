@@ -19,7 +19,7 @@ impl LiveMediaSessionAudioParam {
 }
 
 /// Startup configuration for a Live media session. Follow the [Live prompting guide](https://developers.openai.com/api/docs/guides/live-prompting) when writing frontend instructions and the backend prompt under delegation.responses.instructions.
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct LiveMediaSessionCreateParams {
     /// The Live model. Required in the session configuration for every transport; do not pass it as a URL query parameter.
     pub model: ModelIdsLive,
@@ -56,6 +56,14 @@ pub struct LiveMediaSessionCreateParams {
 
 impl LiveMediaSessionCreateParams {
     pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
+        crate::validation::validate_length(
+            "model",
+            &self.model,
+            crate::validation::LengthOpts {
+                min: Some(1),
+                ..Default::default()
+            },
+        )?;
         if let Some(value) = self.triggers.as_ref() {
             crate::validation::validate_items(
                 "triggers",

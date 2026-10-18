@@ -247,7 +247,7 @@ impl std::fmt::Display for LiveSessionClosedReason {
 }
 
 /// Returned after the Live session finishes finalizing, with the close reason, final session snapshot, and cumulative audio usage. A connection closing without this event does not confirm successful finalization.
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct LiveSessionClosed {
     /// The unique ID of the Live server event.
     pub event_id: String,
@@ -349,7 +349,7 @@ impl LiveSessionCloseParam {
 }
 
 /// Initial configuration for a Live session, including its model, conversation instructions, audio, and delegated task handling.
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct LiveSessionCreateParams {
     /// The Live model. Required in the session configuration for every transport; do not pass it as a URL query parameter.
     pub model: ModelIdsLive,
@@ -386,6 +386,14 @@ pub struct LiveSessionCreateParams {
 
 impl LiveSessionCreateParams {
     pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
+        crate::validation::validate_length(
+            "model",
+            &self.model,
+            crate::validation::LengthOpts {
+                min: Some(1),
+                ..Default::default()
+            },
+        )?;
         if let Some(value) = self.input.as_ref() {
             crate::validation::validate_items(
                 "input",

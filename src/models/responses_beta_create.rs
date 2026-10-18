@@ -3,20 +3,77 @@
 
 // responses_beta_create domain models
 
+/// Typed representation of the `BetaCreateModelResponseProperties` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct BetaCreateModelResponsePropertiesVariant1 {
-    /// Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to content blocks with `prompt_cache_breakpoint`. Each request can write up to four breakpoints. For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for current details.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub prompt_cache_options: Option<BetaPromptCacheOptionsParam>,
+pub struct BetaCreateModelResponseProperties {
+    /// Set of 16 key-value pairs that can be attached to an object. This can be
+    /// useful for storing additional information about the object in a structured
+    /// format, and querying for objects via API or the dashboard.
+    ///
+    /// Keys are strings with a maximum length of 64 characters. Values are strings
+    /// with a maximum length of 512 characters.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub metadata: Option<Option<BetaMetadata>>,
     /// An integer between 0 and 20 specifying the maximum number of most likely
     /// tokens to return at each token position, each with an associated log
     /// probability. In some cases, the number of returned tokens may be fewer than
     /// requested.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub top_logprobs: Option<i64>,
+    /// Optional API value serialized in the `temperature` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub temperature: Option<Option<f64>>,
+    /// Optional API value serialized in the `top_p` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub top_p: Option<Option<f64>>,
+    /// This field is being replaced by `safety_identifier` and `prompt_cache_key`. Use `prompt_cache_key` instead to maintain caching optimizations.
+    /// A stable identifier for your end-users.
+    /// Used to boost cache hit rates by better bucketing similar requests and  to help OpenAI detect and prevent abuse. [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub user: Option<Option<String>>,
+    /// Optional API value serialized in the `safety_identifier` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub safety_identifier: Option<Option<String>>,
+    /// Optional `string` value serialized in the `prompt_cache_key` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub prompt_cache_key: Option<Option<String>>,
+    /// Optional API value serialized in the `prompt_cache_retention` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub prompt_cache_retention: Option<Option<BetaModelResponsePropertiesPromptCacheRetention>>,
+    /// Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to content blocks with `prompt_cache_breakpoint`. Each request can write up to four breakpoints. For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for current details.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub prompt_cache_options: Option<BetaPromptCacheOptionsParam>,
 }
 
-impl BetaCreateModelResponsePropertiesVariant1 {
+impl BetaCreateModelResponseProperties {
     pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
         if let Some(value) = self.top_logprobs.as_ref() {
             crate::validation::validate_range(
@@ -29,34 +86,56 @@ impl BetaCreateModelResponsePropertiesVariant1 {
                 },
             )?;
         }
+        if let Some(Some(value)) = self.temperature.as_ref() {
+            crate::validation::validate_range(
+                "temperature",
+                *value,
+                crate::validation::RangeOpts {
+                    min: Some(0_f64),
+                    max: Some(2_f64),
+                    ..Default::default()
+                },
+            )?;
+        }
+        if let Some(Some(value)) = self.top_p.as_ref() {
+            crate::validation::validate_range(
+                "top_p",
+                *value,
+                crate::validation::RangeOpts {
+                    min: Some(0_f64),
+                    max: Some(1_f64),
+                    ..Default::default()
+                },
+            )?;
+        }
+        if let Some(Some(value)) = self.safety_identifier.as_ref() {
+            crate::validation::validate_length(
+                "safety_identifier",
+                value,
+                crate::validation::LengthOpts {
+                    max: Some(128),
+                    ..Default::default()
+                },
+            )?;
+        }
         Ok(())
     }
 
     #[allow(clippy::new_without_default)]
     pub fn new() -> Result<Self, crate::errors::SdkError> {
         let value = Self {
-            prompt_cache_options: None,
+            metadata: None,
             top_logprobs: None,
+            temperature: None,
+            top_p: None,
+            user: None,
+            safety_identifier: None,
+            prompt_cache_key: None,
+            prompt_cache_retention: None,
+            prompt_cache_options: None,
         };
         value.validate_constraints()?;
         Ok(value)
-    }
-}
-
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct BetaCreateModelResponseProperties {
-    #[serde(flatten)]
-    pub member_0: BetaModelResponseProperties,
-    #[serde(flatten)]
-    pub member_1: BetaCreateModelResponsePropertiesVariant1,
-}
-
-impl BetaCreateModelResponseProperties {
-    pub fn new(
-        member_0: BetaModelResponseProperties,
-        member_1: BetaCreateModelResponsePropertiesVariant1,
-    ) -> Self {
-        Self { member_0, member_1 }
     }
 }
 
@@ -113,14 +192,141 @@ impl std::fmt::Display for BetaCreateResponseVariant2Truncation {
     }
 }
 
+/// Typed representation of the `BetaCreateResponse` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct BetaCreateResponseVariant2 {
-    /// Domain-specific access programs to use for this request.
+pub struct BetaCreateResponse {
+    /// Set of 16 key-value pairs that can be attached to an object. This can be
+    /// useful for storing additional information about the object in a structured
+    /// format, and querying for objects via API or the dashboard.
+    ///
+    /// Keys are strings with a maximum length of 64 characters. Values are strings
+    /// with a maximum length of 512 characters.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub metadata: Option<Option<BetaMetadata>>,
+    /// An integer between 0 and 20 specifying the maximum number of most likely
+    /// tokens to return at each token position, each with an associated log
+    /// probability. In some cases, the number of returned tokens may be fewer than
+    /// requested.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub access_programs: Option<BetaAccessProgramsParam>,
+    pub top_logprobs: Option<i64>,
+    /// Optional API value serialized in the `temperature` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub temperature: Option<Option<f64>>,
+    /// Optional API value serialized in the `top_p` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub top_p: Option<Option<f64>>,
+    /// This field is being replaced by `safety_identifier` and `prompt_cache_key`. Use `prompt_cache_key` instead to maintain caching optimizations.
+    /// A stable identifier for your end-users.
+    /// Used to boost cache hit rates by better bucketing similar requests and  to help OpenAI detect and prevent abuse. [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub user: Option<Option<String>>,
+    /// Optional API value serialized in the `safety_identifier` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub safety_identifier: Option<Option<String>>,
+    /// Optional `string` value serialized in the `prompt_cache_key` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub prompt_cache_key: Option<Option<String>>,
+    /// Optional API value serialized in the `prompt_cache_retention` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub prompt_cache_retention: Option<Option<BetaModelResponsePropertiesPromptCacheRetention>>,
     /// Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to content blocks with `prompt_cache_breakpoint`. Each request can write up to four breakpoints. For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for current details.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub prompt_cache_options: Option<BetaResponsePromptCacheOptionsParam>,
+    /// Optional `string` value serialized in the `previous_response_id` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub previous_response_id: Option<Option<String>>,
+    /// Model ID used to generate the response, like `gpt-6-astra`. OpenAI
+    /// offers a wide range of models with different capabilities, performance
+    /// characteristics, and price points. Refer to the [model guide](https://developers.openai.com/api/docs/models)
+    /// to browse and compare available models.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub model: Option<BetaModelIdsResponses>,
+    /// Optional `boolean` value serialized in the `background` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub background: Option<Option<bool>>,
+    /// Optional `integer` value serialized in the `max_tool_calls` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub max_tool_calls: Option<Option<i64>>,
+    /// Configuration options for a text response from the model. Can be plain
+    /// text or structured JSON data. Learn more:
+    /// \- [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+    /// \- [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub text: Option<BetaResponseTextParam>,
+    /// An array of tools the model may call while generating a response. You
+    /// can specify which tool to use by setting the `tool_choice` parameter.
+    ///
+    /// We support the following categories of tools:
+    /// \- \*\*Built-in tools\*\*: Tools that are provided by OpenAI that extend the
+    ///   model's capabilities, like [web search](https://developers.openai.com/api/docs/guides/tools-web-search)
+    ///   or [file search](https://developers.openai.com/api/docs/guides/tools-file-search). Learn more about
+    ///   [built-in tools](https://developers.openai.com/api/docs/guides/tools).
+    /// \- \*\*MCP Tools\*\*: Integrations with third-party systems via custom MCP servers
+    ///   or predefined connectors such as Google Drive and SharePoint. Learn more about
+    ///   [MCP Tools](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
+    /// \- \*\*Function calls (custom tools)\*\*: Functions that are defined by you,
+    ///   enabling the model to call your own code with strongly typed arguments
+    ///   and outputs. Learn more about
+    ///   [function calling](https://developers.openai.com/api/docs/guides/function-calling). You can also use
+    ///   custom tools to call your own code.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tools: Option<BetaToolsArray>,
+    /// How the model should select which tool (or tools) to use when generating
+    /// a response. See the `tools` parameter to see how to specify which tools
+    /// the model can call.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tool_choice: Option<BetaToolChoiceParam>,
+    /// Reference to a prompt template and its variables.
+    /// [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub prompt: Option<Option<BetaPrompt>>,
+    /// Domain-specific access programs to use for this request.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub access_programs: Option<BetaAccessProgramsParam>,
     #[serde(
         skip_serializing_if = "Option::is_none",
         default,
@@ -227,8 +433,51 @@ pub struct BetaCreateResponseVariant2 {
     pub multi_agent: Option<Option<BetaMultiAgentParam>>,
 }
 
-impl BetaCreateResponseVariant2 {
+impl BetaCreateResponse {
     pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
+        if let Some(value) = self.top_logprobs.as_ref() {
+            crate::validation::validate_range(
+                "top_logprobs",
+                *value as f64,
+                crate::validation::RangeOpts {
+                    min: Some(0_f64),
+                    max: Some(20_f64),
+                    ..Default::default()
+                },
+            )?;
+        }
+        if let Some(Some(value)) = self.temperature.as_ref() {
+            crate::validation::validate_range(
+                "temperature",
+                *value,
+                crate::validation::RangeOpts {
+                    min: Some(0_f64),
+                    max: Some(2_f64),
+                    ..Default::default()
+                },
+            )?;
+        }
+        if let Some(Some(value)) = self.top_p.as_ref() {
+            crate::validation::validate_range(
+                "top_p",
+                *value,
+                crate::validation::RangeOpts {
+                    min: Some(0_f64),
+                    max: Some(1_f64),
+                    ..Default::default()
+                },
+            )?;
+        }
+        if let Some(Some(value)) = self.safety_identifier.as_ref() {
+            crate::validation::validate_length(
+                "safety_identifier",
+                value,
+                crate::validation::LengthOpts {
+                    max: Some(128),
+                    ..Default::default()
+                },
+            )?;
+        }
         if let Some(Some(value)) = self.context_management.as_ref() {
             crate::validation::validate_items(
                 "context_management",
@@ -255,8 +504,24 @@ impl BetaCreateResponseVariant2 {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Result<Self, crate::errors::SdkError> {
         let value = Self {
-            access_programs: None,
+            metadata: None,
+            top_logprobs: None,
+            temperature: None,
+            top_p: None,
+            user: None,
+            safety_identifier: None,
+            prompt_cache_key: None,
+            prompt_cache_retention: None,
             prompt_cache_options: None,
+            previous_response_id: None,
+            model: None,
+            background: None,
+            max_tool_calls: None,
+            text: None,
+            tools: None,
+            tool_choice: None,
+            prompt: None,
+            access_programs: None,
             service_tier: None,
             truncation: None,
             reasoning: None,
@@ -275,29 +540,5 @@ impl BetaCreateResponseVariant2 {
         };
         value.validate_constraints()?;
         Ok(value)
-    }
-}
-
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct BetaCreateResponse {
-    #[serde(flatten)]
-    pub member_0: BetaCreateModelResponseProperties,
-    #[serde(flatten)]
-    pub member_1: BetaResponseProperties,
-    #[serde(flatten)]
-    pub member_2: BetaCreateResponseVariant2,
-}
-
-impl BetaCreateResponse {
-    pub fn new(
-        member_0: BetaCreateModelResponseProperties,
-        member_1: BetaResponseProperties,
-        member_2: BetaCreateResponseVariant2,
-    ) -> Self {
-        Self {
-            member_0,
-            member_1,
-            member_2,
-        }
     }
 }

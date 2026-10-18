@@ -3,6 +3,48 @@
 
 // vector_stores domain models (part 3)
 
+impl<'de> serde::Deserialize<'de> for VectorStoreFileObjectObjectEnum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "vector_store.file" => Self::VectorStoreFile,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for VectorStoreFileObjectObjectEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+/// The status of the vector store file, which can be either `in_progress`, `completed`, `cancelled`, or `failed`. The status `completed` indicates that the vector store file is ready for use.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum VectorStoreFileObjectStatusEnum {
+    #[default]
+    InProgress,
+    Completed,
+    Cancelled,
+    Failed,
+    Unknown(String),
+}
+
+impl VectorStoreFileObjectStatusEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::InProgress => "in_progress",
+            Self::Completed => "completed",
+            Self::Cancelled => "cancelled",
+            Self::Failed => "failed",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
 impl serde::Serialize for VectorStoreFileObjectStatusEnum {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -368,11 +410,35 @@ impl VectorStoreObject {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum VectorStoreSearchRequestQuery {
     String(String),
     StringArray(Vec<String>),
+}
+
+impl<'de> serde::Deserialize<'de> for VectorStoreSearchRequestQuery {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Vec<String>>(value.clone()) {
+            let candidate = Self::StringArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom("no VectorStoreSearchRequestQuery branch accepts this payload")
+        })
+    }
 }
 
 /// Enable re-ranking; set to `none` to disable, which can help reduce latency.
@@ -423,91 +489,5 @@ impl<'de> serde::Deserialize<'de> for VectorStoreSearchRequestRankingOptionsRank
 impl std::fmt::Display for VectorStoreSearchRequestRankingOptionsRankerEnum {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
-    }
-}
-
-/// Ranking options for search.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct VectorStoreSearchRequestRankingOptions {
-    /// Enable re-ranking; set to `none` to disable, which can help reduce latency.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ranker: Option<VectorStoreSearchRequestRankingOptionsRankerEnum>,
-    /// Optional `number` value serialized in the `score_threshold` wire field.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub score_threshold: Option<f64>,
-}
-
-impl VectorStoreSearchRequestRankingOptions {
-    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
-        if let Some(value) = self.score_threshold.as_ref() {
-            crate::validation::validate_range(
-                "score_threshold",
-                *value,
-                crate::validation::RangeOpts {
-                    min: Some(0_f64),
-                    max: Some(1_f64),
-                    ..Default::default()
-                },
-            )?;
-        }
-        Ok(())
-    }
-
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Result<Self, crate::errors::SdkError> {
-        let value = Self {
-            ranker: None,
-            score_threshold: None,
-        };
-        value.validate_constraints()?;
-        Ok(value)
-    }
-}
-
-/// Typed representation of the `VectorStoreSearchRequest` API schema.
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct VectorStoreSearchRequest {
-    /// A query string for a search
-    pub query: VectorStoreSearchRequestQuery,
-    /// Whether to rewrite the natural language query for vector search.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub rewrite_query: Option<bool>,
-    /// The maximum number of results to return. This number should be between 1 and 50 inclusive.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub max_num_results: Option<i64>,
-    /// A filter to apply based on file attributes.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub filters: Option<VectorStoreSearchRequestFilters>,
-    /// Ranking options for search.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ranking_options: Option<VectorStoreSearchRequestRankingOptions>,
-}
-
-impl VectorStoreSearchRequest {
-    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
-        if let Some(value) = self.max_num_results.as_ref() {
-            crate::validation::validate_range(
-                "max_num_results",
-                *value as f64,
-                crate::validation::RangeOpts {
-                    min: Some(1_f64),
-                    max: Some(50_f64),
-                    ..Default::default()
-                },
-            )?;
-        }
-        Ok(())
-    }
-
-    pub fn new(query: VectorStoreSearchRequestQuery) -> Result<Self, crate::errors::SdkError> {
-        let value = Self {
-            query,
-            rewrite_query: None,
-            max_num_results: None,
-            filters: None,
-            ranking_options: None,
-        };
-        value.validate_constraints()?;
-        Ok(value)
     }
 }

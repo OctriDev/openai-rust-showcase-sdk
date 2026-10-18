@@ -3,6 +3,37 @@
 
 // assistants_create domain models (part 4)
 
+/// Optional object value serialized in the `code_interpreter` wire field.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct CreateThreadRequestToolResourcesCodeInterpreter {
+    /// A list of [file](https://developers.openai.com/api/reference/resources/files) IDs made available to the `code_interpreter` tool. There can be a maximum of 20 files associated with the tool.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub file_ids: Option<Vec<String>>,
+}
+
+impl CreateThreadRequestToolResourcesCodeInterpreter {
+    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
+        if let Some(value) = self.file_ids.as_ref() {
+            crate::validation::validate_items(
+                "file_ids",
+                value.as_slice(),
+                crate::validation::LengthOpts {
+                    max: Some(20),
+                    ..Default::default()
+                },
+            )?;
+        }
+        Ok(())
+    }
+
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Result<Self, crate::errors::SdkError> {
+        let value = Self { file_ids: None };
+        value.validate_constraints()?;
+        Ok(value)
+    }
+}
+
 /// Required object value serialized in the `vector_stores[]` wire field.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct CreateThreadRequestToolResourcesFileSearchVectorStoresItem {
@@ -293,7 +324,7 @@ impl CreateThreadRequestToolResourcesFileSearchVectorStoresItemChunkingStrategyV
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum CreateThreadRequestToolResourcesFileSearchVectorStoresItemChunkingStrategy {
     AutoChunkingStrategy(
@@ -302,4 +333,34 @@ pub enum CreateThreadRequestToolResourcesFileSearchVectorStoresItemChunkingStrat
     StaticChunkingStrategy(
         Box<CreateThreadRequestToolResourcesFileSearchVectorStoresItemChunkingStrategyVariant1>,
     ),
+}
+
+impl<'de> serde::Deserialize<'de>
+    for CreateThreadRequestToolResourcesFileSearchVectorStoresItemChunkingStrategy
+{
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<
+            Box<CreateThreadRequestToolResourcesFileSearchVectorStoresItemChunkingStrategyVariant0>,
+        >(value.clone())
+        {
+            let candidate = Self::AutoChunkingStrategy(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            Box<CreateThreadRequestToolResourcesFileSearchVectorStoresItemChunkingStrategyVariant1>,
+        >(value.clone())
+        {
+            let candidate = Self::StaticChunkingStrategy(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| serde::de::Error::custom("no CreateThreadRequestToolResourcesFileSearchVectorStoresItemChunkingStrategy branch accepts this payload"))
+    }
 }

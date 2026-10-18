@@ -3,6 +3,22 @@
 
 // responses_beta_response domain models (part 3)
 
+impl BetaResponseQueuedEventTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::ResponseQueued => "response.queued",
+        }
+    }
+}
+
+impl std::fmt::Display for BetaResponseQueuedEventTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            BetaResponseQueuedEventTypeEnum::ResponseQueued => f.write_str("response.queued"),
+        }
+    }
+}
+
 /// Emitted when a response is queued and waiting to be processed.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct BetaResponseQueuedEvent {

@@ -3,6 +3,88 @@
 
 // responses_beta domain models (part 3)
 
+/// Specify additional output data to include in the model response. Currently supported values are:
+/// \- `web_search_call.results`: Include the search results of the web search tool call.
+/// \- `web_search_call.action.sources`: Include the sources of the web search tool call.
+/// \- `code_interpreter_call.outputs`: Includes the outputs of python code execution in code interpreter tool call items.
+/// \- `computer_call_output.output.image_url`: Include image urls from the computer call output.
+/// \- `file_search_call.results`: Include the search results of the file search tool call.
+/// \- `message.input_image.image_url`: Include image urls from the input message.
+/// \- `message.output_text.logprobs`: Include logprobs with assistant messages.
+/// \- `reasoning.encrypted_content`: Includes an encrypted version of reasoning tokens in reasoning item outputs. This enables reasoning items to be used in multi-turn conversations when using the Responses API statelessly (like when the `store` parameter is set to `false`, or when an organization is enrolled in the zero data retention program).
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum BetaIncludeEnum {
+    #[default]
+    FileSearchCallResults,
+    WebSearchCallResults,
+    WebSearchCallActionSources,
+    MessageInputImageImageUrl,
+    ComputerCallOutputOutputImageUrl,
+    CodeInterpreterCallOutputs,
+    ReasoningEncryptedContent,
+    MessageOutputTextLogprobs,
+    Unknown(String),
+}
+
+impl BetaIncludeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::FileSearchCallResults => "file_search_call.results",
+            Self::WebSearchCallResults => "web_search_call.results",
+            Self::WebSearchCallActionSources => "web_search_call.action.sources",
+            Self::MessageInputImageImageUrl => "message.input_image.image_url",
+            Self::ComputerCallOutputOutputImageUrl => "computer_call_output.output.image_url",
+            Self::CodeInterpreterCallOutputs => "code_interpreter_call.outputs",
+            Self::ReasoningEncryptedContent => "reasoning.encrypted_content",
+            Self::MessageOutputTextLogprobs => "message.output_text.logprobs",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for BetaIncludeEnum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for BetaIncludeEnum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "file_search_call.results" => Self::FileSearchCallResults,
+            "web_search_call.results" => Self::WebSearchCallResults,
+            "web_search_call.action.sources" => Self::WebSearchCallActionSources,
+            "message.input_image.image_url" => Self::MessageInputImageImageUrl,
+            "computer_call_output.output.image_url" => Self::ComputerCallOutputOutputImageUrl,
+            "code_interpreter_call.outputs" => Self::CodeInterpreterCallOutputs,
+            "reasoning.encrypted_content" => Self::ReasoningEncryptedContent,
+            "message.output_text.logprobs" => Self::MessageOutputTextLogprobs,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for BetaIncludeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+/// Specifies the event type. For a keypress action, this property is always set to `keypress`.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum BetaKeyPressActionTypeEnum {
+    #[serde(rename = "keypress")]
+    #[default]
+    Keypress,
+}
+
 impl BetaKeyPressActionTypeEnum {
     pub fn as_str(&self) -> &str {
         match self {
@@ -381,104 +463,4 @@ impl std::fmt::Display for BetaScrollParamTypeEnum {
             BetaScrollParamTypeEnum::Scroll => f.write_str("scroll"),
         }
     }
-}
-
-/// A scroll action.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct BetaScrollParam {
-    /// Specifies the event type. For a scroll action, this property is always set to `scroll`.
-    #[serde(rename = "type")]
-    pub type_: BetaScrollParamTypeEnum,
-    /// The x-coordinate where the scroll occurred.
-    pub x: i64,
-    /// The y-coordinate where the scroll occurred.
-    pub y: i64,
-    /// The horizontal scroll distance.
-    pub scroll_x: i64,
-    /// The vertical scroll distance.
-    pub scroll_y: i64,
-    /// The keys being held while scrolling.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub keys: Option<Option<Vec<String>>>,
-}
-
-impl BetaScrollParam {
-    pub fn new(
-        type_: BetaScrollParamTypeEnum,
-        x: i64,
-        y: i64,
-        scroll_x: i64,
-        scroll_y: i64,
-    ) -> Self {
-        Self {
-            type_,
-            x,
-            y,
-            scroll_x,
-            scroll_y,
-            keys: None,
-        }
-    }
-}
-
-/// A delta of stdout/stderr emitted while a shell call was running.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct BetaShellCallOutputDelta {
-    /// The stdout delta that was emitted.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub stdout: Option<String>,
-    /// The stderr delta that was emitted.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub stderr: Option<String>,
-}
-
-impl BetaShellCallOutputDelta {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        Self {
-            stdout: None,
-            stderr: None,
-        }
-    }
-}
-
-/// References a skill created with the /v1/skills endpoint.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum BetaSkillReferenceParamTypeEnum {
-    #[serde(rename = "skill_reference")]
-    #[default]
-    SkillReference,
-}
-
-impl BetaSkillReferenceParamTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::SkillReference => "skill_reference",
-        }
-    }
-}
-
-impl std::fmt::Display for BetaSkillReferenceParamTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            BetaSkillReferenceParamTypeEnum::SkillReference => f.write_str("skill_reference"),
-        }
-    }
-}
-
-/// Typed representation of the `BetaSkillReferenceParam` API schema.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct BetaSkillReferenceParam {
-    /// References a skill created with the /v1/skills endpoint.
-    #[serde(rename = "type")]
-    pub type_: BetaSkillReferenceParamTypeEnum,
-    /// The ID of the referenced skill.
-    pub skill_id: String,
-    /// Optional skill version. Use a positive integer or 'latest'. Omit for default.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub version: Option<String>,
 }

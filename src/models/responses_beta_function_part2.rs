@@ -3,6 +3,22 @@
 
 // responses_beta_function domain models (part 2)
 
+/// The type of the item. Always `shell_call`.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum BetaFunctionShellCallItemParamTypeEnum {
+    #[serde(rename = "shell_call")]
+    #[default]
+    ShellCall,
+}
+
+impl BetaFunctionShellCallItemParamTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::ShellCall => "shell_call",
+        }
+    }
+}
+
 impl std::fmt::Display for BetaFunctionShellCallItemParamTypeEnum {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -486,49 +502,4 @@ pub struct BetaFunctionShellCallOutputItemParam {
         with = "crate::client::double_option"
     )]
     pub max_output_length: Option<Option<i64>>,
-}
-
-impl BetaFunctionShellCallOutputItemParam {
-    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
-        crate::validation::validate_length(
-            "call_id",
-            &self.call_id,
-            crate::validation::LengthOpts {
-                min: Some(1),
-                max: Some(64),
-            },
-        )?;
-        Ok(())
-    }
-
-    pub fn new(
-        call_id: String,
-        type_: BetaFunctionShellCallOutputItemParamTypeEnum,
-        output: Vec<BetaFunctionShellCallOutputContentParam>,
-    ) -> Result<Self, crate::errors::SdkError> {
-        let value = Self {
-            agent: None,
-            id: None,
-            call_id,
-            caller: None,
-            type_,
-            output,
-            status: None,
-            max_output_length: None,
-        };
-        value.validate_constraints()?;
-        Ok(value)
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum BetaFunctionShellCallOutputOutcomeParam {
-    BetaFunctionShellCallOutputTimeoutOutcomeParam(
-        Box<BetaFunctionShellCallOutputTimeoutOutcomeParam>,
-    ),
-    BetaFunctionShellCallOutputExitOutcomeParam(Box<BetaFunctionShellCallOutputExitOutcomeParam>),
-    /// A member whose `type` names no branch this SDK knows, kept as received.
-    #[serde(deserialize_with = "BetaFunctionShellCallOutputOutcomeParam::unknown_member")]
-    Unknown(serde_json::Value),
 }

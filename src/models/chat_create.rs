@@ -3,6 +3,64 @@
 
 // chat_create domain models
 
+/// Deprecated. Use `prompt_cache_options.ttl` instead.
+///
+/// The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours. [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
+/// This field expresses a maximum retention policy, while
+/// `prompt_cache_options.ttl` expresses a minimum cache lifetime. The two
+/// fields are independent and do not interact.
+/// For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
+///
+/// For older models that support both `in_memory` and `24h`, the default depends on your organization's data retention policy:
+///   \- Organizations without ZDR enabled default to `24h`.
+///   \- Organizations with ZDR enabled default to `in_memory` when `prompt_cache_retention` is not specified.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum ModelResponsePropertiesPromptCacheRetention {
+    #[default]
+    InMemory,
+    _24h,
+    Unknown(String),
+}
+
+impl ModelResponsePropertiesPromptCacheRetention {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::InMemory => "in_memory",
+            Self::_24h => "24h",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for ModelResponsePropertiesPromptCacheRetention {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for ModelResponsePropertiesPromptCacheRetention {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "in_memory" => Self::InMemory,
+            "24h" => Self::_24h,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for ModelResponsePropertiesPromptCacheRetention {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// The type of location approximation. Always `approximate`.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub enum CreateChatCompletionRequestVariant1WebSearchOptionsUserLocationTypeEnum {
@@ -97,6 +155,47 @@ impl CreateChatCompletionRequestVariant1WebSearchOptions {
     }
 }
 
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(untagged)]
+pub enum CreateChatCompletionRequestVariant1ResponseFormat {
+    ResponseFormatText(Box<ResponseFormatText>),
+    ResponseFormatJsonSchema(Box<ResponseFormatJsonSchema>),
+    ResponseFormatJsonObject(Box<ResponseFormatJsonObject>),
+}
+
+impl<'de> serde::Deserialize<'de> for CreateChatCompletionRequestVariant1ResponseFormat {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<Box<ResponseFormatText>>(value.clone()) {
+            let candidate = Self::ResponseFormatText(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<ResponseFormatJsonSchema>>(value.clone()) {
+            let candidate = Self::ResponseFormatJsonSchema(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<ResponseFormatJsonObject>>(value.clone()) {
+            let candidate = Self::ResponseFormatJsonObject(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no CreateChatCompletionRequestVariant1ResponseFormat branch accepts this payload",
+            )
+        })
+    }
+}
+
 /// Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`,
 /// `opus`, or `pcm16`.
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -182,6 +281,40 @@ impl CreateChatCompletionRequestVariant1Audio {
     }
 }
 
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(untagged)]
+pub enum CreateChatCompletionRequestVariant1ToolsItem {
+    ChatCompletionTool(Box<ChatCompletionTool>),
+    CustomToolChatCompletions(Box<CustomToolChatCompletions>),
+}
+
+impl<'de> serde::Deserialize<'de> for CreateChatCompletionRequestVariant1ToolsItem {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<Box<ChatCompletionTool>>(value.clone()) {
+            let candidate = Self::ChatCompletionTool(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<CustomToolChatCompletions>>(value.clone())
+        {
+            let candidate = Self::CustomToolChatCompletions(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no CreateChatCompletionRequestVariant1ToolsItem branch accepts this payload",
+            )
+        })
+    }
+}
+
 /// `none` means the model will not call a function and instead generates a message. `auto` means the model can pick between generating a message or calling a function.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub enum CreateChatCompletionRequestVariant1FunctionCallVariant0Enum {
@@ -230,262 +363,40 @@ impl std::fmt::Display for CreateChatCompletionRequestVariant1FunctionCallVarian
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum CreateChatCompletionRequestVariant1FunctionCall {
     Literal(CreateChatCompletionRequestVariant1FunctionCallVariant0Enum),
     ChatCompletionFunctionCallOption(Box<ChatCompletionFunctionCallOption>),
 }
 
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct CreateChatCompletionRequestVariant1 {
-    /// A list of messages comprising the conversation so far. Depending on the
-    /// [model](https://developers.openai.com/api/docs/models) you use, different message types (modalities) are
-    /// supported, like [text](https://developers.openai.com/api/docs/guides/text),
-    /// [images](https://developers.openai.com/api/docs/guides/images-vision), and [audio](https://developers.openai.com/api/docs/guides/audio).
-    pub messages: Vec<ChatCompletionRequestMessage>,
-    /// Model ID used to generate the response, like `gpt-6-astra` or `o3`. OpenAI
-    /// offers a wide range of models with different capabilities, performance
-    /// characteristics, and price points. Refer to the [model guide](https://developers.openai.com/api/docs/models)
-    /// to browse and compare available models.
-    pub model: ModelIdsShared,
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub service_tier: Option<Option<ServiceTier>>,
-    /// Output types that you would like the model to generate.
-    /// Most models are capable of generating text, which is the default:
-    ///
-    /// `["text"]`
-    ///
-    /// The `gpt-4o-audio-preview` model can also be used to
-    /// [generate audio](https://developers.openai.com/api/docs/guides/audio). To request that this model generate
-    /// both text and audio responses, you can use:
-    ///
-    /// `["text", "audio"]`
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub modalities: Option<Option<ResponseModalities>>,
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub verbosity: Option<Option<Verbosity>>,
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub reasoning_effort: Option<Option<ReasoningEffort>>,
-    /// An upper bound for the number of tokens that can be generated for a completion, including visible output tokens and [reasoning tokens](https://developers.openai.com/api/docs/guides/reasoning).
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub max_completion_tokens: Option<Option<i64>>,
-    /// Number between -2.0 and 2.0. Positive values penalize new tokens based on
-    /// their existing frequency in the text so far, decreasing the model's
-    /// likelihood to repeat the same line verbatim.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub frequency_penalty: Option<Option<f64>>,
-    /// Number between -2.0 and 2.0. Positive values penalize new tokens based on
-    /// whether they appear in the text so far, increasing the model's likelihood
-    /// to talk about new topics.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub presence_penalty: Option<Option<f64>>,
-    /// This tool searches the web for relevant results to use in a response.
-    /// Learn more about the [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub web_search_options: Option<CreateChatCompletionRequestVariant1WebSearchOptions>,
-    /// An integer between 0 and 20 specifying the maximum number of most likely
-    /// tokens to return at each token position, each with an associated log
-    /// probability. In some cases, the number of returned tokens may be fewer than
-    /// requested.
-    /// `logprobs` must be set to `true` if this parameter is used.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub top_logprobs: Option<Option<i64>>,
-    /// An object specifying the format that the model must output.
-    ///
-    /// Setting to `{ "type": "json_schema", "json_schema": {...} }` enables
-    /// Structured Outputs which ensures the model will match your supplied JSON
-    /// schema. Learn more in the [Structured Outputs
-    /// guide](https://developers.openai.com/api/docs/guides/structured-outputs).
-    ///
-    /// Setting to `{ "type": "json_object" }` enables the older JSON mode, which
-    /// ensures the message the model generates is valid JSON. Using `json_schema`
-    /// is preferred for models that support it.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub response_format: Option<ResponseFormat>,
-    /// Parameters for audio output. Required when audio output is requested with
-    /// `modalities: ["audio"]`. [Learn more](https://developers.openai.com/api/docs/guides/audio).
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub audio: Option<Option<CreateChatCompletionRequestVariant1Audio>>,
-    /// Whether or not to store the output of this chat completion request for
-    /// use in our [model distillation](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#distilling-from-a-larger-model) or
-    /// [evals](https://developers.openai.com/api/docs/guides/evals) products.
-    ///
-    /// Supports text and image inputs. Note: image inputs over 8MB will be dropped.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub store: Option<Option<bool>>,
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub moderation: Option<Option<ModerationParam>>,
-    /// If set to true, the model response data will be streamed to the client
-    /// as it is generated using [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format).
-    /// See the [Streaming section below](https://developers.openai.com/api/reference/resources/chat/subresources/completions/streaming-events)
-    /// for more information, along with the [streaming responses](https://developers.openai.com/api/docs/guides/streaming-responses)
-    /// guide for more information on how to handle the streaming events.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub stream: Option<Option<bool>>,
-    /// Not supported with latest reasoning models `o3` and `o4-mini`.
-    ///
-    /// Up to 4 sequences where the API will stop generating further tokens. The
-    /// returned text will not contain the stop sequence.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub stop: Option<Option<StopConfiguration>>,
-    /// Modify the likelihood of specified tokens appearing in the completion.
-    ///
-    /// Accepts a JSON object that maps tokens (specified by their token ID in the
-    /// tokenizer) to an associated bias value from -100 to 100\. Mathematically,
-    /// the bias is added to the logits generated by the model prior to sampling.
-    /// The exact effect will vary per model, but values between -1 and 1 should
-    /// decrease or increase likelihood of selection; values like -100 or 100
-    /// should result in a ban or exclusive selection of the relevant token.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub logit_bias: Option<Option<std::collections::HashMap<String, i64>>>,
-    /// Whether to return log probabilities of the output tokens or not. If true,
-    /// returns the log probabilities of each output token returned in the
-    /// `content` of `message`.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub logprobs: Option<Option<bool>>,
-    /// The maximum number of [tokens](https://platform.openai.com/tokenizer) that can be generated in the
-    /// chat completion. This value can be used to control
-    /// [costs](https://openai.com/api/pricing/) for text generated via API.
-    ///
-    /// This value is now deprecated in favor of `max_completion_tokens`, and is
-    /// not compatible with [o-series models](https://developers.openai.com/api/docs/guides/reasoning).
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub max_tokens: Option<Option<i64>>,
-    /// How many chat completion choices to generate for each input message. Note that you will be charged based on the number of generated tokens across all of the choices. Keep `n` as `1` to minimize costs.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub n: Option<Option<i64>>,
-    /// Configuration for a [Predicted Output](https://developers.openai.com/api/docs/guides/predicted-outputs),
-    /// which can greatly improve response times when large parts of the model
-    /// response are known ahead of time. This is most common when you are
-    /// regenerating a file with only minor changes to most of the content.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub prediction: Option<Option<PredictionContent>>,
-    /// This feature is in Beta.
-    /// If specified, our system will make a best effort to sample deterministically, such that repeated requests with the same `seed` and parameters should return the same result.
-    /// Determinism is not guaranteed, and you should refer to the `system_fingerprint` response parameter to monitor changes in the backend.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub seed: Option<Option<i64>>,
-    /// Options for streaming response. Only set this when you set `stream: true`.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub stream_options: Option<Option<ChatCompletionStreamOptions>>,
-    /// A list of tools the model may call. You can provide either
-    /// [custom tools](https://developers.openai.com/api/docs/guides/function-calling#custom-tools) or
-    /// [function tools](https://developers.openai.com/api/docs/guides/function-calling).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tools: Option<Vec<ToolsItem>>,
-    /// Controls which (if any) tool is called by the model.
-    /// `none` means the model will not call any tool and instead generates a message.
-    /// `auto` means the model can pick between generating a message or calling one or more tools.
-    /// `required` means the model must call one or more tools.
-    /// Specifying a particular tool via `{"type": "function", "function": {"name": "my_function"}}` forces the model to call that tool.
-    ///
-    /// `none` is the default when no tools are present. `auto` is the default if tools are present.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tool_choice: Option<ChatCompletionToolChoiceOption>,
-    /// Whether to enable [parallel function calling](https://developers.openai.com/api/docs/guides/function-calling#parallel-function-calling) during tool use.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub parallel_tool_calls: Option<ParallelToolCalls>,
-    /// Deprecated in favor of `tool_choice`.
-    ///
-    /// Controls which (if any) function is called by the model.
-    ///
-    /// `none` means the model will not call a function and instead generates a
-    /// message.
-    ///
-    /// `auto` means the model can pick between generating a message or calling a
-    /// function.
-    ///
-    /// Specifying a particular function via `{"name": "my_function"}` forces the
-    /// model to call that function.
-    ///
-    /// `none` is the default when no functions are present. `auto` is the default
-    /// if functions are present.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub function_call: Option<CreateChatCompletionRequestVariant1FunctionCall>,
-    /// Deprecated in favor of `tools`.
-    ///
-    /// A list of functions the model may generate JSON inputs for.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub functions: Option<Vec<ChatCompletionFunctions>>,
+impl<'de> serde::Deserialize<'de> for CreateChatCompletionRequestVariant1FunctionCall {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<
+            CreateChatCompletionRequestVariant1FunctionCallVariant0Enum,
+        >(value.clone())
+        {
+            let candidate = Self::Literal(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<ChatCompletionFunctionCallOption>>(value.clone())
+        {
+            let candidate = Self::ChatCompletionFunctionCallOption(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no CreateChatCompletionRequestVariant1FunctionCall branch accepts this payload",
+            )
+        })
+    }
 }

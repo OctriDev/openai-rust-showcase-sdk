@@ -173,63 +173,44 @@ impl ThreadObject {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum ThreadStreamEventVariant0EventEnum {
+/// Required enumerated value serialized in the `event` wire field.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum ThreadStreamEventEventEnum {
+    #[serde(rename = "thread.created")]
     #[default]
     ThreadCreated,
-    Unknown(String),
 }
 
-impl ThreadStreamEventVariant0EventEnum {
+impl ThreadStreamEventEventEnum {
     pub fn as_str(&self) -> &str {
         match self {
             Self::ThreadCreated => "thread.created",
-            Self::Unknown(value) => value.as_str(),
         }
     }
 }
 
-impl serde::Serialize for ThreadStreamEventVariant0EventEnum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for ThreadStreamEventVariant0EventEnum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "thread.created" => Self::ThreadCreated,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for ThreadStreamEventVariant0EventEnum {
+impl std::fmt::Display for ThreadStreamEventEventEnum {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
+        match self {
+            ThreadStreamEventEventEnum::ThreadCreated => f.write_str("thread.created"),
+        }
     }
 }
 
 /// Occurs when a new [thread](https://developers.openai.com/api/docs/assistants/migration) is created.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct ThreadStreamEventVariant0 {
+pub struct ThreadStreamEvent {
     /// Whether to enable input audio transcription.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
-    pub event: ThreadStreamEventVariant0EventEnum,
+    /// Required enumerated value serialized in the `event` wire field.
+    pub event: ThreadStreamEventEventEnum,
     /// Represents a thread that contains [messages](https://developers.openai.com/api/docs/assistants/migration).
     pub data: ThreadObject,
 }
 
-impl ThreadStreamEventVariant0 {
-    pub fn new(event: ThreadStreamEventVariant0EventEnum, data: ThreadObject) -> Self {
+impl ThreadStreamEvent {
+    pub fn new(event: ThreadStreamEventEventEnum, data: ThreadObject) -> Self {
         Self {
             enabled: None,
             event,
@@ -237,5 +218,3 @@ impl ThreadStreamEventVariant0 {
         }
     }
 }
-
-pub type ThreadStreamEvent = ThreadStreamEventVariant0;

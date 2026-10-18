@@ -376,7 +376,7 @@ impl MessageStreamEventVariant4 {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum MessageStreamEvent {
     ThreadMessageCreated(Box<MessageStreamEventVariant0>),
@@ -384,4 +384,54 @@ pub enum MessageStreamEvent {
     ThreadMessageDelta(Box<MessageStreamEventVariant2>),
     ThreadMessageCompleted(Box<MessageStreamEventVariant3>),
     ThreadMessageIncomplete(Box<MessageStreamEventVariant4>),
+}
+
+impl<'de> serde::Deserialize<'de> for MessageStreamEvent {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<Box<MessageStreamEventVariant0>>(value.clone())
+        {
+            let candidate = Self::ThreadMessageCreated(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<MessageStreamEventVariant1>>(value.clone())
+        {
+            let candidate = Self::ThreadMessageInProgress(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<MessageStreamEventVariant2>>(value.clone())
+        {
+            let candidate = Self::ThreadMessageDelta(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<MessageStreamEventVariant3>>(value.clone())
+        {
+            let candidate = Self::ThreadMessageCompleted(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<MessageStreamEventVariant4>>(value.clone())
+        {
+            let candidate = Self::ThreadMessageIncomplete(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom("no MessageStreamEvent branch accepts this payload")
+        })
+    }
 }

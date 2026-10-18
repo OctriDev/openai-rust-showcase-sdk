@@ -49,13 +49,39 @@ impl std::fmt::Display for PredictionContentTypeEnum {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum PredictionContentContent {
     String(String),
     ChatCompletionRequestMessageContentPartTextArray(
         Vec<ChatCompletionRequestMessageContentPartText>,
     ),
+}
+
+impl<'de> serde::Deserialize<'de> for PredictionContentContent {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Vec<ChatCompletionRequestMessageContentPartText>>(
+            value.clone(),
+        ) {
+            let candidate = Self::ChatCompletionRequestMessageContentPartTextArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom("no PredictionContentContent branch accepts this payload")
+        })
+    }
 }
 
 /// Static predicted output content, such as the content of a text file that is
@@ -77,6 +103,55 @@ impl PredictionContent {
         Self { type_, content }
     }
 }
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum ResponseModalitiesItemEnum {
+    #[default]
+    Text,
+    Audio,
+    Unknown(String),
+}
+
+impl ResponseModalitiesItemEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Text => "text",
+            Self::Audio => "audio",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for ResponseModalitiesItemEnum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for ResponseModalitiesItemEnum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "text" => Self::Text,
+            "audio" => Self::Audio,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for ResponseModalitiesItemEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+pub type ResponseModalities = Vec<ResponseModalitiesItemEnum>;
 
 /// Specifies the processing type used for serving the request.
 ///   \- If set to 'auto', then the request will be processed with the service tier configured in the Project settings. Unless otherwise configured, the Project will use 'default'.
@@ -146,21 +221,3 @@ impl std::fmt::Display for ServiceTierVariant0Enum {
 }
 
 pub type ServiceTier = ServiceTierVariant0Enum;
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum ToolsItem {
-    ChatCompletionTool(Box<ChatCompletionTool>),
-    CustomToolChatCompletions(Box<CustomToolChatCompletions>),
-    /// A member whose `type` names no branch this SDK knows, kept as received.
-    #[serde(deserialize_with = "ToolsItem::unknown_member")]
-    Unknown(serde_json::Value),
-}
-
-impl ToolsItem {
-    fn unknown_member<'de, D: serde::Deserializer<'de>>(
-        deserializer: D,
-    ) -> Result<serde_json::Value, D::Error> {
-        crate::client::unknown_union_member(deserializer, "type", &["function", "custom"])
-    }
-}

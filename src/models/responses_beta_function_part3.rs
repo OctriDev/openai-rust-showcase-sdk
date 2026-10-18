@@ -3,6 +3,51 @@
 
 // responses_beta_function domain models (part 3)
 
+impl BetaFunctionShellCallOutputItemParam {
+    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
+        crate::validation::validate_length(
+            "call_id",
+            &self.call_id,
+            crate::validation::LengthOpts {
+                min: Some(1),
+                max: Some(64),
+            },
+        )?;
+        Ok(())
+    }
+
+    pub fn new(
+        call_id: String,
+        type_: BetaFunctionShellCallOutputItemParamTypeEnum,
+        output: Vec<BetaFunctionShellCallOutputContentParam>,
+    ) -> Result<Self, crate::errors::SdkError> {
+        let value = Self {
+            agent: None,
+            id: None,
+            call_id,
+            caller: None,
+            type_,
+            output,
+            status: None,
+            max_output_length: None,
+        };
+        value.validate_constraints()?;
+        Ok(value)
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(untagged)]
+pub enum BetaFunctionShellCallOutputOutcomeParam {
+    BetaFunctionShellCallOutputTimeoutOutcomeParam(
+        Box<BetaFunctionShellCallOutputTimeoutOutcomeParam>,
+    ),
+    BetaFunctionShellCallOutputExitOutcomeParam(Box<BetaFunctionShellCallOutputExitOutcomeParam>),
+    /// A member whose `type` names no branch this SDK knows, kept as received.
+    #[serde(deserialize_with = "BetaFunctionShellCallOutputOutcomeParam::unknown_member")]
+    Unknown(serde_json::Value),
+}
+
 impl BetaFunctionShellCallOutputOutcomeParam {
     fn unknown_member<'de, D: serde::Deserializer<'de>>(
         deserializer: D,

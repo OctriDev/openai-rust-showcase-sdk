@@ -187,9 +187,22 @@ impl ComputerToolCallOutput {
     }
 }
 
-/// Required object value serialized in the `data[]` wire field.
+/// Typed representation of the `ComputerToolCallOutputResource` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct ComputerToolCallOutputResourceVariant1 {
+pub struct ComputerToolCallOutputResource {
+    /// The type of the computer tool call output. Always `computer_call_output`.
+    #[serde(rename = "type")]
+    pub type_: ComputerToolCallOutputTypeEnum,
+    /// The ID of the computer tool call output.
+    pub id: String,
+    /// The ID of the computer tool call that produced the output.
+    pub call_id: String,
+    /// The safety checks reported by the API that have been acknowledged by the
+    /// developer.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub acknowledged_safety_checks: Option<Vec<ComputerCallSafetyCheckParam>>,
+    /// A computer screenshot image used with the computer use tool.
+    pub output: ComputerScreenshotImage,
     /// The status of the message input. One of `in_progress`, `completed`, or
     /// `incomplete`. Populated when input items are returned via API.
     pub status: ComputerCallOutputStatus,
@@ -198,29 +211,23 @@ pub struct ComputerToolCallOutputResourceVariant1 {
     pub created_by: Option<String>,
 }
 
-impl ComputerToolCallOutputResourceVariant1 {
-    pub fn new(status: ComputerCallOutputStatus) -> Self {
+impl ComputerToolCallOutputResource {
+    pub fn new(
+        type_: ComputerToolCallOutputTypeEnum,
+        id: String,
+        call_id: String,
+        output: ComputerScreenshotImage,
+        status: ComputerCallOutputStatus,
+    ) -> Self {
         Self {
+            type_,
+            id,
+            call_id,
+            acknowledged_safety_checks: None,
+            output,
             status,
             created_by: None,
         }
-    }
-}
-
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct ComputerToolCallOutputResource {
-    #[serde(flatten)]
-    pub member_0: ComputerToolCallOutput,
-    #[serde(flatten)]
-    pub member_1: ComputerToolCallOutputResourceVariant1,
-}
-
-impl ComputerToolCallOutputResource {
-    pub fn new(
-        member_0: ComputerToolCallOutput,
-        member_1: ComputerToolCallOutputResourceVariant1,
-    ) -> Self {
-        Self { member_0, member_1 }
     }
 }
 

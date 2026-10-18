@@ -48,11 +48,39 @@ impl std::fmt::Display for RealtimeResponseMaxOutputTokensVariant1Enum {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum RealtimeResponseMaxOutputTokens {
     Integer(i64),
     Inf(RealtimeResponseMaxOutputTokensVariant1Enum),
+}
+
+impl<'de> serde::Deserialize<'de> for RealtimeResponseMaxOutputTokens {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<i64>(value.clone()) {
+            let candidate = Self::Integer(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<RealtimeResponseMaxOutputTokensVariant1Enum>(value.clone())
+        {
+            let candidate = Self::Inf(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no RealtimeResponseMaxOutputTokens branch accepts this payload",
+            )
+        })
+    }
 }
 
 /// The response resource.
@@ -268,11 +296,40 @@ impl std::fmt::Display for RealtimeResponseCreateParamsMaxOutputTokensVariant1En
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum RealtimeResponseCreateParamsMaxOutputTokens {
     Integer(i64),
     Inf(RealtimeResponseCreateParamsMaxOutputTokensVariant1Enum),
+}
+
+impl<'de> serde::Deserialize<'de> for RealtimeResponseCreateParamsMaxOutputTokens {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<i64>(value.clone()) {
+            let candidate = Self::Integer(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            RealtimeResponseCreateParamsMaxOutputTokensVariant1Enum,
+        >(value.clone())
+        {
+            let candidate = Self::Inf(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no RealtimeResponseCreateParamsMaxOutputTokens branch accepts this payload",
+            )
+        })
+    }
 }
 
 /// Optional enumerated value serialized in the `conversation` wire field.
@@ -423,28 +480,4 @@ pub enum RealtimeResponseCreateParamsToolChoice {
     /// A member whose `type` names no branch this SDK knows, kept as received.
     #[serde(deserialize_with = "RealtimeResponseCreateParamsToolChoice::unknown_member")]
     Unknown(serde_json::Value),
-}
-
-impl RealtimeResponseCreateParamsToolChoice {
-    fn unknown_member<'de, D: serde::Deserializer<'de>>(
-        deserializer: D,
-    ) -> Result<serde_json::Value, D::Error> {
-        crate::client::unknown_union_member(deserializer, "type", &["function", "mcp"])
-    }
-}
-
-impl RealtimeResponseCreateParamsToolChoice {
-    pub fn as_string_wire_value(&self) -> Option<&str> {
-        match self {
-            Self::ToolChoiceOptions(value) => Some(value.as_str()),
-            _ => None,
-        }
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum RealtimeResponseCreateParamsToolsItem {
-    RealtimeFunctionTool(Box<RealtimeFunctionTool>),
-    MCPTool(Box<MCPTool>),
 }

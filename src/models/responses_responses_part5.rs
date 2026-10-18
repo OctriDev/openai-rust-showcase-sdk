@@ -207,7 +207,7 @@ impl ResponsesServerEvent {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum ResponsesWebSocketStreamEventVariant0 {
     ResponseAudioDeltaEvent(Box<ResponseAudioDeltaEvent>),
@@ -272,37 +272,4 @@ pub enum ResponsesWebSocketStreamEventVariant0 {
     ResponseQueuedEvent(Box<ResponseQueuedEvent>),
     ResponseCustomToolCallInputDeltaEvent(Box<ResponseCustomToolCallInputDeltaEvent>),
     ResponseCustomToolCallInputDoneEvent(Box<ResponseCustomToolCallInputDoneEvent>),
-}
-
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct ResponsesWebSocketStreamEventVariant1 {
-    /// The WebSocket lane that emitted this event. This field is present
-    /// when the originating `response.create` event supplied a
-    /// `stream_id`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub stream_id: Option<String>,
-}
-
-impl ResponsesWebSocketStreamEventVariant1 {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        Self { stream_id: None }
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct ResponsesWebSocketStreamEvent {
-    #[serde(flatten)]
-    pub member_0: ResponsesWebSocketStreamEventVariant0,
-    #[serde(flatten)]
-    pub member_1: ResponsesWebSocketStreamEventVariant1,
-}
-
-impl ResponsesWebSocketStreamEvent {
-    pub fn new(
-        member_0: ResponsesWebSocketStreamEventVariant0,
-        member_1: ResponsesWebSocketStreamEventVariant1,
-    ) -> Self {
-        Self { member_0, member_1 }
-    }
 }

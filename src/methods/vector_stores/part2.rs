@@ -69,6 +69,105 @@ pub fn list_vector_stores(
     .data)
 }
 
+/// Lists vector stores, which are collections of processed files that you can use with the `file_search` tool. Use the cursor parameters to move forward or backward through the results, and set `order` to control sorting by creation time.
+///
+/// Returns a list of vector stores.
+///
+/// # Arguments
+///
+/// * `limit` - A limit on the number of objects to be returned. Limit can range
+///   between 1 and 100, and the default is 20.
+/// * `order` - Sort order by the `created_at` timestamp of the objects. `asc`
+///   for ascending order and `desc` for descending order.
+/// * `after` - A cursor for use in pagination. `after` is an object ID that
+///   defines your place in the list. For instance, if you make a list request and
+///   receive 100 objects, ending with obj_foo, your subsequent call can include
+///   after=obj_foo in order to fetch the next page of the list.
+/// * `before` - A cursor for use in pagination. `before` is an object ID that
+///   defines your place in the list. For instance, if you make a list request and
+///   receive 100 objects, starting with obj_foo, your subsequent call can include
+///   before=obj_foo in order to fetch the previous page of the list.
+pub fn list_vector_stores_paginated(
+    config: &ClientConfig,
+    limit: Option<i64>,
+    order: Option<ListVectorStoresEnum>,
+    after: Option<String>,
+    before: Option<String>,
+    options: Option<&RequestOptions>,
+    mut yield_fn: impl FnMut(&VectorStoreObject) -> bool,
+) -> Result<(), SdkError> {
+    let mut _cursor: Option<String> = after;
+    loop {
+        let _page = list_vector_stores(
+            config,
+            limit,
+            order.clone(),
+            _cursor,
+            before.clone(),
+            options,
+        )?;
+        let _items: Vec<_> = _page.data.iter().collect();
+        if _items.is_empty() {
+            return Ok(());
+        }
+        for _item in &_items {
+            if !yield_fn(_item) {
+                return Ok(());
+            }
+        }
+        let _next = _page.last_id.clone();
+        if !_page.has_more {
+            return Ok(());
+        }
+        _cursor = Some(_next);
+    }
+}
+
+pub struct ListVectorStoresPage<'a> {
+    pub data: &'a ListVectorStoresResponse,
+    pub items: Vec<&'a VectorStoreObject>,
+    pub has_more: bool,
+}
+
+pub fn list_vector_stores_pages(
+    config: &ClientConfig,
+    limit: Option<i64>,
+    order: Option<ListVectorStoresEnum>,
+    after: Option<String>,
+    before: Option<String>,
+    options: Option<&RequestOptions>,
+    mut yield_page: impl FnMut(ListVectorStoresPage<'_>) -> bool,
+) -> Result<(), SdkError> {
+    let mut _cursor: Option<String> = after;
+    loop {
+        let _page = list_vector_stores(
+            config,
+            limit,
+            order.clone(),
+            _cursor,
+            before.clone(),
+            options,
+        )?;
+        let _items: Vec<_> = _page.data.iter().collect();
+        if _items.is_empty() {
+            return Ok(());
+        }
+        let _next = _page.last_id.clone();
+        let _has_more = _page.has_more;
+        if !yield_page(ListVectorStoresPage {
+            data: &_page,
+            items: _items,
+            has_more: _has_more,
+        }) {
+            return Ok(());
+        }
+        if !_has_more {
+            return Ok(());
+        }
+        _cursor = Some(_next);
+    }
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct CreateVectorStoreParams {
     pub file_ids: Option<Vec<String>>,
@@ -497,83 +596,6 @@ pub fn create_vector_store_file_batch(
                 ("409", "ErrorResponse"),
                 ("429", "ErrorResponse"),
                 ("500", "ErrorResponse"),
-            ],
-            ..Default::default()
-        },
-    )?
-    .data)
-}
-
-/// Retrieves a file batch associated with a vector store. Use the batch status and file counts to check the progress and outcome of file processing.
-///
-/// Retrieves a vector store file batch.
-///
-/// # Arguments
-///
-/// * `vector_store_id` - The ID of the vector store that the file batch belongs
-///   to.
-/// * `batch_id` - The ID of the file batch being retrieved.
-pub fn get_vector_store_file_batch(
-    config: &ClientConfig,
-    vector_store_id: String,
-    batch_id: String,
-    options: Option<&RequestOptions>,
-) -> Result<VectorStoreFileBatchObject, SdkError> {
-    Ok(sdk_request::<VectorStoreFileBatchObject>(
-        "GET",
-        &format!(
-            "/vector_stores/{}/file_batches/{}",
-            crate::client::encode_path_segment(&vector_store_id),
-            crate::client::encode_path_segment(&batch_id)
-        ),
-        config,
-        RequestOpts {
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "get_vector_store_file_batch",
-            options,
-            errors: &[
-                ("400", "ErrorResponse"),
-                ("404", "ErrorResponse"),
-                ("429", "ErrorResponse"),
-            ],
-            ..Default::default()
-        },
-    )?
-    .data)
-}
-
-/// Attempts to stop processing files in a vector store file batch as soon as possible. Check the returned batch status to see whether processing has been cancelled.
-///
-/// Cancel a vector store file batch. This attempts to cancel the processing of files in this batch as soon as possible.
-///
-/// # Arguments
-///
-/// * `vector_store_id` - The ID of the vector store that the file batch belongs
-///   to.
-/// * `batch_id` - The ID of the file batch to cancel.
-pub fn cancel_vector_store_file_batch(
-    config: &ClientConfig,
-    vector_store_id: String,
-    batch_id: String,
-    options: Option<&RequestOptions>,
-) -> Result<VectorStoreFileBatchObject, SdkError> {
-    Ok(sdk_request::<VectorStoreFileBatchObject>(
-        "POST",
-        &format!(
-            "/vector_stores/{}/file_batches/{}/cancel",
-            crate::client::encode_path_segment(&vector_store_id),
-            crate::client::encode_path_segment(&batch_id)
-        ),
-        config,
-        RequestOpts {
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "cancel_vector_store_file_batch",
-            options,
-            errors: &[
-                ("400", "ErrorResponse"),
-                ("404", "ErrorResponse"),
-                ("409", "ErrorResponse"),
-                ("429", "ErrorResponse"),
             ],
             ..Default::default()
         },

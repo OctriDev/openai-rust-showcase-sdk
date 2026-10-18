@@ -3,6 +3,56 @@
 
 // moderations domain models (part 3)
 
+/// A list of the categories along with the input type(s) that the score applies to.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct CreateModerationResponseResultsItemCategoryAppliedInputTypes {
+    /// The applied input type(s) for the category 'hate'.
+    pub hate: Vec<CreateModerationResponseResultsItemCategoryAppliedInputTypesHateItemEnum>,
+    /// The applied input type(s) for the category 'hate/threatening'.
+    #[serde(rename = "hate/threatening")]
+    pub hate_threatening:
+        Vec<CreateModerationResponseResultsItemCategoryAppliedInputTypesHatethreateningItemEnum>,
+    /// The applied input type(s) for the category 'harassment'.
+    pub harassment:
+        Vec<CreateModerationResponseResultsItemCategoryAppliedInputTypesHarassmentItemEnum>,
+    /// The applied input type(s) for the category 'harassment/threatening'.
+    #[serde(rename = "harassment/threatening")]
+    pub harassment_threatening: Vec<
+        CreateModerationResponseResultsItemCategoryAppliedInputTypesHarassmentthreateningItemEnum,
+    >,
+    /// The applied input type(s) for the category 'illicit'.
+    pub illicit: Vec<CreateModerationResponseResultsItemCategoryAppliedInputTypesIllicitItemEnum>,
+    /// The applied input type(s) for the category 'illicit/violent'.
+    #[serde(rename = "illicit/violent")]
+    pub illicit_violent:
+        Vec<CreateModerationResponseResultsItemCategoryAppliedInputTypesIllicitviolentItemEnum>,
+    /// The applied input type(s) for the category 'self-harm'.
+    #[serde(rename = "self-harm")]
+    pub self_harm:
+        Vec<CreateModerationResponseResultsItemCategoryAppliedInputTypesSelfharmItemEnum>,
+    /// The applied input type(s) for the category 'self-harm/intent'.
+    #[serde(rename = "self-harm/intent")]
+    pub self_harm_intent:
+        Vec<CreateModerationResponseResultsItemCategoryAppliedInputTypesSelfharmintentItemEnum>,
+    /// The applied input type(s) for the category 'self-harm/instructions'.
+    #[serde(rename = "self-harm/instructions")]
+    pub self_harm_instructions: Vec<
+        CreateModerationResponseResultsItemCategoryAppliedInputTypesSelfharminstructionsItemEnum,
+    >,
+    /// The applied input type(s) for the category 'sexual'.
+    pub sexual: Vec<CreateModerationResponseResultsItemCategoryAppliedInputTypesSexualItemEnum>,
+    /// The applied input type(s) for the category 'sexual/minors'.
+    #[serde(rename = "sexual/minors")]
+    pub sexual_minors:
+        Vec<CreateModerationResponseResultsItemCategoryAppliedInputTypesSexualminorsItemEnum>,
+    /// The applied input type(s) for the category 'violence'.
+    pub violence: Vec<CreateModerationResponseResultsItemCategoryAppliedInputTypesViolenceItemEnum>,
+    /// The applied input type(s) for the category 'violence/graphic'.
+    #[serde(rename = "violence/graphic")]
+    pub violence_graphic:
+        Vec<CreateModerationResponseResultsItemCategoryAppliedInputTypesViolencegraphicItemEnum>,
+}
+
 impl CreateModerationResponseResultsItemCategoryAppliedInputTypes {
     #[allow(clippy::too_many_arguments)]
     pub fn new(

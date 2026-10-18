@@ -3,11 +3,35 @@
 
 // responses_beta_token domain models
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum BetaTokenCountsBodyInput {
     String(String),
     BetaInputItemArray(Vec<BetaInputItem>),
+}
+
+impl<'de> serde::Deserialize<'de> for BetaTokenCountsBodyInput {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Vec<BetaInputItem>>(value.clone()) {
+            let candidate = Self::BetaInputItemArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom("no BetaTokenCountsBodyInput branch accepts this payload")
+        })
+    }
 }
 
 /// Typed representation of the `BetaTokenCountsBody` API schema.

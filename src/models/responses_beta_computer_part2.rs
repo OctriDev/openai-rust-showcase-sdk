@@ -97,32 +97,6 @@ impl BetaComputerToolCall {
     }
 }
 
-/// The type of the computer tool call output. Always `computer_call_output`.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum BetaComputerToolCallOutputTypeEnum {
-    #[serde(rename = "computer_call_output")]
-    #[default]
-    ComputerCallOutput,
-}
-
-impl BetaComputerToolCallOutputTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::ComputerCallOutput => "computer_call_output",
-        }
-    }
-}
-
-impl std::fmt::Display for BetaComputerToolCallOutputTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            BetaComputerToolCallOutputTypeEnum::ComputerCallOutput => {
-                f.write_str("computer_call_output")
-            }
-        }
-    }
-}
-
 /// The status of the message input. One of `in_progress`, `completed`, or
 /// `incomplete`. Populated when input items are returned via API.
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -223,9 +197,55 @@ impl BetaComputerToolCallOutput {
     }
 }
 
-/// Required object value serialized in the `data[]` wire field.
+/// The type of the computer tool call output. Always `computer_call_output`.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum BetaComputerToolCallOutputTypeEnum {
+    #[serde(rename = "computer_call_output")]
+    #[default]
+    ComputerCallOutput,
+}
+
+impl BetaComputerToolCallOutputTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::ComputerCallOutput => "computer_call_output",
+        }
+    }
+}
+
+impl std::fmt::Display for BetaComputerToolCallOutputTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            BetaComputerToolCallOutputTypeEnum::ComputerCallOutput => {
+                f.write_str("computer_call_output")
+            }
+        }
+    }
+}
+
+/// Typed representation of the `BetaComputerToolCallOutputResource` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct BetaComputerToolCallOutputResourceVariant1 {
+pub struct BetaComputerToolCallOutputResource {
+    /// The agent that produced this item.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub agent: Option<Option<BetaAgentTag>>,
+    /// The type of the computer tool call output. Always `computer_call_output`.
+    #[serde(rename = "type")]
+    pub type_: BetaComputerToolCallOutputTypeEnum,
+    /// The ID of the computer tool call output.
+    pub id: String,
+    /// The ID of the computer tool call that produced the output.
+    pub call_id: String,
+    /// The safety checks reported by the API that have been acknowledged by the
+    /// developer.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub acknowledged_safety_checks: Option<Vec<BetaComputerCallSafetyCheckParam>>,
+    /// A computer screenshot image used with the computer use tool.
+    pub output: BetaComputerScreenshotImage,
     /// The status of the message input. One of `in_progress`, `completed`, or
     /// `incomplete`. Populated when input items are returned via API.
     pub status: BetaComputerCallOutputStatus,
@@ -234,29 +254,24 @@ pub struct BetaComputerToolCallOutputResourceVariant1 {
     pub created_by: Option<String>,
 }
 
-impl BetaComputerToolCallOutputResourceVariant1 {
-    pub fn new(status: BetaComputerCallOutputStatus) -> Self {
+impl BetaComputerToolCallOutputResource {
+    pub fn new(
+        type_: BetaComputerToolCallOutputTypeEnum,
+        id: String,
+        call_id: String,
+        output: BetaComputerScreenshotImage,
+        status: BetaComputerCallOutputStatus,
+    ) -> Self {
         Self {
+            agent: None,
+            type_,
+            id,
+            call_id,
+            acknowledged_safety_checks: None,
+            output,
             status,
             created_by: None,
         }
-    }
-}
-
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct BetaComputerToolCallOutputResource {
-    #[serde(flatten)]
-    pub member_0: BetaComputerToolCallOutput,
-    #[serde(flatten)]
-    pub member_1: BetaComputerToolCallOutputResourceVariant1,
-}
-
-impl BetaComputerToolCallOutputResource {
-    pub fn new(
-        member_0: BetaComputerToolCallOutput,
-        member_1: BetaComputerToolCallOutputResourceVariant1,
-    ) -> Self {
-        Self { member_0, member_1 }
     }
 }
 

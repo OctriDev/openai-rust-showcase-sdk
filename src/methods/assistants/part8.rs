@@ -6,17 +6,16 @@ use crate::client::ClientConfig;
 use crate::client::{sdk_request, RequestOptions, RequestOpts};
 use crate::errors::{SdkError, SdkNetworkError};
 use crate::types::{
-    AssistantStreamEvent, AssistantsApiResponseFormatOption, AssistantsApiToolChoiceOption,
-    CreateMessageRequest, CreateRunRequestModel, CreateRunRequestToolsItem,
-    CreateRunRequestTruncationStrategy, ListRunStepsResponse, Metadata, ParallelToolCalls,
-    ReasoningEffort, RunObject,
+    AssistantsApiResponseFormatOption, AssistantsApiToolChoiceOption, CreateMessageRequest,
+    CreateRunRequestModel, CreateRunRequestToolsItem, CreateRunRequestTruncationStrategy, Metadata,
+    ParallelToolCalls, ReasoningEffort, RunObject,
 };
+use crate::validation::{validate_items, validate_range, LengthOpts, RangeOpts};
 
 #[derive(Debug, Clone, Default)]
-pub struct CreateRunStreamParams {
+pub struct CreateRunParams {
     pub thread_id: String,
     pub assistant_id: String,
-    pub stream: Option<bool>,
     pub include: Option<Vec<CreateRunItemEnum>>,
     pub model: Option<Option<CreateRunRequestModel>>,
     pub reasoning_effort: Option<Option<ReasoningEffort>>,
@@ -27,6 +26,7 @@ pub struct CreateRunStreamParams {
     pub metadata: Option<Option<Metadata>>,
     pub temperature: Option<Option<f64>>,
     pub top_p: Option<Option<f64>>,
+    pub stream: Option<Option<bool>>,
     pub max_prompt_tokens: Option<Option<i64>>,
     pub max_completion_tokens: Option<Option<i64>>,
     pub truncation_strategy: Option<CreateRunRequestTruncationStrategy>,
@@ -45,9 +45,6 @@ pub struct CreateRunStreamParams {
 /// * `assistant_id` - The ID of the
 ///   [assistant](https://developers.openai.com/api/docs/assistants/migration) to
 ///   use to execute this run.
-/// * `stream` - If `true`, returns a stream of events that happen during the
-///   Run as server-sent events, terminating when the Run enters a terminal state
-///   with a `data: [DONE]` message.
 /// * `include` - A list of additional fields to include in the response.
 ///   Currently the only supported value is
 ///   `step_details.tool_calls[\*].file_search.results[\*].content` to fetch the
@@ -85,6 +82,9 @@ pub struct CreateRunStreamParams {
 ///   probability mass. So 0.1 means only the tokens comprising the top 10%
 ///   probability mass are considered. We generally recommend altering this or
 ///   temperature but not both.
+/// * `stream` - If `true`, returns a stream of events that happen during the
+///   Run as server-sent events, terminating when the Run enters a terminal state
+///   with a `data: [DONE]` message.
 /// * `max_prompt_tokens` - The maximum number of prompt tokens that may be used
 ///   over the course of the run. The run will make a best effort to use only the
 ///   number of prompt tokens specified, across multiple turns of the run. If the
@@ -120,15 +120,14 @@ pub struct CreateRunStreamParams {
 ///   the message content may be partially cut off if `finish_reason="length"`,
 ///   which indicates the generation exceeded `max_tokens` or the conversation
 ///   exceeded the max context length.
-pub fn create_run_stream(
+pub fn create_run(
     config: &ClientConfig,
-    params: CreateRunStreamParams,
+    params: CreateRunParams,
     options: Option<&RequestOptions>,
-) -> Result<impl Iterator<Item = Result<AssistantStreamEvent, SdkError>>, SdkError> {
-    let CreateRunStreamParams {
+) -> Result<RunObject, SdkError> {
+    let CreateRunParams {
         thread_id,
         assistant_id,
-        stream,
         include,
         model,
         reasoning_effort,
@@ -139,6 +138,7 @@ pub fn create_run_stream(
         metadata,
         temperature,
         top_p,
+        stream,
         max_prompt_tokens,
         max_completion_tokens,
         truncation_strategy,
@@ -146,25 +146,70 @@ pub fn create_run_stream(
         parallel_tool_calls,
         response_format,
     } = params;
+    if let Some(Some(ref tools_v)) = &tools {
+        validate_items(
+            "tools",
+            tools_v,
+            LengthOpts {
+                max: Some(20),
+                ..Default::default()
+            },
+        )?;
+    }
+    if let Some(Some(ref temperature_v)) = &temperature {
+        validate_range(
+            "temperature",
+            *temperature_v,
+            RangeOpts {
+                min: Some(0_f64),
+                max: Some(2_f64),
+                ..Default::default()
+            },
+        )?;
+    }
+    if let Some(Some(ref top_p_v)) = &top_p {
+        validate_range(
+            "top_p",
+            *top_p_v,
+            RangeOpts {
+                min: Some(0_f64),
+                max: Some(1_f64),
+                ..Default::default()
+            },
+        )?;
+    }
+    if let Some(Some(ref max_prompt_tokens_v)) = &max_prompt_tokens {
+        validate_range(
+            "max_prompt_tokens",
+            *max_prompt_tokens_v as f64,
+            RangeOpts {
+                min: Some(256_f64),
+                ..Default::default()
+            },
+        )?;
+    }
+    if let Some(Some(ref max_completion_tokens_v)) = &max_completion_tokens {
+        validate_range(
+            "max_completion_tokens",
+            *max_completion_tokens_v as f64,
+            RangeOpts {
+                min: Some(256_f64),
+                ..Default::default()
+            },
+        )?;
+    }
+
     let mut __query: Vec<(&str, String)> = Vec::with_capacity(1);
-    if let Some(ref v) = include {
-        for item in v {
+    if let Some(ref vec) = include {
+        for item in vec {
             __query.push(("include[]", crate::client::query_value(item)));
         }
     }
+
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "assistant_id".to_string(),
         serde_json::to_value(assistant_id).map_err(|e| {
-            SdkError::Network(SdkNetworkError {
-                message: format!("encode body field: {}", e),
-                request_id: None,
-            })
-        })?,
-    );
-    __body_map.insert(
-        "stream".to_string(),
-        serde_json::to_value(stream).map_err(|e| {
             SdkError::Network(SdkNetworkError {
                 message: format!("encode body field: {}", e),
                 request_id: None,
@@ -270,6 +315,17 @@ pub fn create_run_stream(
             })?,
         );
     }
+    if let Some(ref value) = stream {
+        __body_map.insert(
+            "stream".to_string(),
+            serde_json::to_value(value).map_err(|e| {
+                SdkError::Network(SdkNetworkError {
+                    message: format!("encode body field: {}", e),
+                    request_id: None,
+                })
+            })?,
+        );
+    }
     if let Some(ref value) = max_prompt_tokens {
         __body_map.insert(
             "max_prompt_tokens".to_string(),
@@ -337,255 +393,19 @@ pub fn create_run_stream(
         );
     }
     let __body = serde_json::Value::Object(__body_map);
-    let opts = RequestOpts {
-        query: &__query,
-        body: Some(__body),
-        operation_id: "create_run_stream",
-        options,
-        errors: &[("429", "ErrorResponse")],
-        ..Default::default()
-    };
-    let upstream = crate::client::sdk_stream_with_format(
+
+    Ok(sdk_request::<RunObject>(
         "POST",
         &format!(
             "/threads/{}/runs",
             crate::client::encode_path_segment(&thread_id)
         ),
         config,
-        opts,
-        "sse",
-        "text/event-stream",
-        "bytes",
-    )?;
-    Ok(upstream.filter_map(|res| match res {
-        Ok(ev) => {
-            if ev.data == "[DONE]" {
-                None
-            } else {
-                Some(
-                    serde_json::from_str::<AssistantStreamEvent>(&ev.data).map_err(|e| {
-                        crate::client::response_decode_error(
-                            200,
-                            &Default::default(),
-                            None,
-                            ev.data.as_bytes(),
-                            None,
-                            e.to_string(),
-                        )
-                    }),
-                )
-            }
-        }
-        Err(e) => Some(Err(e)),
-    }))
-}
-
-/// Retrieves a run associated with a thread. Use the thread and run IDs to inspect the run’s current status, timestamps, and any required action or error.
-///
-/// Retrieves a run.
-///
-/// # Arguments
-///
-/// * `thread_id` - The ID of the
-///   [thread](https://developers.openai.com/api/docs/assistants/migration) that
-///   was run.
-/// * `run_id` - The ID of the run to retrieve.
-pub fn get_run(
-    config: &ClientConfig,
-    thread_id: String,
-    run_id: String,
-    options: Option<&RequestOptions>,
-) -> Result<RunObject, SdkError> {
-    Ok(sdk_request::<RunObject>(
-        "GET",
-        &format!(
-            "/threads/{}/runs/{}",
-            crate::client::encode_path_segment(&thread_id),
-            crate::client::encode_path_segment(&run_id)
-        ),
-        config,
-        RequestOpts {
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "get_run",
-            options,
-            errors: &[("429", "ErrorResponse")],
-            ..Default::default()
-        },
-    )?
-    .data)
-}
-
-/// Updates the metadata attached to a run. Send the key-value pairs you want associated with the run; the metadata object supports up to 16 pairs, with string values and keys of up to 64 characters.
-///
-/// Modifies a run.
-///
-/// # Arguments
-///
-/// * `thread_id` - The ID of the
-///   [thread](https://developers.openai.com/api/docs/assistants/migration) that
-///   was run.
-/// * `run_id` - The ID of the run to modify.
-/// * `metadata` - Set of 16 key-value pairs that can be attached to an object.
-///   This can be useful for storing additional information about the object in a
-///   structured format, and querying for objects via API or the dashboard. Keys
-///   are strings with a maximum length of 64 characters. Values are strings with
-///   a maximum length of 512 characters.
-pub fn modify_run(
-    config: &ClientConfig,
-    thread_id: String,
-    run_id: String,
-    metadata: Option<Option<Metadata>>,
-    options: Option<&RequestOptions>,
-) -> Result<RunObject, SdkError> {
-    let mut __body_map = serde_json::Map::new();
-    if let Some(ref value) = metadata {
-        __body_map.insert(
-            "metadata".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    let __body = serde_json::Value::Object(__body_map);
-
-    Ok(sdk_request::<RunObject>(
-        "POST",
-        &format!(
-            "/threads/{}/runs/{}",
-            crate::client::encode_path_segment(&thread_id),
-            crate::client::encode_path_segment(&run_id)
-        ),
-        config,
-        RequestOpts {
-            body: Some(__body),
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "modify_run",
-            options,
-            errors: &[("429", "ErrorResponse")],
-            ..Default::default()
-        },
-    )?
-    .data)
-}
-
-/// Cancels a run that is in progress on a thread. Use this operation when you need to stop the run before it completes; the returned run object reports its current status.
-///
-/// Cancels a run that is `in_progress`.
-///
-/// # Arguments
-///
-/// * `thread_id` - The ID of the thread to which this run belongs.
-/// * `run_id` - The ID of the run to cancel.
-pub fn cancel_run(
-    config: &ClientConfig,
-    thread_id: String,
-    run_id: String,
-    options: Option<&RequestOptions>,
-) -> Result<RunObject, SdkError> {
-    Ok(sdk_request::<RunObject>(
-        "POST",
-        &format!(
-            "/threads/{}/runs/{}/cancel",
-            crate::client::encode_path_segment(&thread_id),
-            crate::client::encode_path_segment(&run_id)
-        ),
-        config,
-        RequestOpts {
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "cancel_run",
-            options,
-            errors: &[("429", "ErrorResponse")],
-            ..Default::default()
-        },
-    )?
-    .data)
-}
-
-#[derive(Debug, Clone, Default)]
-pub struct ListRunStepsParams {
-    pub thread_id: String,
-    pub run_id: String,
-    pub limit: Option<i64>,
-    pub order: Option<ListRunStepsEnum>,
-    pub after: Option<String>,
-    pub before: Option<String>,
-    pub include: Option<Vec<ListRunStepsItemEnum>>,
-}
-
-/// Lists the steps belonging to a run on a thread. Use cursor parameters to page through the steps, and set `order` to control their order by creation time.
-///
-/// Returns a list of run steps belonging to a run.
-///
-/// # Arguments
-///
-/// * `thread_id` - The ID of the thread the run and run steps belong to.
-/// * `run_id` - The ID of the run the run steps belong to.
-/// * `limit` - A limit on the number of objects to be returned. Limit can range
-///   between 1 and 100, and the default is 20.
-/// * `order` - Sort order by the `created_at` timestamp of the objects. `asc`
-///   for ascending order and `desc` for descending order.
-/// * `after` - A cursor for use in pagination. `after` is an object ID that
-///   defines your place in the list. For instance, if you make a list request and
-///   receive 100 objects, ending with obj_foo, your subsequent call can include
-///   after=obj_foo in order to fetch the next page of the list.
-/// * `before` - A cursor for use in pagination. `before` is an object ID that
-///   defines your place in the list. For instance, if you make a list request and
-///   receive 100 objects, starting with obj_foo, your subsequent call can include
-///   before=obj_foo in order to fetch the previous page of the list.
-/// * `include` - A list of additional fields to include in the response.
-///   Currently the only supported value is
-///   `step_details.tool_calls[\*].file_search.results[\*].content` to fetch the
-///   file search result content. See the [file search tool
-///   documentation](https://developers.openai.com/api/docs/guides/tools-file-sear
-///   ch#retrieval-customization) for more information.
-pub fn list_run_steps(
-    config: &ClientConfig,
-    params: ListRunStepsParams,
-    options: Option<&RequestOptions>,
-) -> Result<ListRunStepsResponse, SdkError> {
-    let ListRunStepsParams {
-        thread_id,
-        run_id,
-        limit,
-        order,
-        after,
-        before,
-        include,
-    } = params;
-    let mut __query: Vec<(&str, String)> = Vec::with_capacity(5);
-    if let Some(ref v) = limit {
-        __query.push(("limit", crate::client::query_value(v)));
-    }
-    if let Some(ref v) = order {
-        __query.push(("order", crate::client::query_value(v)));
-    }
-    if let Some(ref v) = after {
-        __query.push(("after", crate::client::query_value(v)));
-    }
-    if let Some(ref v) = before {
-        __query.push(("before", crate::client::query_value(v)));
-    }
-    if let Some(ref vec) = include {
-        for item in vec {
-            __query.push(("include[]", crate::client::query_value(item)));
-        }
-    }
-
-    Ok(sdk_request::<ListRunStepsResponse>(
-        "GET",
-        &format!(
-            "/threads/{}/runs/{}/steps",
-            crate::client::encode_path_segment(&thread_id),
-            crate::client::encode_path_segment(&run_id)
-        ),
-        config,
         RequestOpts {
             query: &__query,
+            body: Some(__body),
             decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "list_run_steps",
+            operation_id: "create_run",
             options,
             errors: &[("429", "ErrorResponse")],
             ..Default::default()

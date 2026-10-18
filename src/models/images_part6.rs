@@ -159,10 +159,43 @@ impl ImageGenUsage {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum ImageRefParam {
-    Value(serde_json::Value),
+/// Reference an input image by either URL or uploaded file ID.
+/// Provide exactly one of `image_url` or `file_id`.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct ImageRefParam {
+    /// A fully qualified URL or base64-encoded data URL.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub image_url: Option<String>,
+    /// The File API ID of an uploaded image to use as input.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub file_id: Option<String>,
+}
+
+impl ImageRefParam {
+    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
+        if let Some(value) = self.image_url.as_ref() {
+            crate::validation::validate_length(
+                "image_url",
+                value,
+                crate::validation::LengthOpts {
+                    max: Some(20971520),
+                    ..Default::default()
+                },
+            )?;
+            crate::validation::validate_uri("image_url", value)?;
+        }
+        Ok(())
+    }
+
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Result<Self, crate::errors::SdkError> {
+        let value = Self {
+            image_url: None,
+            file_id: None,
+        };
+        value.validate_constraints()?;
+        Ok(value)
+    }
 }
 
 /// The background parameter used for the image generation. Either `transparent` or `opaque`.

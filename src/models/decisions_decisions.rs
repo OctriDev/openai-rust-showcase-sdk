@@ -284,13 +284,6 @@ impl std::fmt::Display for DecisionsUsageGroupBy {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum DecisionsUsagePermissionErrorResponseError {
-    DecisionsUsageErrorDetails(Box<DecisionsUsageErrorDetails>),
-    String(String),
-}
-
 /// Typed representation of the `DecisionsUsagePermissionErrorResponse` API schema.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct DecisionsUsagePermissionErrorResponse {
@@ -301,6 +294,22 @@ pub struct DecisionsUsagePermissionErrorResponse {
 impl DecisionsUsagePermissionErrorResponse {
     pub fn new(error: DecisionsUsagePermissionErrorResponseError) -> Self {
         Self { error }
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(untagged)]
+pub enum DecisionsUsagePermissionErrorResponseError {
+    DecisionsUsageErrorDetails(Box<DecisionsUsageErrorDetails>),
+    String(String),
+}
+
+impl DecisionsUsagePermissionErrorResponseError {
+    pub fn as_string_wire_value(&self) -> Option<&str> {
+        match self {
+            Self::String(value) => Some(value.as_str()),
+            _ => None,
+        }
     }
 }
 

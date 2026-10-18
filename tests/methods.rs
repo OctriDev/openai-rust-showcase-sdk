@@ -196,7 +196,7 @@ fn accept_realtime_call_accept_realtime_call_reaches_mock_and_decodes_response()
             output_modalities: Some(decode(fixture(r#"["audio"]"#))),
             model: Some(decode(fixture(r#""model""#))),
             instructions: Some(decode(fixture(r#""instructions""#))),
-            audio: Some(decode(fixture(r#"{"input":{"format":{"type":"audio/pcm","rate":24000},"transcription":{"model":"model","language":"language","languages":["languages"],"keywords":["keywords"],"prompt":"prompt","delay":"minimal"},"noise_reduction":null,"turn_detection":{"type":"server_vad","threshold":1,"prefix_padding_ms":1,"silence_duration_ms":1,"create_response":true,"interrupt_response":true,"idle_timeout_ms":5000}},"output":{"format":{"type":"audio/pcm","rate":24000},"voice":"alloy","speed":1}}"#))),
+            audio: Some(decode(fixture(r#"{"input":{"format":{"type":"audio/pcm","rate":24000},"transcription":{"model":"model","language":"language","languages":["languages"],"keywords":["keywords"],"prompt":"prompt","delay":"minimal"},"noise_reduction":{"type":"near_field"},"turn_detection":{"type":"server_vad","threshold":1,"prefix_padding_ms":1,"silence_duration_ms":1,"create_response":true,"interrupt_response":true,"idle_timeout_ms":5000}},"output":{"format":{"type":"audio/pcm","rate":24000},"voice":"alloy","speed":1}}"#))),
             include: Some(decode(fixture(r#"["item.input_audio_transcription.logprobs"]"#))),
             tracing: None,
             tools: Some(decode(fixture(r#"[{"type":"function","name":"Example Name","description":"example text","parameters":{}}]"#))),
@@ -232,7 +232,7 @@ fn accept_realtime_call_accept_realtime_call_404_decodes_declared_error() {
             model: Some(decode(fixture(r#""model""#))),
             instructions: Some(decode(fixture(r#""instructions""#))),
             audio: Some(decode(fixture(
-                r#"{"input":{"format":{"type":"audio/pcm","rate":24000},"transcription":{"model":"model","language":"language","languages":["languages"],"keywords":["keywords"],"prompt":"prompt","delay":"minimal"},"noise_reduction":null,"turn_detection":{"type":"server_vad","threshold":1,"prefix_padding_ms":1,"silence_duration_ms":1,"create_response":true,"interrupt_response":true,"idle_timeout_ms":5000}},"output":{"format":{"type":"audio/pcm","rate":24000},"voice":"alloy","speed":1}}"#,
+                r#"{"input":{"format":{"type":"audio/pcm","rate":24000},"transcription":{"model":"model","language":"language","languages":["languages"],"keywords":["keywords"],"prompt":"prompt","delay":"minimal"},"noise_reduction":{"type":"near_field"},"turn_detection":{"type":"server_vad","threshold":1,"prefix_padding_ms":1,"silence_duration_ms":1,"create_response":true,"interrupt_response":true,"idle_timeout_ms":5000}},"output":{"format":{"type":"audio/pcm","rate":24000},"voice":"alloy","speed":1}}"#,
             ))),
             include: Some(decode(fixture(
                 r#"["item.input_audio_transcription.logprobs"]"#,
@@ -1119,7 +1119,7 @@ fn beta_list_input_items_beta_list_input_items_reaches_mock_and_decodes_response
     .expect("beta_list_input_items request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
-        r#"{"object":"list","data":[{"agent":{"agent_name":"Example Name"},"type":"BetaInputMessageResource","role":"user","status":"in_progress","content":[{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}],"id":"id-1"}],"has_more":false,"first_id":"first-1","last_id":"last-1"}"#,
+        r#"{"object":"list","data":[{"agent":{"agent_name":"Example Name"},"type":"message","role":"user","status":"in_progress","content":[{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}],"id":"id-1"}],"has_more":false,"first_id":"first-1","last_id":"last-1"}"#,
     );
     assert!(
         representative(&actual, &expected),
@@ -2377,7 +2377,7 @@ fn create_assistant_create_assistant_reaches_mock_and_decodes_response() {
             instructions: Some(Some(decode(fixture(r#""instructions""#)))),
             reasoning_effort: Some(Some(decode(fixture(r#""medium""#)))),
             tools: Some(decode(fixture(r#"[]"#))),
-            tool_resources: Some(Some(decode(fixture(r#"{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"]}}"#)))),
+            tool_resources: Some(Some(decode(fixture(r#"{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"],"vector_stores":[{"file_ids":["file_ids"],"chunking_strategy":{"type":"auto"},"metadata":{"key":"key"}}]}}"#)))),
             metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
             temperature: Some(Some(decode(fixture(r#"1"#)))),
             top_p: Some(Some(decode(fixture(r#"1"#)))),
@@ -4488,7 +4488,7 @@ fn create_realtime_call_create_realtime_call_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = realtime::create_realtime_call(
         &config,
-        realtime::CreateRealtimeCallBody::RealtimeCallCreateRequest(decode(fixture(r#"{"sdp":"sdp","session":{"type":"realtime","output_modalities":["audio"],"model":"model","instructions":"instructions","audio":{"input":{"format":{"type":"audio/pcm","rate":24000},"transcription":{"model":"model","language":"language","languages":["languages"],"keywords":["keywords"],"prompt":"prompt","delay":"minimal"},"noise_reduction":null,"turn_detection":{"type":"server_vad","threshold":1,"prefix_padding_ms":1,"silence_duration_ms":1,"create_response":true,"interrupt_response":true,"idle_timeout_ms":5000}},"output":{"format":{"type":"audio/pcm","rate":24000},"voice":"alloy","speed":1}},"include":["item.input_audio_transcription.logprobs"],"tracing":null,"tools":[{"type":"function","name":"Example Name","description":"example text","parameters":{}}],"tool_choice":"auto","parallel_tool_calls":false,"reasoning":{"effort":"low"},"max_output_tokens":1,"truncation":"auto","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}}}}"#))),
+        realtime::CreateRealtimeCallBody::RealtimeCallCreateRequest(decode(fixture(r#"{"sdp":"sdp","session":{"type":"realtime","output_modalities":["audio"],"model":"model","instructions":"instructions","audio":{"input":{"format":{"type":"audio/pcm","rate":24000},"transcription":{"model":"model","language":"language","languages":["languages"],"keywords":["keywords"],"prompt":"prompt","delay":"minimal"},"noise_reduction":{"type":"near_field"},"turn_detection":{"type":"server_vad","threshold":1,"prefix_padding_ms":1,"silence_duration_ms":1,"create_response":true,"interrupt_response":true,"idle_timeout_ms":5000}},"output":{"format":{"type":"audio/pcm","rate":24000},"voice":"alloy","speed":1}},"include":["item.input_audio_transcription.logprobs"],"tracing":null,"tools":[{"type":"function","name":"Example Name","description":"example text","parameters":{}}],"tool_choice":"auto","parallel_tool_calls":false,"reasoning":{"effort":"low"},"max_output_tokens":1,"truncation":"auto","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}}}}"#))),
         None,
     )
     .expect("create_realtime_call request failed");
@@ -4529,7 +4529,7 @@ fn create_realtime_client_secret_create_realtime_client_secret_reaches_mock_and_
     let actual = realtime::create_realtime_client_secret(
         &config,
         Some(decode(fixture(r#"{"anchor":"created_at","seconds":600}"#))),
-        Some(decode(fixture(r#"{"type":"realtime","output_modalities":["audio"],"model":"model","instructions":"instructions","audio":{"input":{"format":{"type":"audio/pcm","rate":24000},"transcription":{"model":"model","language":"language","languages":["languages"],"keywords":["keywords"],"prompt":"prompt","delay":"minimal"},"noise_reduction":null,"turn_detection":{"type":"server_vad","threshold":1,"prefix_padding_ms":1,"silence_duration_ms":1,"create_response":true,"interrupt_response":true,"idle_timeout_ms":5000}},"output":{"format":{"type":"audio/pcm","rate":24000},"voice":"alloy","speed":1}},"include":["item.input_audio_transcription.logprobs"],"tracing":null,"tools":[{"type":"function","name":"Example Name","description":"example text","parameters":{}}],"tool_choice":"auto","parallel_tool_calls":false,"reasoning":{"effort":"low"},"max_output_tokens":1,"truncation":"auto","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}}}"#))),
+        Some(decode(fixture(r#"{"type":"realtime","output_modalities":["audio"],"model":"model","instructions":"instructions","audio":{"input":{"format":{"type":"audio/pcm","rate":24000},"transcription":{"model":"model","language":"language","languages":["languages"],"keywords":["keywords"],"prompt":"prompt","delay":"minimal"},"noise_reduction":{"type":"near_field"},"turn_detection":{"type":"server_vad","threshold":1,"prefix_padding_ms":1,"silence_duration_ms":1,"create_response":true,"interrupt_response":true,"idle_timeout_ms":5000}},"output":{"format":{"type":"audio/pcm","rate":24000},"voice":"alloy","speed":1}},"include":["item.input_audio_transcription.logprobs"],"tracing":null,"tools":[{"type":"function","name":"Example Name","description":"example text","parameters":{}}],"tool_choice":"auto","parallel_tool_calls":false,"reasoning":{"effort":"low"},"max_output_tokens":1,"truncation":"auto","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}}}"#))),
         None,
     )
     .expect("create_realtime_client_secret request failed");
@@ -4558,7 +4558,7 @@ fn create_realtime_client_secret_create_realtime_client_secret_400_decodes_decla
         &config,
         Some(decode(fixture(r#"{"anchor":"created_at","seconds":600}"#))),
         Some(decode(fixture(
-            r#"{"type":"realtime","output_modalities":["audio"],"model":"model","instructions":"instructions","audio":{"input":{"format":{"type":"audio/pcm","rate":24000},"transcription":{"model":"model","language":"language","languages":["languages"],"keywords":["keywords"],"prompt":"prompt","delay":"minimal"},"noise_reduction":null,"turn_detection":{"type":"server_vad","threshold":1,"prefix_padding_ms":1,"silence_duration_ms":1,"create_response":true,"interrupt_response":true,"idle_timeout_ms":5000}},"output":{"format":{"type":"audio/pcm","rate":24000},"voice":"alloy","speed":1}},"include":["item.input_audio_transcription.logprobs"],"tracing":null,"tools":[{"type":"function","name":"Example Name","description":"example text","parameters":{}}],"tool_choice":"auto","parallel_tool_calls":false,"reasoning":{"effort":"low"},"max_output_tokens":1,"truncation":"auto","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}}}"#,
+            r#"{"type":"realtime","output_modalities":["audio"],"model":"model","instructions":"instructions","audio":{"input":{"format":{"type":"audio/pcm","rate":24000},"transcription":{"model":"model","language":"language","languages":["languages"],"keywords":["keywords"],"prompt":"prompt","delay":"minimal"},"noise_reduction":{"type":"near_field"},"turn_detection":{"type":"server_vad","threshold":1,"prefix_padding_ms":1,"silence_duration_ms":1,"create_response":true,"interrupt_response":true,"idle_timeout_ms":5000}},"output":{"format":{"type":"audio/pcm","rate":24000},"voice":"alloy","speed":1}},"include":["item.input_audio_transcription.logprobs"],"tracing":null,"tools":[{"type":"function","name":"Example Name","description":"example text","parameters":{}}],"tool_choice":"auto","parallel_tool_calls":false,"reasoning":{"effort":"low"},"max_output_tokens":1,"truncation":"auto","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}}}"#,
         ))),
         None,
     );
@@ -4626,7 +4626,7 @@ fn create_realtime_transcription_session_create_realtime_transcription_session_r
         &config,
         realtime::CreateRealtimeTranscriptionSessionParams {
             turn_detection: Some(decode(fixture(r#"{"type":"server_vad","threshold":1,"prefix_padding_ms":1,"silence_duration_ms":1}"#))),
-            input_audio_noise_reduction: Some(decode(fixture(r#""sample""#))),
+            input_audio_noise_reduction: Some(decode(fixture(r#"{"type":"near_field"}"#))),
             input_audio_format: Some(decode(fixture(r#""pcm16""#))),
             input_audio_transcription: Some(decode(fixture(r#"{"model":"model","language":"language","languages":["languages"],"keywords":["keywords"],"prompt":"prompt","delay":"minimal"}"#))),
             include: Some(decode(fixture(r#"["item.input_audio_transcription.logprobs"]"#))),
@@ -4975,7 +4975,7 @@ fn create_run_create_run_stream_reaches_mock_and_decodes_response() {
         .expect("create_run_stream stream event failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
-        r#"{"enabled":false,"event":"ThreadStreamEvent","data":{"id":"id-1","object":"thread","created_at":1,"tool_resources":{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"]}},"metadata":{"key":"key"}}}"#,
+        r#"{"enabled":false,"event":"thread.created","data":{"id":"id-1","object":"thread","created_at":1,"tool_resources":{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"]}},"metadata":{"key":"key"}}}"#,
     );
     assert!(
         representative(&actual, &expected),
@@ -5236,7 +5236,7 @@ fn create_thread_create_thread_reaches_mock_and_decodes_response() {
     let actual = assistants::create_thread(
         &config,
         Some(decode(fixture(r#"[{"role":"user","content":"content","attachments":[{"file_id":"file-1","tools":[{"type":"code_interpreter"}]}],"metadata":{"key":"key"}}]"#))),
-        Some(Some(decode(fixture(r#"{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"]}}"#)))),
+        Some(Some(decode(fixture(r#"{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"],"vector_stores":[{"file_ids":["file_ids"],"chunking_strategy":{"type":"auto"},"metadata":{"key":"key"}}]}}"#)))),
         Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
         None,
     )
@@ -5261,7 +5261,7 @@ fn create_thread_and_run_create_thread_and_run_reaches_mock_and_decodes_response
         &config,
         assistants::CreateThreadAndRunParams {
             assistant_id: decode(fixture(r#""assistant-1""#)),
-            thread: Some(decode(fixture(r#"{"messages":[{"role":"user","content":"content","attachments":[{"file_id":"file-1","tools":[{"type":"code_interpreter"}]}],"metadata":{"key":"key"}}],"tool_resources":{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"]}},"metadata":{"key":"key"}}"#))),
+            thread: Some(decode(fixture(r#"{"messages":[{"role":"user","content":"content","attachments":[{"file_id":"file-1","tools":[{"type":"code_interpreter"}]}],"metadata":{"key":"key"}}],"tool_resources":{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"],"vector_stores":[{"file_ids":["file_ids"],"chunking_strategy":{"type":"auto"},"metadata":{"key":"key"}}]}},"metadata":{"key":"key"}}"#))),
             model: Some(Some(decode(fixture(r#""gpt-4.1""#)))),
             instructions: Some(Some(decode(fixture(r#""instructions""#)))),
             tools: Some(Some(decode(fixture(r#"[{"type":"code_interpreter"}]"#)))),
@@ -5301,7 +5301,7 @@ fn create_thread_and_run_create_thread_and_run_stream_reaches_mock_and_decodes_r
         assistants::CreateThreadAndRunStreamParams {
             assistant_id: decode(fixture(r#""assistant-1""#)),
             stream: Some(decode(fixture(r#"false"#))),
-            thread: Some(decode(fixture(r#"{"messages":[{"role":"user","content":"content","attachments":[{"file_id":"file-1","tools":[{"type":"code_interpreter"}]}],"metadata":{"key":"key"}}],"tool_resources":{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"]}},"metadata":{"key":"key"}}"#))),
+            thread: Some(decode(fixture(r#"{"messages":[{"role":"user","content":"content","attachments":[{"file_id":"file-1","tools":[{"type":"code_interpreter"}]}],"metadata":{"key":"key"}}],"tool_resources":{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"],"vector_stores":[{"file_ids":["file_ids"],"chunking_strategy":{"type":"auto"},"metadata":{"key":"key"}}]}},"metadata":{"key":"key"}}"#))),
             model: Some(Some(decode(fixture(r#""gpt-4.1""#)))),
             instructions: Some(Some(decode(fixture(r#""instructions""#)))),
             tools: Some(Some(decode(fixture(r#"[{"type":"code_interpreter"}]"#)))),
@@ -5325,7 +5325,7 @@ fn create_thread_and_run_create_thread_and_run_stream_reaches_mock_and_decodes_r
         .expect("create_thread_and_run_stream stream event failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
-        r#"{"enabled":false,"event":"ThreadStreamEvent","data":{"id":"id-1","object":"thread","created_at":1,"tool_resources":{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"]}},"metadata":{"key":"key"}}}"#,
+        r#"{"enabled":false,"event":"thread.created","data":{"id":"id-1","object":"thread","created_at":1,"tool_resources":{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"]}},"metadata":{"key":"key"}}}"#,
     );
     assert!(
         representative(&actual, &expected),
@@ -12267,7 +12267,7 @@ fn list_input_items_list_input_items_reaches_mock_and_decodes_response() {
     .expect("list_input_items request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
-        r#"{"object":"list","data":[{"type":"InputMessageResource","role":"user","status":"in_progress","content":[{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}],"id":"id-1"}],"has_more":false,"first_id":"first-1","last_id":"last-1"}"#,
+        r#"{"object":"list","data":[{"type":"message","role":"user","status":"in_progress","content":[{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}],"id":"id-1"}],"has_more":false,"first_id":"first-1","last_id":"last-1"}"#,
     );
     assert!(
         representative(&actual, &expected),
@@ -17372,34 +17372,34 @@ fn submit_assistants_tool_outputs_to_run_submit_assistants_tool_outputs_to_run_r
 }
 
 #[test]
-fn submit_assistants_tool_outputs_to_run_submit_assistants_tool_outputs_to_run_reaches_mock_and_decodes_response(
+fn submit_assistants_tool_outputs_to_run_submit_assistants_tool_outputs_to_run_stream_reaches_mock_and_decodes_response(
 ) {
     let Some(config) = configured_client() else {
         return;
     };
     let _ = &config;
-    let mut events = assistants::submit_assistants_tool_outputs_to_run(
+    let mut events = assistants::submit_assistants_tool_outputs_to_run_stream(
         &config,
         decode(fixture(r#""thread-1""#)),
         decode(fixture(r#""run-1""#)),
         decode(fixture(
             r#"[{"tool_call_id":"tool_call-1","output":"output"}]"#,
         )),
-        Some(Some(decode(fixture(r#"false"#)))),
+        Some(decode(fixture(r#"false"#))),
         None,
     )
-    .expect("submit_assistants_tool_outputs_to_run request failed");
+    .expect("submit_assistants_tool_outputs_to_run_stream request failed");
     let actual = events
         .next()
-        .expect("submit_assistants_tool_outputs_to_run stream returned no events")
-        .expect("submit_assistants_tool_outputs_to_run stream event failed");
+        .expect("submit_assistants_tool_outputs_to_run_stream stream returned no events")
+        .expect("submit_assistants_tool_outputs_to_run_stream stream event failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
-        r#"{"enabled":false,"event":"ThreadStreamEvent","data":{"id":"id-1","object":"thread","created_at":1,"tool_resources":{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"]}},"metadata":{"key":"key"}}}"#,
+        r#"{"enabled":false,"event":"thread.created","data":{"id":"id-1","object":"thread","created_at":1,"tool_resources":{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"]}},"metadata":{"key":"key"}}}"#,
     );
     assert!(
         representative(&actual, &expected),
-        "submit_assistants_tool_outputs_to_run decoded {actual}, expected representative {expected}"
+        "submit_assistants_tool_outputs_to_run_stream decoded {actual}, expected representative {expected}"
     );
 }
 

@@ -3,6 +3,53 @@
 
 // audio domain models (part 4)
 
+/// Emitted when the transcription is complete. Contains the complete transcription text. Only emitted when you [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create) with the `Stream` parameter set to `true`.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct TranscriptTextDoneEvent {
+    /// The type of the event. Always `transcript.text.done`.
+    #[serde(rename = "type")]
+    pub type_: TranscriptTextDoneEventTypeEnum,
+    /// The text that was transcribed.
+    pub text: String,
+    /// The languages detected in the audio. Returned by `gpt-transcribe`. An empty array indicates that no language could be reliably detected.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub languages: Option<Vec<TranscriptionLanguage>>,
+    /// The log probabilities of the individual tokens in the transcription. Only included if you [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create) with the `include[]` parameter set to `logprobs`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub logprobs: Option<Vec<TranscriptTextDoneEventLogprobsItem>>,
+    /// Usage statistics for models billed by token usage.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub usage: Option<TranscriptTextUsageTokens>,
+}
+
+impl TranscriptTextDoneEvent {
+    pub fn new(type_: TranscriptTextDoneEventTypeEnum, text: String) -> Self {
+        Self {
+            type_,
+            text,
+            languages: None,
+            logprobs: None,
+            usage: None,
+        }
+    }
+}
+
+/// The type of the event. Always `transcript.text.segment`.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum TranscriptTextSegmentEventTypeEnum {
+    #[serde(rename = "transcript.text.segment")]
+    #[default]
+    TranscriptTextSegment,
+}
+
+impl TranscriptTextSegmentEventTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::TranscriptTextSegment => "transcript.text.segment",
+        }
+    }
+}
+
 impl std::fmt::Display for TranscriptTextSegmentEventTypeEnum {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -455,64 +502,5 @@ impl<'de> serde::Deserialize<'de> for VoiceConsentResourceObjectEnum {
 impl std::fmt::Display for VoiceConsentResourceObjectEnum {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
-    }
-}
-
-/// A consent recording used to authorize creation of a custom voice.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct VoiceConsentResource {
-    /// The object type, which is always `audio.voice_consent`.
-    pub object: VoiceConsentResourceObjectEnum,
-    /// The consent recording identifier.
-    pub id: String,
-    /// The label provided when the consent recording was uploaded.
-    pub name: String,
-    /// The BCP 47 language tag for the consent phrase (for example, `en-US`).
-    pub language: String,
-    /// The Unix timestamp (in seconds) for when the consent recording was created.
-    pub created_at: i64,
-}
-
-impl VoiceConsentResource {
-    pub fn new(
-        object: VoiceConsentResourceObjectEnum,
-        id: String,
-        name: String,
-        language: String,
-        created_at: i64,
-    ) -> Self {
-        Self {
-            object,
-            id,
-            name,
-            language,
-            created_at,
-        }
-    }
-}
-
-/// The object type, which is always `audio.voice`.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum VoiceResourceObjectEnum {
-    #[default]
-    AudioVoice,
-    Unknown(String),
-}
-
-impl VoiceResourceObjectEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::AudioVoice => "audio.voice",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for VoiceResourceObjectEnum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
     }
 }

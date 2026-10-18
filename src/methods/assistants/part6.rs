@@ -7,8 +7,212 @@ use crate::client::{sdk_request, RequestOptions, RequestOpts};
 use crate::errors::{SdkError, SdkNetworkError};
 use crate::types::{
     CreateMessageRequestAttachmentsItem, CreateMessageRequestContent, CreateMessageRequestRoleEnum,
-    DeleteMessageResponse, ListRunsResponse, MessageObject, Metadata, RunObject,
+    DeleteMessageResponse, ListMessagesResponse, MessageObject, Metadata,
 };
+
+#[derive(Debug, Clone, Default)]
+pub struct ListMessagesParams {
+    pub thread_id: String,
+    pub limit: Option<i64>,
+    pub order: Option<ListMessagesEnum>,
+    pub after: Option<String>,
+    pub before: Option<String>,
+    pub run_id: Option<String>,
+}
+
+/// Lists messages belonging to a thread. Use `run_id` to filter by the run that generated the messages and `order` to control their creation-time order. Use `after` or `before` cursors to navigate the results.
+///
+/// Returns a list of messages for a given thread.
+///
+/// # Arguments
+///
+/// * `thread_id` - The ID of the
+///   [thread](https://developers.openai.com/api/docs/assistants/migration) the
+///   messages belong to.
+/// * `limit` - A limit on the number of objects to be returned. Limit can range
+///   between 1 and 100, and the default is 20.
+/// * `order` - Sort order by the `created_at` timestamp of the objects. `asc`
+///   for ascending order and `desc` for descending order.
+/// * `after` - A cursor for use in pagination. `after` is an object ID that
+///   defines your place in the list. For instance, if you make a list request and
+///   receive 100 objects, ending with obj_foo, your subsequent call can include
+///   after=obj_foo in order to fetch the next page of the list.
+/// * `before` - A cursor for use in pagination. `before` is an object ID that
+///   defines your place in the list. For instance, if you make a list request and
+///   receive 100 objects, starting with obj_foo, your subsequent call can include
+///   before=obj_foo in order to fetch the previous page of the list.
+/// * `run_id` - Filter messages by the run ID that generated them.
+pub fn list_messages(
+    config: &ClientConfig,
+    params: ListMessagesParams,
+    options: Option<&RequestOptions>,
+) -> Result<ListMessagesResponse, SdkError> {
+    let ListMessagesParams {
+        thread_id,
+        limit,
+        order,
+        after,
+        before,
+        run_id,
+    } = params;
+    let mut __query: Vec<(&str, String)> = Vec::with_capacity(5);
+    if let Some(ref v) = limit {
+        __query.push(("limit", crate::client::query_value(v)));
+    }
+    if let Some(ref v) = order {
+        __query.push(("order", crate::client::query_value(v)));
+    }
+    if let Some(ref v) = after {
+        __query.push(("after", crate::client::query_value(v)));
+    }
+    if let Some(ref v) = before {
+        __query.push(("before", crate::client::query_value(v)));
+    }
+    if let Some(ref v) = run_id {
+        __query.push(("run_id", crate::client::query_value(v)));
+    }
+
+    Ok(sdk_request::<ListMessagesResponse>(
+        "GET",
+        &format!(
+            "/threads/{}/messages",
+            crate::client::encode_path_segment(&thread_id)
+        ),
+        config,
+        RequestOpts {
+            query: &__query,
+            decoder: crate::client::ResponseDecoder::Json,
+            operation_id: "list_messages",
+            options,
+            errors: &[("429", "ErrorResponse")],
+            ..Default::default()
+        },
+    )?
+    .data)
+}
+
+/// Lists messages belonging to a thread. Use `run_id` to filter by the run that generated the messages and `order` to control their creation-time order. Use `after` or `before` cursors to navigate the results.
+///
+/// Returns a list of messages for a given thread.
+///
+/// # Arguments
+///
+/// * `thread_id` - The ID of the
+///   [thread](https://developers.openai.com/api/docs/assistants/migration) the
+///   messages belong to.
+/// * `limit` - A limit on the number of objects to be returned. Limit can range
+///   between 1 and 100, and the default is 20.
+/// * `order` - Sort order by the `created_at` timestamp of the objects. `asc`
+///   for ascending order and `desc` for descending order.
+/// * `after` - A cursor for use in pagination. `after` is an object ID that
+///   defines your place in the list. For instance, if you make a list request and
+///   receive 100 objects, ending with obj_foo, your subsequent call can include
+///   after=obj_foo in order to fetch the next page of the list.
+/// * `before` - A cursor for use in pagination. `before` is an object ID that
+///   defines your place in the list. For instance, if you make a list request and
+///   receive 100 objects, starting with obj_foo, your subsequent call can include
+///   before=obj_foo in order to fetch the previous page of the list.
+/// * `run_id` - Filter messages by the run ID that generated them.
+pub fn list_messages_paginated(
+    config: &ClientConfig,
+    params: ListMessagesParams,
+    options: Option<&RequestOptions>,
+    mut yield_fn: impl FnMut(&MessageObject) -> bool,
+) -> Result<(), SdkError> {
+    let ListMessagesParams {
+        thread_id,
+        limit,
+        order,
+        after,
+        before,
+        run_id,
+    } = params;
+
+    let mut _cursor: Option<String> = after;
+    loop {
+        let _page = list_messages(
+            config,
+            ListMessagesParams {
+                thread_id: thread_id.clone(),
+                limit,
+                order: order.clone(),
+                after: _cursor,
+                before: before.clone(),
+                run_id: run_id.clone(),
+            },
+            options,
+        )?;
+        let _items: Vec<_> = _page.data.iter().collect();
+        if _items.is_empty() {
+            return Ok(());
+        }
+        for _item in &_items {
+            if !yield_fn(_item) {
+                return Ok(());
+            }
+        }
+        let _next = _page.last_id.clone();
+        if !_page.has_more {
+            return Ok(());
+        }
+        _cursor = Some(_next);
+    }
+}
+
+pub struct ListMessagesPage<'a> {
+    pub data: &'a ListMessagesResponse,
+    pub items: Vec<&'a MessageObject>,
+    pub has_more: bool,
+}
+
+pub fn list_messages_pages(
+    config: &ClientConfig,
+    params: ListMessagesParams,
+    options: Option<&RequestOptions>,
+    mut yield_page: impl FnMut(ListMessagesPage<'_>) -> bool,
+) -> Result<(), SdkError> {
+    let ListMessagesParams {
+        thread_id,
+        limit,
+        order,
+        after,
+        before,
+        run_id,
+    } = params;
+
+    let mut _cursor: Option<String> = after;
+    loop {
+        let _page = list_messages(
+            config,
+            ListMessagesParams {
+                thread_id: thread_id.clone(),
+                limit,
+                order: order.clone(),
+                after: _cursor,
+                before: before.clone(),
+                run_id: run_id.clone(),
+            },
+            options,
+        )?;
+        let _items: Vec<_> = _page.data.iter().collect();
+        if _items.is_empty() {
+            return Ok(());
+        }
+        let _next = _page.last_id.clone();
+        let _has_more = _page.has_more;
+        if !yield_page(ListMessagesPage {
+            data: &_page,
+            items: _items,
+            has_more: _has_more,
+        }) {
+            return Ok(());
+        }
+        if !_has_more {
+            return Ok(());
+        }
+        _cursor = Some(_next);
+    }
+}
 
 #[derive(Debug, Clone)]
 pub struct CreateMessageParams {
@@ -235,193 +439,4 @@ pub fn delete_message(
         },
     )?
     .data)
-}
-
-#[derive(Debug, Clone, Default)]
-pub struct ListRunsParams {
-    pub thread_id: String,
-    pub limit: Option<i64>,
-    pub order: Option<ListRunsEnum>,
-    pub after: Option<String>,
-    pub before: Option<String>,
-}
-
-/// Lists runs belonging to a thread. Use `order` to sort runs by creation time and `after` or `before` to navigate through the results. The returned run statuses show whether each run is queued, active, completed, or in another state.
-///
-/// Returns a list of runs belonging to a thread.
-///
-/// # Arguments
-///
-/// * `thread_id` - The ID of the thread the run belongs to.
-/// * `limit` - A limit on the number of objects to be returned. Limit can range
-///   between 1 and 100, and the default is 20.
-/// * `order` - Sort order by the `created_at` timestamp of the objects. `asc`
-///   for ascending order and `desc` for descending order.
-/// * `after` - A cursor for use in pagination. `after` is an object ID that
-///   defines your place in the list. For instance, if you make a list request and
-///   receive 100 objects, ending with obj_foo, your subsequent call can include
-///   after=obj_foo in order to fetch the next page of the list.
-/// * `before` - A cursor for use in pagination. `before` is an object ID that
-///   defines your place in the list. For instance, if you make a list request and
-///   receive 100 objects, starting with obj_foo, your subsequent call can include
-///   before=obj_foo in order to fetch the previous page of the list.
-pub fn list_runs(
-    config: &ClientConfig,
-    params: ListRunsParams,
-    options: Option<&RequestOptions>,
-) -> Result<ListRunsResponse, SdkError> {
-    let ListRunsParams {
-        thread_id,
-        limit,
-        order,
-        after,
-        before,
-    } = params;
-    let mut __query: Vec<(&str, String)> = Vec::with_capacity(4);
-    if let Some(ref v) = limit {
-        __query.push(("limit", crate::client::query_value(v)));
-    }
-    if let Some(ref v) = order {
-        __query.push(("order", crate::client::query_value(v)));
-    }
-    if let Some(ref v) = after {
-        __query.push(("after", crate::client::query_value(v)));
-    }
-    if let Some(ref v) = before {
-        __query.push(("before", crate::client::query_value(v)));
-    }
-
-    Ok(sdk_request::<ListRunsResponse>(
-        "GET",
-        &format!(
-            "/threads/{}/runs",
-            crate::client::encode_path_segment(&thread_id)
-        ),
-        config,
-        RequestOpts {
-            query: &__query,
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "list_runs",
-            options,
-            errors: &[("429", "ErrorResponse")],
-            ..Default::default()
-        },
-    )?
-    .data)
-}
-
-/// Lists runs belonging to a thread. Use `order` to sort runs by creation time and `after` or `before` to navigate through the results. The returned run statuses show whether each run is queued, active, completed, or in another state.
-///
-/// Returns a list of runs belonging to a thread.
-///
-/// # Arguments
-///
-/// * `thread_id` - The ID of the thread the run belongs to.
-/// * `limit` - A limit on the number of objects to be returned. Limit can range
-///   between 1 and 100, and the default is 20.
-/// * `order` - Sort order by the `created_at` timestamp of the objects. `asc`
-///   for ascending order and `desc` for descending order.
-/// * `after` - A cursor for use in pagination. `after` is an object ID that
-///   defines your place in the list. For instance, if you make a list request and
-///   receive 100 objects, ending with obj_foo, your subsequent call can include
-///   after=obj_foo in order to fetch the next page of the list.
-/// * `before` - A cursor for use in pagination. `before` is an object ID that
-///   defines your place in the list. For instance, if you make a list request and
-///   receive 100 objects, starting with obj_foo, your subsequent call can include
-///   before=obj_foo in order to fetch the previous page of the list.
-pub fn list_runs_paginated(
-    config: &ClientConfig,
-    params: ListRunsParams,
-    options: Option<&RequestOptions>,
-    mut yield_fn: impl FnMut(&RunObject) -> bool,
-) -> Result<(), SdkError> {
-    let ListRunsParams {
-        thread_id,
-        limit,
-        order,
-        after,
-        before,
-    } = params;
-
-    let mut _cursor: Option<String> = after;
-    loop {
-        let _page = list_runs(
-            config,
-            ListRunsParams {
-                thread_id: thread_id.clone(),
-                limit,
-                order: order.clone(),
-                after: _cursor,
-                before: before.clone(),
-            },
-            options,
-        )?;
-        let _items: Vec<_> = _page.data.iter().collect();
-        if _items.is_empty() {
-            return Ok(());
-        }
-        for _item in &_items {
-            if !yield_fn(_item) {
-                return Ok(());
-            }
-        }
-        let _next = _page.last_id.clone();
-        if !_page.has_more {
-            return Ok(());
-        }
-        _cursor = Some(_next);
-    }
-}
-
-pub struct ListRunsPage<'a> {
-    pub data: &'a ListRunsResponse,
-    pub items: Vec<&'a RunObject>,
-    pub has_more: bool,
-}
-
-pub fn list_runs_pages(
-    config: &ClientConfig,
-    params: ListRunsParams,
-    options: Option<&RequestOptions>,
-    mut yield_page: impl FnMut(ListRunsPage<'_>) -> bool,
-) -> Result<(), SdkError> {
-    let ListRunsParams {
-        thread_id,
-        limit,
-        order,
-        after,
-        before,
-    } = params;
-
-    let mut _cursor: Option<String> = after;
-    loop {
-        let _page = list_runs(
-            config,
-            ListRunsParams {
-                thread_id: thread_id.clone(),
-                limit,
-                order: order.clone(),
-                after: _cursor,
-                before: before.clone(),
-            },
-            options,
-        )?;
-        let _items: Vec<_> = _page.data.iter().collect();
-        if _items.is_empty() {
-            return Ok(());
-        }
-        let _next = _page.last_id.clone();
-        let _has_more = _page.has_more;
-        if !yield_page(ListRunsPage {
-            data: &_page,
-            items: _items,
-            has_more: _has_more,
-        }) {
-            return Ok(());
-        }
-        if !_has_more {
-            return Ok(());
-        }
-        _cursor = Some(_next);
-    }
 }

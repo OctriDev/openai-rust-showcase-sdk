@@ -237,11 +237,35 @@ impl ResponseVariant2IncompleteDetails {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum ResponseVariant2Instructions {
     String(String),
     InputItemArray(Vec<InputItem>),
+}
+
+impl<'de> serde::Deserialize<'de> for ResponseVariant2Instructions {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Vec<InputItem>>(value.clone()) {
+            let candidate = Self::InputItemArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom("no ResponseVariant2Instructions branch accepts this payload")
+        })
+    }
 }
 
 /// Required object value serialized in the `response` wire field.
@@ -470,37 +494,4 @@ impl std::fmt::Display for ResponseCompletedEventTypeEnum {
             ResponseCompletedEventTypeEnum::ResponseCompleted => f.write_str("response.completed"),
         }
     }
-}
-
-/// Emitted when the model response is complete.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct ResponseCompletedEvent {
-    /// The type of the event. Always `response.completed`.
-    #[serde(rename = "type")]
-    pub type_: ResponseCompletedEventTypeEnum,
-    /// Properties of the completed response.
-    pub response: Response,
-    /// The sequence number for this event.
-    pub sequence_number: i64,
-}
-
-impl ResponseCompletedEvent {
-    pub fn new(
-        type_: ResponseCompletedEventTypeEnum,
-        response: Response,
-        sequence_number: i64,
-    ) -> Self {
-        Self {
-            type_,
-            response,
-            sequence_number,
-        }
-    }
-}
-
-/// The conversation that this response belonged to. Input items and output items from this response were automatically added to this conversation.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct ResponseConversation {
-    /// The unique ID of the conversation that this response was associated with.
-    pub id: String,
 }

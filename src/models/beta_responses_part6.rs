@@ -3,7 +3,7 @@
 
 // beta_responses domain models (part 6)
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum BetaResponsesWebSocketStreamEventVariant0 {
     BetaResponseAudioDeltaEvent(Box<BetaResponseAudioDeltaEvent>),
@@ -86,6 +86,541 @@ pub enum BetaResponsesWebSocketStreamEventVariant0 {
     BetaResponseCustomToolCallInputDoneEvent(Box<BetaResponseCustomToolCallInputDoneEvent>),
 }
 
+impl<'de> serde::Deserialize<'de> for BetaResponsesWebSocketStreamEventVariant0 {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseAudioDeltaEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseAudioDeltaEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<BetaResponseAudioDoneEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseAudioDoneEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseAudioTranscriptDeltaEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseAudioTranscriptDeltaEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseAudioTranscriptDoneEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseAudioTranscriptDoneEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            Box<BetaResponseCodeInterpreterCallCodeDeltaEvent>,
+        >(value.clone())
+        {
+            let candidate = Self::BetaResponseCodeInterpreterCallCodeDeltaEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            Box<BetaResponseCodeInterpreterCallCodeDoneEvent>,
+        >(value.clone())
+        {
+            let candidate = Self::BetaResponseCodeInterpreterCallCodeDoneEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            Box<BetaResponseCodeInterpreterCallCompletedEvent>,
+        >(value.clone())
+        {
+            let candidate = Self::BetaResponseCodeInterpreterCallCompletedEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            Box<BetaResponseCodeInterpreterCallInProgressEvent>,
+        >(value.clone())
+        {
+            let candidate = Self::BetaResponseCodeInterpreterCallInProgressEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            Box<BetaResponseCodeInterpreterCallInterpretingEvent>,
+        >(value.clone())
+        {
+            let candidate = Self::BetaResponseCodeInterpreterCallInterpretingEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            Box<BetaResponseCompactionCompactingStreamingEvent>,
+        >(value.clone())
+        {
+            let candidate = Self::BetaResponseCompactionCompactingStreamingEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<BetaResponseCompletedEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseCompletedEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseContentPartAddedEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseContentPartAddedEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseContentPartDoneEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseContentPartDoneEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<BetaResponseCreatedEvent>>(value.clone()) {
+            let candidate = Self::BetaResponseCreatedEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseFileSearchCallCompletedEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseFileSearchCallCompletedEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseFileSearchCallInProgressEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseFileSearchCallInProgressEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseFileSearchCallSearchingEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseFileSearchCallSearchingEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<BetaResponseFunctionCallArgumentsDeltaEvent>>(
+            value.clone(),
+        ) {
+            let candidate = Self::BetaResponseFunctionCallArgumentsDeltaEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseFunctionCallArgumentsDoneEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseFunctionCallArgumentsDoneEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            Box<BetaResponseShellCallCommandAddedStreamingEvent>,
+        >(value.clone())
+        {
+            let candidate = Self::BetaResponseShellCallCommandAddedStreamingEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            Box<BetaResponseShellCallCommandDeltaStreamingEvent>,
+        >(value.clone())
+        {
+            let candidate = Self::BetaResponseShellCallCommandDeltaStreamingEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            Box<BetaResponseShellCallCommandDoneStreamingEvent>,
+        >(value.clone())
+        {
+            let candidate = Self::BetaResponseShellCallCommandDoneStreamingEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            Box<BetaResponseShellCallOutputContentDeltaStreamingEvent>,
+        >(value.clone())
+        {
+            let candidate = Self::BetaResponseShellCallOutputContentDeltaStreamingEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            Box<BetaResponseShellCallOutputContentDoneStreamingEvent>,
+        >(value.clone())
+        {
+            let candidate = Self::BetaResponseShellCallOutputContentDoneStreamingEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseInProgressEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseInProgressEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<BetaResponseFailedEvent>>(value.clone()) {
+            let candidate = Self::BetaResponseFailedEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseIncompleteEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseIncompleteEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseOutputItemAddedEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseOutputItemAddedEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseOutputItemDoneEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseOutputItemDoneEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseReasoningSummaryPartAddedEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseReasoningSummaryPartAddedEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseReasoningSummaryPartDoneEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseReasoningSummaryPartDoneEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseReasoningSummaryTextDeltaEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseReasoningSummaryTextDeltaEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseReasoningSummaryTextDoneEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseReasoningSummaryTextDoneEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseReasoningTextDeltaEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseReasoningTextDeltaEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseReasoningTextDoneEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseReasoningTextDoneEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseRefusalDeltaEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseRefusalDeltaEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseRefusalDoneEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseRefusalDoneEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<BetaResponseTextDeltaEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseTextDeltaEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<BetaResponseTextDoneEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseTextDoneEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseWebSearchCallCompletedEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseWebSearchCallCompletedEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseWebSearchCallInProgressEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseWebSearchCallInProgressEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseWebSearchCallSearchingEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseWebSearchCallSearchingEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseImageGenCallCompletedEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseImageGenCallCompletedEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseImageGenCallGeneratingEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseImageGenCallGeneratingEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseImageGenCallInProgressEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseImageGenCallInProgressEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseImageGenCallPartialImageEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseImageGenCallPartialImageEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseMCPCallArgumentsDeltaEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseMCPCallArgumentsDeltaEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseMCPCallArgumentsDoneEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseMCPCallArgumentsDoneEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseMCPCallCompletedEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseMCPCallCompletedEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseMCPCallFailedEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseMCPCallFailedEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseMCPCallInProgressEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseMCPCallInProgressEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseMCPListToolsCompletedEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseMCPListToolsCompletedEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseMCPListToolsFailedEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseMCPListToolsFailedEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseMCPListToolsInProgressEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseMCPListToolsInProgressEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseOutputTextAnnotationAddedEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseOutputTextAnnotationAddedEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<BetaResponseQueuedEvent>>(value.clone()) {
+            let candidate = Self::BetaResponseQueuedEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseCustomToolCallInputDeltaEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseCustomToolCallInputDeltaEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Box<BetaResponseCustomToolCallInputDoneEvent>>(value.clone())
+        {
+            let candidate = Self::BetaResponseCustomToolCallInputDoneEvent(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no BetaResponsesWebSocketStreamEventVariant0 branch accepts this payload",
+            )
+        })
+    }
+}
+
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct BetaResponsesWebSocketStreamEventVariant1 {
     /// The WebSocket lane that emitted this event. This field is present
@@ -99,22 +634,5 @@ impl BetaResponsesWebSocketStreamEventVariant1 {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self { stream_id: None }
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct BetaResponsesWebSocketStreamEvent {
-    #[serde(flatten)]
-    pub member_0: BetaResponsesWebSocketStreamEventVariant0,
-    #[serde(flatten)]
-    pub member_1: BetaResponsesWebSocketStreamEventVariant1,
-}
-
-impl BetaResponsesWebSocketStreamEvent {
-    pub fn new(
-        member_0: BetaResponsesWebSocketStreamEventVariant0,
-        member_1: BetaResponsesWebSocketStreamEventVariant1,
-    ) -> Self {
-        Self { member_0, member_1 }
     }
 }

@@ -211,11 +211,40 @@ impl std::fmt::Display for LiveDataChannelConfigParamAllowedClientEventsVariant0
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum LiveDataChannelConfigParamAllowedClientEvents {
     All(LiveDataChannelConfigParamAllowedClientEventsVariant0Enum),
     StringArray(Vec<String>),
+}
+
+impl<'de> serde::Deserialize<'de> for LiveDataChannelConfigParamAllowedClientEvents {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<
+            LiveDataChannelConfigParamAllowedClientEventsVariant0Enum,
+        >(value.clone())
+        {
+            let candidate = Self::All(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Vec<String>>(value.clone()) {
+            let candidate = Self::StringArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no LiveDataChannelConfigParamAllowedClientEvents branch accepts this payload",
+            )
+        })
+    }
 }
 
 /// Optional enumerated value serialized in the `allowed_server_events` wire field.
@@ -263,11 +292,42 @@ impl std::fmt::Display for LiveDataChannelConfigParamAllowedServerEventsVariant0
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum LiveDataChannelConfigParamAllowedServerEvents {
     All(LiveDataChannelConfigParamAllowedServerEventsVariant0Enum),
     LiveAllowedServerEventParamArray(Vec<LiveAllowedServerEventParam>),
+}
+
+impl<'de> serde::Deserialize<'de> for LiveDataChannelConfigParamAllowedServerEvents {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<
+            LiveDataChannelConfigParamAllowedServerEventsVariant0Enum,
+        >(value.clone())
+        {
+            let candidate = Self::All(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Vec<LiveAllowedServerEventParam>>(value.clone())
+        {
+            let candidate = Self::LiveAllowedServerEventParamArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no LiveDataChannelConfigParamAllowedServerEvents branch accepts this payload",
+            )
+        })
+    }
 }
 
 /// Control which Live events an untrusted WebRTC frontend can send and receive over its data channel. These restrictions do not apply to trusted sideband connections.
@@ -417,52 +477,4 @@ impl std::fmt::Display for LiveFileSearchToolInputParamTypeEnum {
             LiveFileSearchToolInputParamTypeEnum::FileSearch => f.write_str("file_search"),
         }
     }
-}
-
-/// Typed representation of the `LiveFileSearchToolInputParam` API schema.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct LiveFileSearchToolInputParam {
-    /// Required enumerated value serialized in the `type` wire field.
-    #[serde(rename = "type")]
-    pub type_: LiveFileSearchToolInputParamTypeEnum,
-}
-
-impl LiveFileSearchToolInputParam {
-    pub fn new(type_: LiveFileSearchToolInputParamTypeEnum) -> Self {
-        Self { type_ }
-    }
-}
-
-/// Required enumerated value serialized in the `type` wire field.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum LiveImageGenerationToolInputParamTypeEnum {
-    #[serde(rename = "image_generation")]
-    #[default]
-    ImageGeneration,
-}
-
-impl LiveImageGenerationToolInputParamTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::ImageGeneration => "image_generation",
-        }
-    }
-}
-
-impl std::fmt::Display for LiveImageGenerationToolInputParamTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            LiveImageGenerationToolInputParamTypeEnum::ImageGeneration => {
-                f.write_str("image_generation")
-            }
-        }
-    }
-}
-
-/// Typed representation of the `LiveImageGenerationToolInputParam` API schema.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct LiveImageGenerationToolInputParam {
-    /// Required enumerated value serialized in the `type` wire field.
-    #[serde(rename = "type")]
-    pub type_: LiveImageGenerationToolInputParamTypeEnum,
 }

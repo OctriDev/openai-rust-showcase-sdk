@@ -67,11 +67,37 @@ impl CreateVideoEditJsonBody {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum CreateVideoEditMultipartBodyVideo {
     Bytes(crate::client::Base64Bytes),
     VideoReferenceInputParam(Box<VideoReferenceInputParam>),
+}
+
+impl<'de> serde::Deserialize<'de> for CreateVideoEditMultipartBodyVideo {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<crate::client::Base64Bytes>(value.clone()) {
+            let candidate = Self::Bytes(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<VideoReferenceInputParam>>(value.clone()) {
+            let candidate = Self::VideoReferenceInputParam(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no CreateVideoEditMultipartBodyVideo branch accepts this payload",
+            )
+        })
+    }
 }
 
 /// Parameters for editing an existing generated video.
@@ -145,11 +171,37 @@ impl CreateVideoExtendJsonBody {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum CreateVideoExtendMultipartBodyVideo {
     VideoReferenceInputParam(Box<VideoReferenceInputParam>),
     Bytes(crate::client::Base64Bytes),
+}
+
+impl<'de> serde::Deserialize<'de> for CreateVideoExtendMultipartBodyVideo {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<Box<VideoReferenceInputParam>>(value.clone()) {
+            let candidate = Self::VideoReferenceInputParam(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<crate::client::Base64Bytes>(value.clone()) {
+            let candidate = Self::Bytes(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no CreateVideoExtendMultipartBodyVideo branch accepts this payload",
+            )
+        })
+    }
 }
 
 /// Multipart parameters for extending an existing generated video.
@@ -236,11 +288,37 @@ impl CreateVideoJsonBody {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum CreateVideoMultipartBodyInputReference {
     Bytes(crate::client::Base64Bytes),
     ImageRefParam2(Box<ImageRefParam2>),
+}
+
+impl<'de> serde::Deserialize<'de> for CreateVideoMultipartBodyInputReference {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<crate::client::Base64Bytes>(value.clone()) {
+            let candidate = Self::Bytes(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<ImageRefParam2>>(value.clone()) {
+            let candidate = Self::ImageRefParam2(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no CreateVideoMultipartBodyInputReference branch accepts this payload",
+            )
+        })
+    }
 }
 
 /// Multipart parameters for creating a new video generation job.
@@ -512,71 +590,5 @@ impl serde::Serialize for VideoContentVariant {
         S: serde::Serializer,
     {
         serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for VideoContentVariant {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "video" => Self::Video,
-            "thumbnail" => Self::Thumbnail,
-            "spritesheet" => Self::Spritesheet,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for VideoContentVariant {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-/// The type of object returned, must be `list`.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum VideoListResourceObjectEnum {
-    #[default]
-    List,
-    Unknown(String),
-}
-
-impl VideoListResourceObjectEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::List => "list",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for VideoListResourceObjectEnum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for VideoListResourceObjectEnum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "list" => Self::List,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for VideoListResourceObjectEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
     }
 }

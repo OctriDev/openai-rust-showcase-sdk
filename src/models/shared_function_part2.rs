@@ -3,6 +3,32 @@
 
 // shared_function domain models (part 2)
 
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(untagged)]
+pub enum FunctionShellCallEnvironment {
+    LocalEnvironmentResource(Box<LocalEnvironmentResource>),
+    ContainerReferenceResource(Box<ContainerReferenceResource>),
+    /// A member whose `type` names no branch this SDK knows, kept as received.
+    #[serde(deserialize_with = "FunctionShellCallEnvironment::unknown_member")]
+    Unknown(serde_json::Value),
+}
+
+impl FunctionShellCallEnvironment {
+    fn unknown_member<'de, D: serde::Deserializer<'de>>(
+        deserializer: D,
+    ) -> Result<serde_json::Value, D::Error> {
+        crate::client::unknown_union_member(deserializer, "type", &["local", "container_reference"])
+    }
+}
+
+/// The type of the item. Always `shell_call`.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum FunctionShellCallItemParamTypeEnum {
+    #[serde(rename = "shell_call")]
+    #[default]
+    ShellCall,
+}
+
 impl FunctionShellCallItemParamTypeEnum {
     pub fn as_str(&self) -> &str {
         match self {
@@ -505,32 +531,4 @@ impl FunctionShellCallOutputItemParam {
         value.validate_constraints()?;
         Ok(value)
     }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum FunctionShellCallOutputOutcomeParam {
-    FunctionShellCallOutputTimeoutOutcomeParam(Box<FunctionShellCallOutputTimeoutOutcomeParam>),
-    FunctionShellCallOutputExitOutcomeParam(Box<FunctionShellCallOutputExitOutcomeParam>),
-    /// A member whose `type` names no branch this SDK knows, kept as received.
-    #[serde(deserialize_with = "FunctionShellCallOutputOutcomeParam::unknown_member")]
-    Unknown(serde_json::Value),
-}
-
-impl FunctionShellCallOutputOutcomeParam {
-    fn unknown_member<'de, D: serde::Deserializer<'de>>(
-        deserializer: D,
-    ) -> Result<serde_json::Value, D::Error> {
-        crate::client::unknown_union_member(deserializer, "type", &["timeout", "exit"])
-    }
-}
-
-/// Typed representation of the `FunctionShellCallOutputStatusEnum` API schema.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum FunctionShellCallOutputStatusEnum {
-    #[default]
-    InProgress,
-    Completed,
-    Incomplete,
-    Unknown(String),
 }

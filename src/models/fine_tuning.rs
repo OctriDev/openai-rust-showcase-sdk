@@ -63,11 +63,40 @@ impl std::fmt::Display for CreateFineTuningJobRequestHyperparametersBatchSizeVar
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum CreateFineTuningJobRequestHyperparametersBatchSize {
     Auto(CreateFineTuningJobRequestHyperparametersBatchSizeVariant0Enum),
     Integer(i64),
+}
+
+impl<'de> serde::Deserialize<'de> for CreateFineTuningJobRequestHyperparametersBatchSize {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<
+            CreateFineTuningJobRequestHyperparametersBatchSizeVariant0Enum,
+        >(value.clone())
+        {
+            let candidate = Self::Auto(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<i64>(value.clone()) {
+            let candidate = Self::Integer(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no CreateFineTuningJobRequestHyperparametersBatchSize branch accepts this payload",
+            )
+        })
+    }
 }
 
 /// Optional enumerated value serialized in the `learning_rate_multiplier` wire field.
@@ -121,11 +150,38 @@ impl std::fmt::Display
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum CreateFineTuningJobRequestHyperparametersLearningRateMultiplier {
     Auto(CreateFineTuningJobRequestHyperparametersLearningRateMultiplierVariant0Enum),
     Number(f64),
+}
+
+impl<'de> serde::Deserialize<'de>
+    for CreateFineTuningJobRequestHyperparametersLearningRateMultiplier
+{
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<
+            CreateFineTuningJobRequestHyperparametersLearningRateMultiplierVariant0Enum,
+        >(value.clone())
+        {
+            let candidate = Self::Auto(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<f64>(value.clone()) {
+            let candidate = Self::Number(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| serde::de::Error::custom("no CreateFineTuningJobRequestHyperparametersLearningRateMultiplier branch accepts this payload"))
+    }
 }
 
 /// Optional enumerated value serialized in the `n_epochs` wire field.
@@ -173,11 +229,40 @@ impl std::fmt::Display for CreateFineTuningJobRequestHyperparametersNEpochsVaria
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum CreateFineTuningJobRequestHyperparametersNEpochs {
     Auto(CreateFineTuningJobRequestHyperparametersNEpochsVariant0Enum),
     Integer(i64),
+}
+
+impl<'de> serde::Deserialize<'de> for CreateFineTuningJobRequestHyperparametersNEpochs {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<
+            CreateFineTuningJobRequestHyperparametersNEpochsVariant0Enum,
+        >(value.clone())
+        {
+            let candidate = Self::Auto(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<i64>(value.clone()) {
+            let candidate = Self::Integer(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no CreateFineTuningJobRequestHyperparametersNEpochs branch accepts this payload",
+            )
+        })
+    }
 }
 
 /// The hyperparameters used for the fine-tuning job.
@@ -432,75 +517,5 @@ impl CreateFineTuningJobRequest {
         };
         value.validate_constraints()?;
         Ok(value)
-    }
-}
-
-/// The object type, which is always "checkpoint.permission".
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum DeleteFineTuningCheckpointPermissionResponseObjectEnum {
-    #[default]
-    CheckpointPermission,
-    Unknown(String),
-}
-
-impl DeleteFineTuningCheckpointPermissionResponseObjectEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::CheckpointPermission => "checkpoint.permission",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for DeleteFineTuningCheckpointPermissionResponseObjectEnum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for DeleteFineTuningCheckpointPermissionResponseObjectEnum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "checkpoint.permission" => Self::CheckpointPermission,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for DeleteFineTuningCheckpointPermissionResponseObjectEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-/// Typed representation of the `DeleteFineTuningCheckpointPermissionResponse` API schema.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct DeleteFineTuningCheckpointPermissionResponse {
-    /// The ID of the fine-tuned model checkpoint permission that was deleted.
-    pub id: String,
-    /// The object type, which is always "checkpoint.permission".
-    pub object: DeleteFineTuningCheckpointPermissionResponseObjectEnum,
-    /// Whether the fine-tuned model checkpoint permission was successfully deleted.
-    pub deleted: bool,
-}
-
-impl DeleteFineTuningCheckpointPermissionResponse {
-    pub fn new(
-        id: String,
-        object: DeleteFineTuningCheckpointPermissionResponseObjectEnum,
-        deleted: bool,
-    ) -> Self {
-        Self {
-            id,
-            object,
-            deleted,
-        }
     }
 }

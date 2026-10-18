@@ -46,31 +46,6 @@ impl LiveResponsesDelegationParam {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum LiveResponsesDelegationSettingsInputParamToolChoiceVariant1 {
-    LiveFunctionToolChoiceParam(Box<LiveFunctionToolChoiceParam>),
-    LiveMCPToolChoiceParam(Box<LiveMCPToolChoiceParam>),
-    LiveSpecificFileSearchParam(Box<LiveSpecificFileSearchParam>),
-    LiveSpecificWebSearchParam(Box<LiveSpecificWebSearchParam>),
-    LiveSpecificWebSearchPreviewParam(Box<LiveSpecificWebSearchPreviewParam>),
-    LiveSpecificImageGenParam(Box<LiveSpecificImageGenParam>),
-    LiveSpecificComputerParam(Box<LiveSpecificComputerParam>),
-    LiveSpecificCodeInterpreterParam(Box<LiveSpecificCodeInterpreterParam>),
-    LiveSpecificProgrammaticToolCallingParam(Box<LiveSpecificProgrammaticToolCallingParam>),
-    LiveSpecificFunctionShellParam(Box<LiveSpecificFunctionShellParam>),
-    LiveSpecificCustomToolParam(Box<LiveSpecificCustomToolParam>),
-    LiveSpecificApplyPatchParam(Box<LiveSpecificApplyPatchParam>),
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum LiveResponsesDelegationSettingsInputParamToolChoice {
-    LiveToolChoiceEnum(LiveToolChoiceEnum),
-    Object(Box<LiveResponsesDelegationSettingsInputParamToolChoiceVariant1>),
-    LiveAllowedToolsChoiceParam(Box<LiveAllowedToolsChoiceParam>),
-}
-
 /// Model, prompt, and tool settings for tasks delegated by the Live session to a Responses backend.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct LiveResponsesDelegationSettingsInputParam {
@@ -160,6 +135,34 @@ impl LiveResponsesDelegationSettingsInputParam {
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 #[serde(untagged)]
+pub enum LiveResponsesDelegationSettingsInputParamToolChoice {
+    LiveToolChoiceEnum(LiveToolChoiceEnum),
+    LiveFunctionToolChoiceParam(Box<LiveFunctionToolChoiceParam>),
+    LiveMCPToolChoiceParam(Box<LiveMCPToolChoiceParam>),
+    LiveSpecificFileSearchParam(Box<LiveSpecificFileSearchParam>),
+    LiveSpecificWebSearchParam(Box<LiveSpecificWebSearchParam>),
+    LiveSpecificWebSearchPreviewParam(Box<LiveSpecificWebSearchPreviewParam>),
+    LiveSpecificImageGenParam(Box<LiveSpecificImageGenParam>),
+    LiveSpecificComputerParam(Box<LiveSpecificComputerParam>),
+    LiveSpecificCodeInterpreterParam(Box<LiveSpecificCodeInterpreterParam>),
+    LiveSpecificProgrammaticToolCallingParam(Box<LiveSpecificProgrammaticToolCallingParam>),
+    LiveSpecificFunctionShellParam(Box<LiveSpecificFunctionShellParam>),
+    LiveSpecificCustomToolParam(Box<LiveSpecificCustomToolParam>),
+    LiveSpecificApplyPatchParam(Box<LiveSpecificApplyPatchParam>),
+    LiveAllowedToolsChoiceParam(Box<LiveAllowedToolsChoiceParam>),
+}
+
+impl LiveResponsesDelegationSettingsInputParamToolChoice {
+    pub fn as_string_wire_value(&self) -> Option<&str> {
+        match self {
+            Self::LiveToolChoiceEnum(value) => Some(value.as_str()),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(untagged)]
 pub enum LiveResponsesDelegationSettingsInputParamToolsItem {
     LiveFunctionToolInputParam(Box<LiveFunctionToolInputParam>),
     LiveWebSearchToolInputParam(Box<LiveWebSearchToolInputParam>),
@@ -205,31 +208,6 @@ impl LiveResponsesDelegationSettingsInputParamToolsItem {
             ],
         )
     }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum LiveResponsesDelegationSettingsUpdateInputParamToolChoiceVariant1 {
-    LiveFunctionToolChoiceParam(Box<LiveFunctionToolChoiceParam>),
-    LiveMCPToolChoiceParam(Box<LiveMCPToolChoiceParam>),
-    LiveSpecificFileSearchParam(Box<LiveSpecificFileSearchParam>),
-    LiveSpecificWebSearchParam(Box<LiveSpecificWebSearchParam>),
-    LiveSpecificWebSearchPreviewParam(Box<LiveSpecificWebSearchPreviewParam>),
-    LiveSpecificImageGenParam(Box<LiveSpecificImageGenParam>),
-    LiveSpecificComputerParam(Box<LiveSpecificComputerParam>),
-    LiveSpecificCodeInterpreterParam(Box<LiveSpecificCodeInterpreterParam>),
-    LiveSpecificProgrammaticToolCallingParam(Box<LiveSpecificProgrammaticToolCallingParam>),
-    LiveSpecificFunctionShellParam(Box<LiveSpecificFunctionShellParam>),
-    LiveSpecificCustomToolParam(Box<LiveSpecificCustomToolParam>),
-    LiveSpecificApplyPatchParam(Box<LiveSpecificApplyPatchParam>),
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum LiveResponsesDelegationSettingsUpdateInputParamToolChoice {
-    LiveToolChoiceEnum(LiveToolChoiceEnum),
-    Object(Box<LiveResponsesDelegationSettingsUpdateInputParamToolChoiceVariant1>),
-    LiveAllowedToolsChoiceParam(Box<LiveAllowedToolsChoiceParam>),
 }
 
 /// Updates to the Responses backend of an existing Live session. Omitted settings retain their current values.
@@ -318,6 +296,34 @@ impl LiveResponsesDelegationSettingsUpdateInputParam {
         };
         value.validate_constraints()?;
         Ok(value)
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(untagged)]
+pub enum LiveResponsesDelegationSettingsUpdateInputParamToolChoice {
+    LiveToolChoiceEnum(LiveToolChoiceEnum),
+    LiveFunctionToolChoiceParam(Box<LiveFunctionToolChoiceParam>),
+    LiveMCPToolChoiceParam(Box<LiveMCPToolChoiceParam>),
+    LiveSpecificFileSearchParam(Box<LiveSpecificFileSearchParam>),
+    LiveSpecificWebSearchParam(Box<LiveSpecificWebSearchParam>),
+    LiveSpecificWebSearchPreviewParam(Box<LiveSpecificWebSearchPreviewParam>),
+    LiveSpecificImageGenParam(Box<LiveSpecificImageGenParam>),
+    LiveSpecificComputerParam(Box<LiveSpecificComputerParam>),
+    LiveSpecificCodeInterpreterParam(Box<LiveSpecificCodeInterpreterParam>),
+    LiveSpecificProgrammaticToolCallingParam(Box<LiveSpecificProgrammaticToolCallingParam>),
+    LiveSpecificFunctionShellParam(Box<LiveSpecificFunctionShellParam>),
+    LiveSpecificCustomToolParam(Box<LiveSpecificCustomToolParam>),
+    LiveSpecificApplyPatchParam(Box<LiveSpecificApplyPatchParam>),
+    LiveAllowedToolsChoiceParam(Box<LiveAllowedToolsChoiceParam>),
+}
+
+impl LiveResponsesDelegationSettingsUpdateInputParamToolChoice {
+    pub fn as_string_wire_value(&self) -> Option<&str> {
+        match self {
+            Self::LiveToolChoiceEnum(value) => Some(value.as_str()),
+            _ => None,
+        }
     }
 }
 

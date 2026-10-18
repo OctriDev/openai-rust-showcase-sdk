@@ -3,6 +3,72 @@
 
 // videos domain models (part 2)
 
+impl<'de> serde::Deserialize<'de> for VideoContentVariant {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "video" => Self::Video,
+            "thumbnail" => Self::Thumbnail,
+            "spritesheet" => Self::Spritesheet,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for VideoContentVariant {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+/// The type of object returned, must be `list`.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum VideoListResourceObjectEnum {
+    #[default]
+    List,
+    Unknown(String),
+}
+
+impl VideoListResourceObjectEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::List => "list",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for VideoListResourceObjectEnum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for VideoListResourceObjectEnum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "list" => Self::List,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for VideoListResourceObjectEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// Typed representation of the `VideoListResource` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct VideoListResource {

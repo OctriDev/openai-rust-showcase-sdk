@@ -3,6 +3,39 @@
 
 // responses_response domain models (part 2)
 
+/// Emitted when the model response is complete.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct ResponseCompletedEvent {
+    /// The type of the event. Always `response.completed`.
+    #[serde(rename = "type")]
+    pub type_: ResponseCompletedEventTypeEnum,
+    /// Properties of the completed response.
+    pub response: Response,
+    /// The sequence number for this event.
+    pub sequence_number: i64,
+}
+
+impl ResponseCompletedEvent {
+    pub fn new(
+        type_: ResponseCompletedEventTypeEnum,
+        response: Response,
+        sequence_number: i64,
+    ) -> Self {
+        Self {
+            type_,
+            response,
+            sequence_number,
+        }
+    }
+}
+
+/// The conversation that this response belonged to. Input items and output items from this response were automatically added to this conversation.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct ResponseConversation {
+    /// The unique ID of the conversation that this response was associated with.
+    pub id: String,
+}
+
 impl ResponseConversation {
     pub fn new(id: String) -> Self {
         Self { id }
@@ -492,37 +525,4 @@ pub struct ResponseQueuedEvent {
     pub response: Response,
     /// The sequence number for this event.
     pub sequence_number: i64,
-}
-
-impl ResponseQueuedEvent {
-    pub fn new(
-        type_: ResponseQueuedEventTypeEnum,
-        response: Response,
-        sequence_number: i64,
-    ) -> Self {
-        Self {
-            type_,
-            response,
-            sequence_number,
-        }
-    }
-}
-
-/// A detailed breakdown of the input tokens.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct ResponseUsageInputTokensDetails {
-    /// The number of tokens that were retrieved from the cache.
-    /// [More on prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching).
-    pub cached_tokens: i64,
-    /// The number of input tokens that were written to the cache.
-    pub cache_write_tokens: i64,
-}
-
-impl ResponseUsageInputTokensDetails {
-    pub fn new(cached_tokens: i64, cache_write_tokens: i64) -> Self {
-        Self {
-            cached_tokens,
-            cache_write_tokens,
-        }
-    }
 }

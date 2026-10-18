@@ -3,130 +3,6 @@
 
 // realtime_realtime_session domain models (part 2)
 
-/// Realtime session object for the beta interface.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct RealtimeSession {
-    /// Unique identifier for the session that looks like `sess_1234567890abcdef`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub id: Option<String>,
-    /// The object type. Always `realtime.session`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub object: Option<RealtimeSessionObjectEnum>,
-    /// The set of modalities the model can respond with. To disable audio,
-    /// set this to ["text"].
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub modalities: Option<Vec<RealtimeSessionModalitiesItemEnum>>,
-    /// The Realtime model used for this session.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub model: Option<String>,
-    /// The default system instructions (i.e. system message) prepended to model
-    /// calls. This field allows the client to guide the model on desired
-    /// responses. The model can be instructed on response content and format,
-    /// (e.g. "be extremely succinct", "act friendly", "here are examples of good
-    /// responses") and on audio behavior (e.g. "talk quickly", "inject emotion
-    /// into your voice", "laugh frequently"). The instructions are not
-    /// guaranteed to be followed by the model, but they provide guidance to the
-    /// model on the desired behavior.
-    ///
-    ///
-    /// Note that the server sets default instructions which will be used if this
-    /// field is not set and are visible in the `session.created` event at the
-    /// start of the session.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub instructions: Option<String>,
-    /// The voice the model uses to respond. Voice cannot be changed during the
-    /// session once the model has responded with audio at least once. Current
-    /// voice options are `alloy`, `ash`, `ballad`, `coral`, `echo`, `sage`,
-    /// `shimmer`, and `verse`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub voice: Option<VoiceIdsShared>,
-    /// The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.
-    /// For `pcm16`, input audio must be 16-bit PCM at a 24kHz sample rate,
-    /// single channel (mono), and little-endian byte order.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub input_audio_format: Option<RealtimeSessionInputAudioFormatEnum>,
-    /// The format of output audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.
-    /// For `pcm16`, output audio is sampled at a rate of 24kHz.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub output_audio_format: Option<RealtimeSessionOutputAudioFormatEnum>,
-    /// Configuration for input audio transcription, defaults to off and can be set to `null` to turn off once on. Input audio transcription is not native to the model, since the model consumes audio directly. Transcription runs asynchronously through [the /audio/transcriptions endpoint](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create) and should be treated as guidance of input audio content rather than precisely what the model heard. The client can optionally set the language and prompt for transcription, these offer additional guidance to the transcription service.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub input_audio_transcription: Option<Option<AudioTranscriptionResponse>>,
-    /// Configuration for turn detection, ether Server VAD or Semantic VAD. This can be set to `null` to turn off, in which case the client must manually trigger model response.
-    ///
-    /// Server VAD means that the model will detect the start and end of speech based on audio volume and respond at the end of user speech.
-    ///
-    /// Semantic VAD is more advanced and uses a turn detection model (in conjunction with VAD) to semantically estimate whether the user has finished speaking, then dynamically sets a timeout based on this probability. For example, if user audio trails off with "uhhm", the model will score a low probability of turn end and wait longer for the user to continue speaking. This can be useful for more natural conversations, but may have a higher latency.
-    ///
-    /// For `gpt-realtime-whisper` transcription sessions, turn detection must be
-    /// set to `null`; VAD is not supported.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub turn_detection: Option<Option<RealtimeTurnDetection>>,
-    /// Configuration for input audio noise reduction. This can be set to `null` to turn off.
-    /// Noise reduction filters audio added to the input audio buffer before it is sent to VAD and the model.
-    /// Filtering the audio can improve VAD and turn detection accuracy (reducing false positives) and model performance by improving perception of the input audio.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub input_audio_noise_reduction: Option<serde_json::Value>,
-    /// The speed of the model's spoken response. 1.0 is the default speed. 0.25 is
-    /// the minimum speed. 1.5 is the maximum speed. This value can only be changed
-    /// in between model turns, not while a response is in progress.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub speed: Option<f64>,
-    /// Configuration options for tracing. Set to null to disable tracing. Once
-    /// tracing is enabled for a session, the configuration cannot be modified.
-    ///
-    /// `auto` will create a trace for the session with default values for the
-    /// workflow name, group id, and metadata.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub tracing: Option<Option<RealtimeSessionTracing>>,
-    /// Tools (functions) available to the model.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tools: Option<Vec<RealtimeFunctionTool>>,
-    /// How the model chooses tools. Options are `auto`, `none`, `required`, or
-    /// specify a function.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tool_choice: Option<String>,
-    /// Sampling temperature for the model, limited to [0.6, 1.2]. For audio models a temperature of 0.8 is highly recommended for best performance.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub temperature: Option<f64>,
-    /// Maximum number of output tokens for a single assistant response,
-    /// inclusive of tool calls. Provide an integer between 1 and 4096 to
-    /// limit output tokens, or `inf` for the maximum available tokens for a
-    /// given model. Defaults to `inf`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub max_response_output_tokens: Option<RealtimeSessionMaxResponseOutputTokens>,
-    /// Expiration timestamp for the session, in seconds since epoch.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub expires_at: Option<i64>,
-    /// Optional API value serialized in the `prompt` wire field.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub prompt: Option<Option<Prompt>>,
-    /// Additional fields to include in server outputs.
-    /// \- `item.input_audio_transcription.logprobs`: Include logprobs for input audio transcription.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub include: Option<Option<Vec<RealtimeSessionIncludeItemEnum>>>,
-}
-
 impl RealtimeSession {
     pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
         if let Some(value) = self.speed.as_ref() {
@@ -255,86 +131,6 @@ impl RealtimeSessionCreateRequestInputAudioTranscription {
     pub fn new() -> Self {
         Self { model: None }
     }
-}
-
-/// Default tracing mode for the session.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum RealtimeSessionCreateRequestTracingVariant0Enum {
-    #[default]
-    Auto,
-    Unknown(String),
-}
-
-impl RealtimeSessionCreateRequestTracingVariant0Enum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Auto => "auto",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for RealtimeSessionCreateRequestTracingVariant0Enum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateRequestTracingVariant0Enum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "auto" => Self::Auto,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for RealtimeSessionCreateRequestTracingVariant0Enum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-/// Granular configuration for tracing.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct RealtimeSessionCreateRequestTracingVariant1 {
-    /// The name of the workflow to attach to this trace. This is used to
-    /// name the trace in the traces dashboard.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub workflow_name: Option<String>,
-    /// The group id to attach to this trace to enable filtering and
-    /// grouping in the traces dashboard.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub group_id: Option<String>,
-    /// The arbitrary metadata to attach to this trace to enable
-    /// filtering in the traces dashboard.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<serde_json::Value>,
-}
-
-impl RealtimeSessionCreateRequestTracingVariant1 {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        Self {
-            workflow_name: None,
-            group_id: None,
-            metadata: None,
-        }
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum RealtimeSessionCreateRequestTracing {
-    Auto(RealtimeSessionCreateRequestTracingVariant0Enum),
-    TracingConfiguration(Box<RealtimeSessionCreateRequestTracingVariant1>),
 }
 
 /// Configuration for turn detection. Can be set to `null` to turn off. Server
@@ -493,5 +289,209 @@ impl<'de> serde::Deserialize<'de>
 impl std::fmt::Display for RealtimeSessionCreateRequestMaxResponseOutputTokensVariant1Enum {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(untagged)]
+pub enum RealtimeSessionCreateRequestMaxResponseOutputTokens {
+    Integer(i64),
+    Inf(RealtimeSessionCreateRequestMaxResponseOutputTokensVariant1Enum),
+}
+
+impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateRequestMaxResponseOutputTokens {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<i64>(value.clone()) {
+            let candidate = Self::Integer(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            RealtimeSessionCreateRequestMaxResponseOutputTokensVariant1Enum,
+        >(value.clone())
+        {
+            let candidate = Self::Inf(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| serde::de::Error::custom("no RealtimeSessionCreateRequestMaxResponseOutputTokens branch accepts this payload"))
+    }
+}
+
+/// A new Realtime session configuration, with an ephemeral key. Default TTL
+/// for keys is one minute.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct RealtimeSessionCreateRequest {
+    /// Ephemeral key returned by the API.
+    pub client_secret: RealtimeSessionCreateRequestClientSecret,
+    /// The set of modalities the model can respond with. To disable audio,
+    /// set this to ["text"].
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub modalities: Option<Vec<RealtimeSessionCreateRequestModalitiesItemEnum>>,
+    /// The default system instructions (i.e. system message) prepended to model calls. This field allows the client to guide the model on desired responses. The model can be instructed on response content and format, (e.g. "be extremely succinct", "act friendly", "here are examples of good responses") and on audio behavior (e.g. "talk quickly", "inject emotion into your voice", "laugh frequently"). The instructions are not guaranteed to be followed by the model, but they provide guidance to the model on the desired behavior.
+    /// Note that the server sets default instructions which will be used if this field is not set and are visible in the `session.created` event at the start of the session.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub instructions: Option<String>,
+    /// The voice the model uses to respond. Supported built-in voices are
+    /// `alloy`, `ash`, `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`,
+    /// `marin`, and `cedar`. You may also provide a custom voice object with an
+    /// `id`, for example `{ "id": "voice_1234" }`. Voice cannot be changed during
+    /// the session once the model has responded with audio at least once.
+    /// Custom voices must be created from audio samples.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub voice: Option<VoiceIdsOrCustomVoice>,
+    /// The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub input_audio_format: Option<String>,
+    /// The format of output audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub output_audio_format: Option<String>,
+    /// Configuration for input audio transcription, defaults to off and can be
+    /// set to `null` to turn off once on. Input audio transcription is not native
+    /// to the model, since the model consumes audio directly. Transcription runs
+    /// asynchronously and should be treated as rough guidance
+    /// rather than the representation understood by the model.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub input_audio_transcription: Option<RealtimeSessionCreateRequestInputAudioTranscription>,
+    /// The speed of the model's spoken response. 1.0 is the default speed. 0.25 is
+    /// the minimum speed. 1.5 is the maximum speed. This value can only be changed
+    /// in between model turns, not while a response is in progress.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub speed: Option<f64>,
+    /// Configuration options for tracing. Set to null to disable tracing. Once
+    /// tracing is enabled for a session, the configuration cannot be modified.
+    ///
+    /// `auto` will create a trace for the session with default values for the
+    /// workflow name, group id, and metadata.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tracing: Option<RealtimeSessionCreateRequestTracing>,
+    /// Configuration for turn detection. Can be set to `null` to turn off. Server
+    /// VAD means that the model will detect the start and end of speech based on
+    /// audio volume and respond at the end of user speech.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub turn_detection: Option<RealtimeSessionCreateRequestTurnDetection>,
+    /// Tools (functions) available to the model.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tools: Option<Vec<RealtimeSessionCreateRequestToolsItem>>,
+    /// How the model chooses tools. Options are `auto`, `none`, `required`, or
+    /// specify a function.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tool_choice: Option<String>,
+    /// Sampling temperature for the model, limited to [0.6, 1.2]. Defaults to 0.8.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub temperature: Option<f64>,
+    /// Maximum number of output tokens for a single assistant response,
+    /// inclusive of tool calls. Provide an integer between 1 and 4096 to
+    /// limit output tokens, or `inf` for the maximum available tokens for a
+    /// given model. Defaults to `inf`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub max_response_output_tokens: Option<RealtimeSessionCreateRequestMaxResponseOutputTokens>,
+    /// When the number of tokens in a conversation exceeds the model's input token limit, the conversation be truncated, meaning messages (starting from the oldest) will not be included in the model's context. A 32k context model with 4,096 max output tokens can only include 28,224 tokens in the context before truncation occurs.
+    ///
+    /// Clients can configure truncation behavior to truncate with a lower max token limit, which is an effective way to control token usage and cost.
+    ///
+    /// Truncation will reduce the number of cached tokens on the next turn (busting the cache), since messages are dropped from the beginning of the context. However, clients can also configure truncation to retain messages up to a fraction of the maximum context size, which will reduce the need for future truncations and thus improve the cache rate.
+    ///
+    /// Truncation can be disabled entirely, which means the server will never truncate but would instead return an error if the conversation exceeds the model's input token limit.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub truncation: Option<RealtimeTruncation>,
+    /// Reference to a prompt template and its variables.
+    /// [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub prompt: Option<Option<Prompt>>,
+}
+
+impl RealtimeSessionCreateRequest {
+    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
+        if let Some(value) = self.speed.as_ref() {
+            crate::validation::validate_range(
+                "speed",
+                *value,
+                crate::validation::RangeOpts {
+                    min: Some(0.25_f64),
+                    max: Some(1.5_f64),
+                    ..Default::default()
+                },
+            )?;
+        }
+        Ok(())
+    }
+
+    pub fn new(
+        client_secret: RealtimeSessionCreateRequestClientSecret,
+    ) -> Result<Self, crate::errors::SdkError> {
+        let value = Self {
+            client_secret,
+            modalities: None,
+            instructions: None,
+            voice: None,
+            input_audio_format: None,
+            output_audio_format: None,
+            input_audio_transcription: None,
+            speed: None,
+            tracing: None,
+            turn_detection: None,
+            tools: None,
+            tool_choice: None,
+            temperature: None,
+            max_response_output_tokens: None,
+            truncation: None,
+            prompt: None,
+        };
+        value.validate_constraints()?;
+        Ok(value)
+    }
+}
+
+/// The type of session to create. Always `realtime` for the Realtime API.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum RealtimeSessionCreateRequestGATypeEnum {
+    #[serde(rename = "realtime")]
+    #[default]
+    Realtime,
+}
+
+impl RealtimeSessionCreateRequestGATypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Realtime => "realtime",
+        }
+    }
+}
+
+impl std::fmt::Display for RealtimeSessionCreateRequestGATypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            RealtimeSessionCreateRequestGATypeEnum::Realtime => f.write_str("realtime"),
+        }
+    }
+}
+
+/// Required enumerated value serialized in the `output_modalities[]` wire field.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum RealtimeSessionCreateRequestGAOutputModalitiesItemEnum {
+    #[default]
+    Text,
+    Audio,
+    Unknown(String),
+}
+
+impl RealtimeSessionCreateRequestGAOutputModalitiesItemEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Text => "text",
+            Self::Audio => "audio",
+            Self::Unknown(value) => value.as_str(),
+        }
     }
 }

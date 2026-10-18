@@ -3,6 +3,90 @@
 
 // shared domain models (part 5)
 
+impl ProgrammaticToolCallingParam {
+    pub fn new(type_: ProgrammaticToolCallingParamTypeEnum) -> Self {
+        Self { type_ }
+    }
+}
+
+/// Typed representation of the `ProjectEventTypeEnum` API schema.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum ProjectEventTypeEnum {
+    #[default]
+    BatchCompleted,
+    BatchFailed,
+    BatchExpired,
+    BatchCancelled,
+    ResponseCompleted,
+    ResponseFailed,
+    ResponseCancelled,
+    ResponseIncomplete,
+    EvalRunSucceeded,
+    EvalRunFailed,
+    EvalRunCanceled,
+    FineTuningJobSucceeded,
+    FineTuningJobFailed,
+    FineTuningJobCancelled,
+    RealtimeCallIncoming,
+    VideoCompleted,
+    VideoFailed,
+    AgentEnvironmentReady,
+    AgentEnvironmentFailed,
+    AgentEnvironmentSuspended,
+    AgentEnvironmentExpired,
+    AgentSessionCreated,
+    AgentSessionActionRequired,
+    AgentSessionInProgress,
+    AgentSessionIdle,
+    AgentSessionFailed,
+    SafetyAlertCreated,
+    Unknown(String),
+}
+
+impl ProjectEventTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::BatchCompleted => "batch.completed",
+            Self::BatchFailed => "batch.failed",
+            Self::BatchExpired => "batch.expired",
+            Self::BatchCancelled => "batch.cancelled",
+            Self::ResponseCompleted => "response.completed",
+            Self::ResponseFailed => "response.failed",
+            Self::ResponseCancelled => "response.cancelled",
+            Self::ResponseIncomplete => "response.incomplete",
+            Self::EvalRunSucceeded => "eval.run.succeeded",
+            Self::EvalRunFailed => "eval.run.failed",
+            Self::EvalRunCanceled => "eval.run.canceled",
+            Self::FineTuningJobSucceeded => "fine_tuning.job.succeeded",
+            Self::FineTuningJobFailed => "fine_tuning.job.failed",
+            Self::FineTuningJobCancelled => "fine_tuning.job.cancelled",
+            Self::RealtimeCallIncoming => "realtime.call.incoming",
+            Self::VideoCompleted => "video.completed",
+            Self::VideoFailed => "video.failed",
+            Self::AgentEnvironmentReady => "agent.environment.ready",
+            Self::AgentEnvironmentFailed => "agent.environment.failed",
+            Self::AgentEnvironmentSuspended => "agent.environment.suspended",
+            Self::AgentEnvironmentExpired => "agent.environment.expired",
+            Self::AgentSessionCreated => "agent.session.created",
+            Self::AgentSessionActionRequired => "agent.session.action_required",
+            Self::AgentSessionInProgress => "agent.session.in_progress",
+            Self::AgentSessionIdle => "agent.session.idle",
+            Self::AgentSessionFailed => "agent.session.failed",
+            Self::SafetyAlertCreated => "safety.alert.created",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for ProjectEventTypeEnum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
 impl<'de> serde::Deserialize<'de> for ProjectEventTypeEnum {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -390,90 +474,5 @@ pub struct SummaryTextContent {
 impl SummaryTextContent {
     pub fn new(type_: SummaryTextContentTypeEnum, text: String) -> Self {
         Self { type_, text }
-    }
-}
-
-/// The top log probability of a token.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct TopLogProb {
-    /// Required `string` value serialized in the `token` wire field.
-    pub token: String,
-    /// Required `number` value serialized in the `logprob` wire field.
-    pub logprob: f64,
-    /// Required array value serialized in the `bytes` wire field.
-    pub bytes: Vec<i64>,
-}
-
-impl TopLogProb {
-    pub fn new(token: String, logprob: f64, bytes: Vec<i64>) -> Self {
-        Self {
-            token,
-            logprob,
-            bytes,
-        }
-    }
-}
-
-/// Specifies the event type. For a type action, this property is always set to `type`.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum TypeParamTypeEnum {
-    #[serde(rename = "type")]
-    #[default]
-    Type,
-}
-
-impl TypeParamTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Type => "type",
-        }
-    }
-}
-
-impl std::fmt::Display for TypeParamTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            TypeParamTypeEnum::Type => f.write_str("type"),
-        }
-    }
-}
-
-/// An action to type in text.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct TypeParam {
-    /// Specifies the event type. For a type action, this property is always set to `type`.
-    #[serde(rename = "type")]
-    pub type_: TypeParamTypeEnum,
-    /// The text to type.
-    pub text: String,
-}
-
-impl TypeParam {
-    pub fn new(type_: TypeParamTypeEnum, text: String) -> Self {
-        Self { type_, text }
-    }
-}
-
-/// The type of the URL citation. Always `url_citation`.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum UrlCitationBodyTypeEnum {
-    #[serde(rename = "url_citation")]
-    #[default]
-    UrlCitation,
-}
-
-impl UrlCitationBodyTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::UrlCitation => "url_citation",
-        }
-    }
-}
-
-impl std::fmt::Display for UrlCitationBodyTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            UrlCitationBodyTypeEnum::UrlCitation => f.write_str("url_citation"),
-        }
     }
 }

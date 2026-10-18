@@ -3,6 +3,22 @@
 
 // responses_beta_response domain models (part 2)
 
+/// The type of the event. Always `response.completed`.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum BetaResponseCompletedEventTypeEnum {
+    #[serde(rename = "response.completed")]
+    #[default]
+    ResponseCompleted,
+}
+
+impl BetaResponseCompletedEventTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::ResponseCompleted => "response.completed",
+        }
+    }
+}
+
 impl std::fmt::Display for BetaResponseCompletedEventTypeEnum {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -514,20 +530,4 @@ pub enum BetaResponseQueuedEventTypeEnum {
     #[serde(rename = "response.queued")]
     #[default]
     ResponseQueued,
-}
-
-impl BetaResponseQueuedEventTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::ResponseQueued => "response.queued",
-        }
-    }
-}
-
-impl std::fmt::Display for BetaResponseQueuedEventTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            BetaResponseQueuedEventTypeEnum::ResponseQueued => f.write_str("response.queued"),
-        }
-    }
 }

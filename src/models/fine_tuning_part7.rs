@@ -3,186 +3,459 @@
 
 // fine_tuning domain models (part 7)
 
-/// Required object value serialized in the `token_usage` wire field.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct RunGraderResponseMetadataTokenUsage {
-    /// Required `integer` value serialized in the `prompt_tokens` wire field.
-    pub prompt_tokens: i64,
-    /// Required `integer` value serialized in the `total_tokens` wire field.
-    pub total_tokens: i64,
-    /// Optional `integer` value serialized in the `completion_tokens` wire field.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub completion_tokens: Option<Option<i64>>,
-    /// Optional `integer` value serialized in the `cached_tokens` wire field.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub cached_tokens: Option<Option<i64>>,
-}
-
-impl RunGraderResponseMetadataTokenUsage {
-    pub fn new(prompt_tokens: i64, total_tokens: i64) -> Self {
-        Self {
-            prompt_tokens,
-            total_tokens,
-            completion_tokens: None,
-            cached_tokens: None,
+impl GraderMultiTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Multi => "multi",
         }
     }
 }
 
-/// Required object value serialized in the `metadata` wire field.
+impl std::fmt::Display for GraderMultiTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            GraderMultiTypeEnum::Multi => f.write_str("multi"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(untagged)]
+pub enum GraderMultiGradersValue {
+    GraderStringCheck(Box<GraderStringCheck>),
+    GraderTextSimilarity(Box<GraderTextSimilarity>),
+    GraderPython(Box<GraderPython>),
+    GraderScoreModel(Box<GraderScoreModel>),
+    GraderLabelModel(Box<GraderLabelModel>),
+}
+
+impl<'de> serde::Deserialize<'de> for GraderMultiGradersValue {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<Box<GraderStringCheck>>(value.clone()) {
+            let candidate = Self::GraderStringCheck(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<GraderTextSimilarity>>(value.clone()) {
+            let candidate = Self::GraderTextSimilarity(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<GraderPython>>(value.clone()) {
+            let candidate = Self::GraderPython(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<GraderScoreModel>>(value.clone()) {
+            let candidate = Self::GraderScoreModel(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<GraderLabelModel>>(value.clone()) {
+            let candidate = Self::GraderLabelModel(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom("no GraderMultiGradersValue branch accepts this payload")
+        })
+    }
+}
+
+/// A MultiGrader object combines the output of multiple graders to produce a single score.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct RunGraderResponseMetadata {
-    /// Required `string` value serialized in the `name` wire field.
-    pub name: String,
-    /// Required `string` value serialized in the `type` wire field.
+pub struct GraderMulti {
+    /// The object type, which is always `multi`.
     #[serde(rename = "type")]
-    pub type_: String,
-    /// Required object value serialized in the `errors` wire field.
-    pub errors: RunGraderResponseMetadataErrors,
-    /// Required `number` value serialized in the `execution_time` wire field.
-    pub execution_time: f64,
-    /// Required object value serialized in the `scores` wire field.
-    pub scores: std::collections::HashMap<String, serde_json::Value>,
-    /// Required object value serialized in the `token_usage` wire field.
-    #[serde(deserialize_with = "Option::deserialize")]
-    pub token_usage: Option<RunGraderResponseMetadataTokenUsage>,
-    /// Required `string` value serialized in the `sampled_model_name` wire field.
-    #[serde(deserialize_with = "Option::deserialize")]
-    pub sampled_model_name: Option<String>,
+    pub type_: GraderMultiTypeEnum,
+    /// The name of the grader.
+    pub name: String,
+    /// Required object value serialized in the `graders` wire field.
+    pub graders: std::collections::HashMap<String, GraderMultiGradersValue>,
+    /// A formula to calculate the output based on grader results.
+    pub calculate_output: String,
 }
 
-impl RunGraderResponseMetadata {
+impl GraderMulti {
     pub fn new(
+        type_: GraderMultiTypeEnum,
         name: String,
-        type_: String,
-        errors: RunGraderResponseMetadataErrors,
-        execution_time: f64,
-        scores: std::collections::HashMap<String, serde_json::Value>,
-        token_usage: Option<RunGraderResponseMetadataTokenUsage>,
-        sampled_model_name: Option<String>,
+        graders: std::collections::HashMap<String, GraderMultiGradersValue>,
+        calculate_output: String,
     ) -> Self {
         Self {
-            name,
             type_,
-            errors,
-            execution_time,
-            scores,
-            token_usage,
-            sampled_model_name,
+            name,
+            graders,
+            calculate_output,
         }
     }
 }
 
-/// Typed representation of the `RunGraderResponse` API schema.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct RunGraderResponse {
-    /// Required `number` value serialized in the `reward` wire field.
-    pub reward: f64,
-    /// Required object value serialized in the `metadata` wire field.
-    pub metadata: RunGraderResponseMetadata,
-    /// Required object value serialized in the `sub_rewards` wire field.
-    pub sub_rewards: std::collections::HashMap<String, serde_json::Value>,
-    /// Required object value serialized in the `model_grader_token_usage_per_model` wire field.
-    pub model_grader_token_usage_per_model: std::collections::HashMap<String, serde_json::Value>,
+/// Required enumerated value serialized in the `object` wire field.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum ListFineTuningCheckpointPermissionResponseObjectEnum {
+    #[default]
+    List,
+    Unknown(String),
 }
 
-impl RunGraderResponse {
+impl ListFineTuningCheckpointPermissionResponseObjectEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::List => "list",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for ListFineTuningCheckpointPermissionResponseObjectEnum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for ListFineTuningCheckpointPermissionResponseObjectEnum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "list" => Self::List,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for ListFineTuningCheckpointPermissionResponseObjectEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+/// Typed representation of the `ListFineTuningCheckpointPermissionResponse` API schema.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct ListFineTuningCheckpointPermissionResponse {
+    /// Required array value serialized in the `data` wire field.
+    pub data: Vec<FineTuningCheckpointPermission>,
+    /// Required enumerated value serialized in the `object` wire field.
+    pub object: ListFineTuningCheckpointPermissionResponseObjectEnum,
+    /// Optional `string` value serialized in the `first_id` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub first_id: Option<Option<String>>,
+    /// Optional `string` value serialized in the `last_id` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub last_id: Option<Option<String>>,
+    /// Required `boolean` value serialized in the `has_more` wire field.
+    pub has_more: bool,
+}
+
+impl ListFineTuningCheckpointPermissionResponse {
     pub fn new(
-        reward: f64,
-        metadata: RunGraderResponseMetadata,
-        sub_rewards: std::collections::HashMap<String, serde_json::Value>,
-        model_grader_token_usage_per_model: std::collections::HashMap<String, serde_json::Value>,
+        data: Vec<FineTuningCheckpointPermission>,
+        object: ListFineTuningCheckpointPermissionResponseObjectEnum,
+        has_more: bool,
     ) -> Self {
         Self {
-            reward,
-            metadata,
-            sub_rewards,
-            model_grader_token_usage_per_model,
+            data,
+            object,
+            first_id: None,
+            last_id: None,
+            has_more,
         }
     }
 }
 
-/// Typed representation of the `ValidateGraderRequest` API schema.
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct ValidateGraderRequest {
-    /// The grader used for the fine-tuning job.
-    pub grader: ValidateGraderRequestGrader,
+/// Required enumerated value serialized in the `object` wire field.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum ListFineTuningJobCheckpointsResponseObjectEnum {
+    #[default]
+    List,
+    Unknown(String),
 }
 
-impl ValidateGraderRequest {
-    pub fn new(grader: ValidateGraderRequestGrader) -> Self {
-        Self { grader }
+impl ListFineTuningJobCheckpointsResponseObjectEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::List => "list",
+            Self::Unknown(value) => value.as_str(),
+        }
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum ValidateGraderRequestGrader {
-    GraderStringCheck(Box<GraderStringCheck>),
-    GraderTextSimilarity(Box<GraderTextSimilarity>),
-    GraderPython(Box<GraderPython>),
-    GraderScoreModel(Box<GraderScoreModel>),
-    GraderMulti(Box<GraderMulti>),
-    /// A member whose `type` names no branch this SDK knows, kept as received.
-    #[serde(deserialize_with = "ValidateGraderRequestGrader::unknown_member")]
-    Unknown(serde_json::Value),
-}
-
-impl ValidateGraderRequestGrader {
-    fn unknown_member<'de, D: serde::Deserializer<'de>>(
-        deserializer: D,
-    ) -> Result<serde_json::Value, D::Error> {
-        crate::client::unknown_union_member(
-            deserializer,
-            "type",
-            &[
-                "string_check",
-                "text_similarity",
-                "python",
-                "score_model",
-                "multi",
-            ],
-        )
+impl serde::Serialize for ListFineTuningJobCheckpointsResponseObjectEnum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
     }
 }
 
-/// Typed representation of the `ValidateGraderResponse` API schema.
+impl<'de> serde::Deserialize<'de> for ListFineTuningJobCheckpointsResponseObjectEnum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "list" => Self::List,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for ListFineTuningJobCheckpointsResponseObjectEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+/// Typed representation of the `ListFineTuningJobCheckpointsResponse` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct ValidateGraderResponse {
-    /// The grader used for the fine-tuning job.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub grader: Option<ValidateGraderResponseGrader>,
+pub struct ListFineTuningJobCheckpointsResponse {
+    /// Required array value serialized in the `data` wire field.
+    pub data: Vec<FineTuningJobCheckpoint>,
+    /// Required enumerated value serialized in the `object` wire field.
+    pub object: ListFineTuningJobCheckpointsResponseObjectEnum,
+    /// Optional `string` value serialized in the `first_id` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub first_id: Option<Option<String>>,
+    /// Optional `string` value serialized in the `last_id` wire field.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub last_id: Option<Option<String>>,
+    /// Required `boolean` value serialized in the `has_more` wire field.
+    pub has_more: bool,
 }
 
-impl ValidateGraderResponse {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        Self { grader: None }
+impl ListFineTuningJobCheckpointsResponse {
+    pub fn new(
+        data: Vec<FineTuningJobCheckpoint>,
+        object: ListFineTuningJobCheckpointsResponseObjectEnum,
+        has_more: bool,
+    ) -> Self {
+        Self {
+            data,
+            object,
+            first_id: None,
+            last_id: None,
+            has_more,
+        }
+    }
+}
+
+/// Required enumerated value serialized in the `object` wire field.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum ListFineTuningJobEventsResponseObjectEnum {
+    #[default]
+    List,
+    Unknown(String),
+}
+
+impl ListFineTuningJobEventsResponseObjectEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::List => "list",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for ListFineTuningJobEventsResponseObjectEnum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for ListFineTuningJobEventsResponseObjectEnum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "list" => Self::List,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for ListFineTuningJobEventsResponseObjectEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+/// Typed representation of the `ListFineTuningJobEventsResponse` API schema.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct ListFineTuningJobEventsResponse {
+    /// Required array value serialized in the `data` wire field.
+    pub data: Vec<FineTuningJobEvent>,
+    /// Required enumerated value serialized in the `object` wire field.
+    pub object: ListFineTuningJobEventsResponseObjectEnum,
+    /// Required `boolean` value serialized in the `has_more` wire field.
+    pub has_more: bool,
+}
+
+impl ListFineTuningJobEventsResponse {
+    pub fn new(
+        data: Vec<FineTuningJobEvent>,
+        object: ListFineTuningJobEventsResponseObjectEnum,
+        has_more: bool,
+    ) -> Self {
+        Self {
+            data,
+            object,
+            has_more,
+        }
+    }
+}
+
+/// Required enumerated value serialized in the `object` wire field.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum ListPaginatedFineTuningJobsResponseObjectEnum {
+    #[default]
+    List,
+    Unknown(String),
+}
+
+impl ListPaginatedFineTuningJobsResponseObjectEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::List => "list",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for ListPaginatedFineTuningJobsResponseObjectEnum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for ListPaginatedFineTuningJobsResponseObjectEnum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "list" => Self::List,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for ListPaginatedFineTuningJobsResponseObjectEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+/// Typed representation of the `ListPaginatedFineTuningJobsResponse` API schema.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct ListPaginatedFineTuningJobsResponse {
+    /// Required array value serialized in the `data` wire field.
+    pub data: Vec<FineTuningJob>,
+    /// Required `boolean` value serialized in the `has_more` wire field.
+    pub has_more: bool,
+    /// Required enumerated value serialized in the `object` wire field.
+    pub object: ListPaginatedFineTuningJobsResponseObjectEnum,
+}
+
+impl ListPaginatedFineTuningJobsResponse {
+    pub fn new(
+        data: Vec<FineTuningJob>,
+        has_more: bool,
+        object: ListPaginatedFineTuningJobsResponseObjectEnum,
+    ) -> Self {
+        Self {
+            data,
+            has_more,
+            object,
+        }
+    }
+}
+
+/// Typed representation of the `RunGraderRequest` API schema.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct RunGraderRequest {
+    /// The grader used for the fine-tuning job.
+    pub grader: RunGraderRequestGrader,
+    /// The dataset item provided to the grader. This will be used to populate
+    /// the `item` namespace. See [the guide](https://developers.openai.com/api/docs/guides/graders) for more details.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub item: Option<serde_json::Value>,
+    /// The model sample to be evaluated. This value will be used to populate
+    /// the `sample` namespace. See [the guide](https://developers.openai.com/api/docs/guides/graders) for more details.
+    /// The `output_json` variable will be populated if the model sample is a
+    /// valid JSON string.
+    pub model_sample: String,
+}
+
+impl RunGraderRequest {
+    pub fn new(grader: RunGraderRequestGrader, model_sample: String) -> Self {
+        Self {
+            grader,
+            item: None,
+            model_sample,
+        }
     }
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 #[serde(untagged)]
-pub enum ValidateGraderResponseGrader {
+pub enum RunGraderRequestGrader {
     GraderStringCheck(Box<GraderStringCheck>),
     GraderTextSimilarity(Box<GraderTextSimilarity>),
     GraderPython(Box<GraderPython>),
     GraderScoreModel(Box<GraderScoreModel>),
     GraderMulti(Box<GraderMulti>),
     /// A member whose `type` names no branch this SDK knows, kept as received.
-    #[serde(deserialize_with = "ValidateGraderResponseGrader::unknown_member")]
+    #[serde(deserialize_with = "RunGraderRequestGrader::unknown_member")]
     Unknown(serde_json::Value),
 }
 
-impl ValidateGraderResponseGrader {
+impl RunGraderRequestGrader {
     fn unknown_member<'de, D: serde::Deserializer<'de>>(
         deserializer: D,
     ) -> Result<serde_json::Value, D::Error> {
@@ -198,4 +471,40 @@ impl ValidateGraderResponseGrader {
             ],
         )
     }
+}
+
+/// Required object value serialized in the `errors` wire field.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct RunGraderResponseMetadataErrors {
+    /// Required `boolean` value serialized in the `formula_parse_error` wire field.
+    pub formula_parse_error: bool,
+    /// Required `boolean` value serialized in the `sample_parse_error` wire field.
+    pub sample_parse_error: bool,
+    /// Required `boolean` value serialized in the `truncated_observation_error` wire field.
+    pub truncated_observation_error: bool,
+    /// Required `boolean` value serialized in the `unresponsive_reward_error` wire field.
+    pub unresponsive_reward_error: bool,
+    /// Required `boolean` value serialized in the `invalid_variable_error` wire field.
+    pub invalid_variable_error: bool,
+    /// Required `boolean` value serialized in the `other_error` wire field.
+    pub other_error: bool,
+    /// Required `boolean` value serialized in the `python_grader_server_error` wire field.
+    pub python_grader_server_error: bool,
+    /// Required `string` value serialized in the `python_grader_server_error_type` wire field.
+    #[serde(deserialize_with = "Option::deserialize")]
+    pub python_grader_server_error_type: Option<String>,
+    /// Required `boolean` value serialized in the `python_grader_runtime_error` wire field.
+    pub python_grader_runtime_error: bool,
+    /// Required `string` value serialized in the `python_grader_runtime_error_details` wire field.
+    #[serde(deserialize_with = "Option::deserialize")]
+    pub python_grader_runtime_error_details: Option<String>,
+    /// Required `boolean` value serialized in the `model_grader_server_error` wire field.
+    pub model_grader_server_error: bool,
+    /// Required `boolean` value serialized in the `model_grader_refusal_error` wire field.
+    pub model_grader_refusal_error: bool,
+    /// Required `boolean` value serialized in the `model_grader_parse_error` wire field.
+    pub model_grader_parse_error: bool,
+    /// Required `string` value serialized in the `model_grader_server_error_details` wire field.
+    #[serde(deserialize_with = "Option::deserialize")]
+    pub model_grader_server_error_details: Option<String>,
 }

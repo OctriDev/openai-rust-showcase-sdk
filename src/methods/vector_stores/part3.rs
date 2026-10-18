@@ -4,14 +4,87 @@
 use super::*;
 use crate::client::ClientConfig;
 use crate::client::{sdk_request, RequestOptions, RequestOpts};
-use crate::errors::{SdkError, SdkNetworkError};
+use crate::errors::SdkError;
 use crate::types::{
-    ChunkingStrategyRequestParam, DeleteVectorStoreFileResponse, ListVectorStoreFilesResponse,
-    VectorStoreFileAttributes, VectorStoreFileContentResponse, VectorStoreFileObject,
-    VectorStoreSearchRequestFilters, VectorStoreSearchRequestQuery,
-    VectorStoreSearchRequestRankingOptions, VectorStoreSearchResultsPage,
+    ListVectorStoreFilesResponse, VectorStoreFileBatchObject, VectorStoreFileObject,
 };
-use crate::validation::{validate_range, RangeOpts};
+
+/// Retrieves a file batch associated with a vector store. Use the batch status and file counts to check the progress and outcome of file processing.
+///
+/// Retrieves a vector store file batch.
+///
+/// # Arguments
+///
+/// * `vector_store_id` - The ID of the vector store that the file batch belongs
+///   to.
+/// * `batch_id` - The ID of the file batch being retrieved.
+pub fn get_vector_store_file_batch(
+    config: &ClientConfig,
+    vector_store_id: String,
+    batch_id: String,
+    options: Option<&RequestOptions>,
+) -> Result<VectorStoreFileBatchObject, SdkError> {
+    Ok(sdk_request::<VectorStoreFileBatchObject>(
+        "GET",
+        &format!(
+            "/vector_stores/{}/file_batches/{}",
+            crate::client::encode_path_segment(&vector_store_id),
+            crate::client::encode_path_segment(&batch_id)
+        ),
+        config,
+        RequestOpts {
+            decoder: crate::client::ResponseDecoder::Json,
+            operation_id: "get_vector_store_file_batch",
+            options,
+            errors: &[
+                ("400", "ErrorResponse"),
+                ("404", "ErrorResponse"),
+                ("429", "ErrorResponse"),
+            ],
+            ..Default::default()
+        },
+    )?
+    .data)
+}
+
+/// Attempts to stop processing files in a vector store file batch as soon as possible. Check the returned batch status to see whether processing has been cancelled.
+///
+/// Cancel a vector store file batch. This attempts to cancel the processing of files in this batch as soon as possible.
+///
+/// # Arguments
+///
+/// * `vector_store_id` - The ID of the vector store that the file batch belongs
+///   to.
+/// * `batch_id` - The ID of the file batch to cancel.
+pub fn cancel_vector_store_file_batch(
+    config: &ClientConfig,
+    vector_store_id: String,
+    batch_id: String,
+    options: Option<&RequestOptions>,
+) -> Result<VectorStoreFileBatchObject, SdkError> {
+    Ok(sdk_request::<VectorStoreFileBatchObject>(
+        "POST",
+        &format!(
+            "/vector_stores/{}/file_batches/{}/cancel",
+            crate::client::encode_path_segment(&vector_store_id),
+            crate::client::encode_path_segment(&batch_id)
+        ),
+        config,
+        RequestOpts {
+            decoder: crate::client::ResponseDecoder::Json,
+            operation_id: "cancel_vector_store_file_batch",
+            options,
+            errors: &[
+                ("400", "ErrorResponse"),
+                ("404", "ErrorResponse"),
+                ("409", "ErrorResponse"),
+                ("429", "ErrorResponse"),
+            ],
+            ..Default::default()
+        },
+    )?
+    .data)
+}
 
 #[derive(Debug, Clone, Default)]
 pub struct ListFilesInVectorStoreBatchParams {
@@ -101,6 +174,133 @@ pub fn list_files_in_vector_store_batch(
     .data)
 }
 
+/// Lists the files in a vector store file batch. Use `filter` to limit results by processing status and the cursor parameters to navigate through the batch's files.
+///
+/// Returns a list of vector store files in a batch.
+///
+/// # Arguments
+///
+/// * `vector_store_id` - The ID of the vector store that the files belong to.
+/// * `batch_id` - The ID of the file batch that the files belong to.
+/// * `limit` - A limit on the number of objects to be returned. Limit can range
+///   between 1 and 100, and the default is 20.
+/// * `order` - Sort order by the `created_at` timestamp of the objects. `asc`
+///   for ascending order and `desc` for descending order.
+/// * `after` - A cursor for use in pagination. `after` is an object ID that
+///   defines your place in the list. For instance, if you make a list request and
+///   receive 100 objects, ending with obj_foo, your subsequent call can include
+///   after=obj_foo in order to fetch the next page of the list.
+/// * `before` - A cursor for use in pagination. `before` is an object ID that
+///   defines your place in the list. For instance, if you make a list request and
+///   receive 100 objects, starting with obj_foo, your subsequent call can include
+///   before=obj_foo in order to fetch the previous page of the list.
+/// * `filter` - Filter by file status. One of `in_progress`, `completed`,
+///   `failed`, `cancelled`.
+pub fn list_files_in_vector_store_batch_paginated(
+    config: &ClientConfig,
+    params: ListFilesInVectorStoreBatchParams,
+    options: Option<&RequestOptions>,
+    mut yield_fn: impl FnMut(&VectorStoreFileObject) -> bool,
+) -> Result<(), SdkError> {
+    let ListFilesInVectorStoreBatchParams {
+        vector_store_id,
+        batch_id,
+        limit,
+        order,
+        after,
+        before,
+        filter,
+    } = params;
+
+    let mut _cursor: Option<String> = after;
+    loop {
+        let _page = list_files_in_vector_store_batch(
+            config,
+            ListFilesInVectorStoreBatchParams {
+                vector_store_id: vector_store_id.clone(),
+                batch_id: batch_id.clone(),
+                limit,
+                order: order.clone(),
+                after: _cursor,
+                before: before.clone(),
+                filter: filter.clone(),
+            },
+            options,
+        )?;
+        let _items: Vec<_> = _page.data.iter().collect();
+        if _items.is_empty() {
+            return Ok(());
+        }
+        for _item in &_items {
+            if !yield_fn(_item) {
+                return Ok(());
+            }
+        }
+        let _next = _page.last_id.clone();
+        if !_page.has_more {
+            return Ok(());
+        }
+        _cursor = Some(_next);
+    }
+}
+
+pub struct ListFilesInVectorStoreBatchPage<'a> {
+    pub data: &'a ListVectorStoreFilesResponse,
+    pub items: Vec<&'a VectorStoreFileObject>,
+    pub has_more: bool,
+}
+
+pub fn list_files_in_vector_store_batch_pages(
+    config: &ClientConfig,
+    params: ListFilesInVectorStoreBatchParams,
+    options: Option<&RequestOptions>,
+    mut yield_page: impl FnMut(ListFilesInVectorStoreBatchPage<'_>) -> bool,
+) -> Result<(), SdkError> {
+    let ListFilesInVectorStoreBatchParams {
+        vector_store_id,
+        batch_id,
+        limit,
+        order,
+        after,
+        before,
+        filter,
+    } = params;
+
+    let mut _cursor: Option<String> = after;
+    loop {
+        let _page = list_files_in_vector_store_batch(
+            config,
+            ListFilesInVectorStoreBatchParams {
+                vector_store_id: vector_store_id.clone(),
+                batch_id: batch_id.clone(),
+                limit,
+                order: order.clone(),
+                after: _cursor,
+                before: before.clone(),
+                filter: filter.clone(),
+            },
+            options,
+        )?;
+        let _items: Vec<_> = _page.data.iter().collect();
+        if _items.is_empty() {
+            return Ok(());
+        }
+        let _next = _page.last_id.clone();
+        let _has_more = _page.has_more;
+        if !yield_page(ListFilesInVectorStoreBatchPage {
+            data: &_page,
+            items: _items,
+            has_more: _has_more,
+        }) {
+            return Ok(());
+        }
+        if !_has_more {
+            return Ok(());
+        }
+        _cursor = Some(_next);
+    }
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct ListVectorStoreFilesParams {
     pub vector_store_id: String,
@@ -185,390 +385,124 @@ pub fn list_vector_store_files(
     .data)
 }
 
-/// Creates an attachment between a file and a vector store. Supply the file's `file_id` and optionally configure `chunking_strategy` or attach `attributes`; use file batches for multi-file ingestion. The response includes the attached file's processing status.
+/// Lists files attached to a vector store, with pagination and an optional status filter. Use `after` or `before` to navigate the list, and `filter` to select files by processing status.
 ///
-/// Create a vector store file by attaching a [File](https://developers.openai.com/api/reference/resources/files) to a [vector store](https://developers.openai.com/api/reference/resources/vector_stores).
-///
-/// # Arguments
-///
-/// * `vector_store_id` - The ID of the vector store for which to create a File.
-/// * `file_id` - A
-///   [File](https://developers.openai.com/api/reference/resources/files) ID that
-///   the vector store should use. Useful for tools like `file_search` that can
-///   access files. For multi-file ingestion, we recommend
-///   [`file_batches`](https://developers.openai.com/api/reference/resources/vecto
-///   r_stores/subresources/file_batches/methods/create) to minimize
-///   per-vector-store write requests.
-/// * `chunking_strategy` - The chunking strategy used to chunk the file(s). If
-///   not set, will use the `auto` strategy.
-/// * `attributes` - Set of 16 key-value pairs that can be attached to an
-///   object. This can be useful for storing additional information about the
-///   object in a structured format, and querying for objects via API or the
-///   dashboard. Keys are strings with a maximum length of 64 characters. Values
-///   are strings with a maximum length of 512 characters, booleans, or numbers.
-pub fn create_vector_store_file(
-    config: &ClientConfig,
-    vector_store_id: String,
-    file_id: String,
-    chunking_strategy: Option<ChunkingStrategyRequestParam>,
-    attributes: Option<Option<VectorStoreFileAttributes>>,
-    options: Option<&RequestOptions>,
-) -> Result<VectorStoreFileObject, SdkError> {
-    let mut __body_map = serde_json::Map::new();
-    __body_map.insert(
-        "file_id".to_string(),
-        serde_json::to_value(file_id).map_err(|e| {
-            SdkError::Network(SdkNetworkError {
-                message: format!("encode body field: {}", e),
-                request_id: None,
-            })
-        })?,
-    );
-    if let Some(ref value) = chunking_strategy {
-        __body_map.insert(
-            "chunking_strategy".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    if let Some(ref value) = attributes {
-        __body_map.insert(
-            "attributes".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    let __body = serde_json::Value::Object(__body_map);
-
-    Ok(sdk_request::<VectorStoreFileObject>(
-        "POST",
-        &format!(
-            "/vector_stores/{}/files",
-            crate::client::encode_path_segment(&vector_store_id)
-        ),
-        config,
-        RequestOpts {
-            body: Some(__body),
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "create_vector_store_file",
-            options,
-            errors: &[
-                ("400", "ErrorResponse"),
-                ("404", "ErrorResponse"),
-                ("409", "ErrorResponse"),
-                ("429", "ErrorResponse"),
-                ("500", "ErrorResponse"),
-            ],
-            ..Default::default()
-        },
-    )?
-    .data)
-}
-
-/// Retrieves a file attachment and its processing details from a vector store. Use `vector_store_id` and `file_id` to identify the attachment whose status and configuration you need.
-///
-/// Retrieves a vector store file.
+/// Returns a list of vector store files.
 ///
 /// # Arguments
 ///
-/// * `vector_store_id` - The ID of the vector store that the file belongs to.
-/// * `file_id` - The ID of the file being retrieved.
-pub fn get_vector_store_file(
+/// * `vector_store_id` - The ID of the vector store that the files belong to.
+/// * `limit` - A limit on the number of objects to be returned. Limit can range
+///   between 1 and 100, and the default is 20.
+/// * `order` - Sort order by the `created_at` timestamp of the objects. `asc`
+///   for ascending order and `desc` for descending order.
+/// * `after` - A cursor for use in pagination. `after` is an object ID that
+///   defines your place in the list. For instance, if you make a list request and
+///   receive 100 objects, ending with obj_foo, your subsequent call can include
+///   after=obj_foo in order to fetch the next page of the list.
+/// * `before` - A cursor for use in pagination. `before` is an object ID that
+///   defines your place in the list. For instance, if you make a list request and
+///   receive 100 objects, starting with obj_foo, your subsequent call can include
+///   before=obj_foo in order to fetch the previous page of the list.
+/// * `filter` - Filter by file status. One of `in_progress`, `completed`,
+///   `failed`, `cancelled`.
+pub fn list_vector_store_files_paginated(
     config: &ClientConfig,
-    vector_store_id: String,
-    file_id: String,
+    params: ListVectorStoreFilesParams,
     options: Option<&RequestOptions>,
-) -> Result<VectorStoreFileObject, SdkError> {
-    Ok(sdk_request::<VectorStoreFileObject>(
-        "GET",
-        &format!(
-            "/vector_stores/{}/files/{}",
-            crate::client::encode_path_segment(&vector_store_id),
-            crate::client::encode_path_segment(&file_id)
-        ),
-        config,
-        RequestOpts {
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "get_vector_store_file",
-            options,
-            errors: &[
-                ("404", "ErrorResponse"),
-                ("429", "ErrorResponse"),
-                ("500", "ErrorResponse"),
-            ],
-            ..Default::default()
-        },
-    )?
-    .data)
-}
-
-/// Deletes a file attachment from a vector store without deleting the underlying file. Use the file deletion operation separately if you also need to delete the file itself.
-///
-/// Delete a vector store file. This will remove the file from the vector store but the file itself will not be deleted. To delete the file, use the [delete file](https://developers.openai.com/api/reference/resources/files/methods/delete) endpoint.
-///
-/// # Arguments
-///
-/// * `vector_store_id` - The ID of the vector store that the file belongs to.
-/// * `file_id` - The ID of the file to delete.
-pub fn delete_vector_store_file(
-    config: &ClientConfig,
-    vector_store_id: String,
-    file_id: String,
-    options: Option<&RequestOptions>,
-) -> Result<DeleteVectorStoreFileResponse, SdkError> {
-    Ok(sdk_request::<DeleteVectorStoreFileResponse>(
-        "DELETE",
-        &format!(
-            "/vector_stores/{}/files/{}",
-            crate::client::encode_path_segment(&vector_store_id),
-            crate::client::encode_path_segment(&file_id)
-        ),
-        config,
-        RequestOpts {
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "delete_vector_store_file",
-            options,
-            errors: &[
-                ("400", "ErrorResponse"),
-                ("404", "ErrorResponse"),
-                ("409", "ErrorResponse"),
-                ("429", "ErrorResponse"),
-                ("500", "ErrorResponse"),
-            ],
-            ..Default::default()
-        },
-    )?
-    .data)
-}
-
-/// Updates the attributes attached to a file in a vector store. Supply `attributes` to replace the file's attribute set, or use `null` to clear it.
-///
-/// Update attributes on a vector store file.
-///
-/// # Arguments
-///
-/// * `vector_store_id` - The ID of the vector store the file belongs to.
-/// * `file_id` - The ID of the file to update attributes.
-/// * `attributes` - Set of 16 key-value pairs that can be attached to an
-///   object. This can be useful for storing additional information about the
-///   object in a structured format, and querying for objects via API or the
-///   dashboard. Keys are strings with a maximum length of 64 characters. Values
-///   are strings with a maximum length of 512 characters, booleans, or numbers.
-pub fn update_vector_store_file_attributes(
-    config: &ClientConfig,
-    vector_store_id: String,
-    file_id: String,
-    attributes: Option<VectorStoreFileAttributes>,
-    options: Option<&RequestOptions>,
-) -> Result<VectorStoreFileObject, SdkError> {
-    let mut __body_map = serde_json::Map::new();
-    __body_map.insert(
-        "attributes".to_string(),
-        serde_json::to_value(attributes).map_err(|e| {
-            SdkError::Network(SdkNetworkError {
-                message: format!("encode body field: {}", e),
-                request_id: None,
-            })
-        })?,
-    );
-    let __body = serde_json::Value::Object(__body_map);
-
-    Ok(sdk_request::<VectorStoreFileObject>(
-        "POST",
-        &format!(
-            "/vector_stores/{}/files/{}",
-            crate::client::encode_path_segment(&vector_store_id),
-            crate::client::encode_path_segment(&file_id)
-        ),
-        config,
-        RequestOpts {
-            body: Some(__body),
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "update_vector_store_file_attributes",
-            options,
-            errors: &[
-                ("400", "ErrorResponse"),
-                ("404", "ErrorResponse"),
-                ("409", "ErrorResponse"),
-                ("429", "ErrorResponse"),
-                ("500", "ErrorResponse"),
-            ],
-            ..Default::default()
-        },
-    )?
-    .data)
-}
-
-/// Retrieves parsed content from a file attached to a vector store. Use `vector_store_id` and `file_id` to identify the file, then follow `next_page` when `has_more` indicates that additional content pages are available.
-///
-/// Retrieve the parsed contents of a vector store file.
-///
-/// # Arguments
-///
-/// * `vector_store_id` - The ID of the vector store.
-/// * `file_id` - The ID of the file within the vector store.
-pub fn retrieve_vector_store_file_content(
-    config: &ClientConfig,
-    vector_store_id: String,
-    file_id: String,
-    options: Option<&RequestOptions>,
-) -> Result<VectorStoreFileContentResponse, SdkError> {
-    Ok(sdk_request::<VectorStoreFileContentResponse>(
-        "GET",
-        &format!(
-            "/vector_stores/{}/files/{}/content",
-            crate::client::encode_path_segment(&vector_store_id),
-            crate::client::encode_path_segment(&file_id)
-        ),
-        config,
-        RequestOpts {
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "retrieve_vector_store_file_content",
-            options,
-            errors: &[
-                ("400", "ErrorResponse"),
-                ("404", "ErrorResponse"),
-                ("429", "ErrorResponse"),
-                ("500", "ErrorResponse"),
-            ],
-            ..Default::default()
-        },
-    )?
-    .data)
-}
-
-#[derive(Debug, Clone)]
-pub struct SearchVectorStoreParams {
-    pub vector_store_id: String,
-    pub query: VectorStoreSearchRequestQuery,
-    pub rewrite_query: Option<bool>,
-    pub max_num_results: Option<i64>,
-    pub filters: Option<VectorStoreSearchRequestFilters>,
-    pub ranking_options: Option<VectorStoreSearchRequestRankingOptions>,
-}
-
-/// Searches a vector store for relevant file chunks using one or more queries and optional file-attribute filters. Set `max_num_results` to control the result count and `ranking_options` to configure ranking; use `next_page` to continue when more results are available.
-///
-/// Search a vector store for relevant chunks based on a query and file attributes filter.
-///
-/// # Arguments
-///
-/// * `vector_store_id` - The ID of the vector store to search.
-/// * `query` - A query string for a search
-/// * `rewrite_query` - Whether to rewrite the natural language query for vector
-///   search.
-/// * `max_num_results` - The maximum number of results to return. This number
-///   should be between 1 and 50 inclusive.
-/// * `filters` - A filter to apply based on file attributes.
-/// * `ranking_options` - Ranking options for search.
-pub fn search_vector_store(
-    config: &ClientConfig,
-    params: SearchVectorStoreParams,
-    options: Option<&RequestOptions>,
-) -> Result<VectorStoreSearchResultsPage, SdkError> {
-    let SearchVectorStoreParams {
+    mut yield_fn: impl FnMut(&VectorStoreFileObject) -> bool,
+) -> Result<(), SdkError> {
+    let ListVectorStoreFilesParams {
         vector_store_id,
-        query,
-        rewrite_query,
-        max_num_results,
-        filters,
-        ranking_options,
+        limit,
+        order,
+        after,
+        before,
+        filter,
     } = params;
-    if let Some(ref max_num_results_v) = max_num_results {
-        validate_range(
-            "max_num_results",
-            *max_num_results_v as f64,
-            RangeOpts {
-                min: Some(1_f64),
-                max: Some(50_f64),
-                ..Default::default()
+
+    let mut _cursor: Option<String> = after;
+    loop {
+        let _page = list_vector_store_files(
+            config,
+            ListVectorStoreFilesParams {
+                vector_store_id: vector_store_id.clone(),
+                limit,
+                order: order.clone(),
+                after: _cursor,
+                before: before.clone(),
+                filter: filter.clone(),
             },
-        )?;
-    }
-
-    let mut __body_map = serde_json::Map::new();
-    __body_map.insert(
-        "query".to_string(),
-        serde_json::to_value(query).map_err(|e| {
-            SdkError::Network(SdkNetworkError {
-                message: format!("encode body field: {}", e),
-                request_id: None,
-            })
-        })?,
-    );
-    if let Some(ref value) = rewrite_query {
-        __body_map.insert(
-            "rewrite_query".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    if let Some(ref value) = max_num_results {
-        __body_map.insert(
-            "max_num_results".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    if let Some(ref value) = filters {
-        __body_map.insert(
-            "filters".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    if let Some(ref value) = ranking_options {
-        __body_map.insert(
-            "ranking_options".to_string(),
-            serde_json::to_value(value).map_err(|e| {
-                SdkError::Network(SdkNetworkError {
-                    message: format!("encode body field: {}", e),
-                    request_id: None,
-                })
-            })?,
-        );
-    }
-    let __body = serde_json::Value::Object(__body_map);
-
-    Ok(sdk_request::<VectorStoreSearchResultsPage>(
-        "POST",
-        &format!(
-            "/vector_stores/{}/search",
-            crate::client::encode_path_segment(&vector_store_id)
-        ),
-        config,
-        RequestOpts {
-            body: Some(__body),
-            decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "search_vector_store",
             options,
-            errors: &[
-                ("400", "ErrorResponse"),
-                ("404", "ErrorResponse"),
-                ("429", "ErrorResponse"),
-            ],
-            ..Default::default()
-        },
-    )?
-    .data)
+        )?;
+        let _items: Vec<_> = _page.data.iter().collect();
+        if _items.is_empty() {
+            return Ok(());
+        }
+        for _item in &_items {
+            if !yield_fn(_item) {
+                return Ok(());
+            }
+        }
+        let _next = _page.last_id.clone();
+        if !_page.has_more {
+            return Ok(());
+        }
+        _cursor = Some(_next);
+    }
+}
+
+pub struct ListVectorStoreFilesPage<'a> {
+    pub data: &'a ListVectorStoreFilesResponse,
+    pub items: Vec<&'a VectorStoreFileObject>,
+    pub has_more: bool,
+}
+
+pub fn list_vector_store_files_pages(
+    config: &ClientConfig,
+    params: ListVectorStoreFilesParams,
+    options: Option<&RequestOptions>,
+    mut yield_page: impl FnMut(ListVectorStoreFilesPage<'_>) -> bool,
+) -> Result<(), SdkError> {
+    let ListVectorStoreFilesParams {
+        vector_store_id,
+        limit,
+        order,
+        after,
+        before,
+        filter,
+    } = params;
+
+    let mut _cursor: Option<String> = after;
+    loop {
+        let _page = list_vector_store_files(
+            config,
+            ListVectorStoreFilesParams {
+                vector_store_id: vector_store_id.clone(),
+                limit,
+                order: order.clone(),
+                after: _cursor,
+                before: before.clone(),
+                filter: filter.clone(),
+            },
+            options,
+        )?;
+        let _items: Vec<_> = _page.data.iter().collect();
+        if _items.is_empty() {
+            return Ok(());
+        }
+        let _next = _page.last_id.clone();
+        let _has_more = _page.has_more;
+        if !yield_page(ListVectorStoreFilesPage {
+            data: &_page,
+            items: _items,
+            has_more: _has_more,
+        }) {
+            return Ok(());
+        }
+        if !_has_more {
+            return Ok(());
+        }
+        _cursor = Some(_next);
+    }
 }

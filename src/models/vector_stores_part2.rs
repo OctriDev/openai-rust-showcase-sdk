@@ -3,6 +3,50 @@
 
 // vector_stores domain models (part 2)
 
+/// Customize your own chunking strategy by setting chunk size and chunk overlap.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct StaticChunkingStrategyRequestParam {
+    /// Always `static`.
+    #[serde(rename = "type")]
+    pub type_: StaticChunkingStrategyRequestParamTypeEnum,
+    /// Required object value serialized in the `static` wire field.
+    #[serde(rename = "static")]
+    pub static_: StaticChunkingStrategy,
+}
+
+impl StaticChunkingStrategyRequestParam {
+    pub fn new(
+        type_: StaticChunkingStrategyRequestParamTypeEnum,
+        static_: StaticChunkingStrategy,
+    ) -> Self {
+        Self { type_, static_ }
+    }
+}
+
+/// Always `static`.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum StaticChunkingStrategyResponseParamTypeEnum {
+    #[serde(rename = "static")]
+    #[default]
+    Static,
+}
+
+impl StaticChunkingStrategyResponseParamTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Static => "static",
+        }
+    }
+}
+
+impl std::fmt::Display for StaticChunkingStrategyResponseParamTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            StaticChunkingStrategyResponseParamTypeEnum::Static => f.write_str("static"),
+        }
+    }
+}
+
 /// Typed representation of the `StaticChunkingStrategyResponseParam` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct StaticChunkingStrategyResponseParam {
@@ -472,47 +516,5 @@ impl serde::Serialize for VectorStoreFileObjectObjectEnum {
         S: serde::Serializer,
     {
         serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for VectorStoreFileObjectObjectEnum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "vector_store.file" => Self::VectorStoreFile,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for VectorStoreFileObjectObjectEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-/// The status of the vector store file, which can be either `in_progress`, `completed`, `cancelled`, or `failed`. The status `completed` indicates that the vector store file is ready for use.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum VectorStoreFileObjectStatusEnum {
-    #[default]
-    InProgress,
-    Completed,
-    Cancelled,
-    Failed,
-    Unknown(String),
-}
-
-impl VectorStoreFileObjectStatusEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::InProgress => "in_progress",
-            Self::Completed => "completed",
-            Self::Cancelled => "cancelled",
-            Self::Failed => "failed",
-            Self::Unknown(value) => value.as_str(),
-        }
     }
 }

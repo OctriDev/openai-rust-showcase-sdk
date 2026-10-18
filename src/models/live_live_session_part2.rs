@@ -97,7 +97,7 @@ impl std::fmt::Display for LiveSessionResourceParamStatusEnum {
 }
 
 /// The resolved Live session configuration and server-assigned session metadata.
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct LiveSessionResourceParam {
     /// The Live model. Required in the session configuration for every transport; do not pass it as a URL query parameter.
     pub model: ModelIdsLive,
@@ -140,6 +140,14 @@ pub struct LiveSessionResourceParam {
 
 impl LiveSessionResourceParam {
     pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
+        crate::validation::validate_length(
+            "model",
+            &self.model,
+            crate::validation::LengthOpts {
+                min: Some(1),
+                ..Default::default()
+            },
+        )?;
         if let Some(value) = self.input.as_ref() {
             crate::validation::validate_items(
                 "input",
@@ -235,7 +243,7 @@ impl std::fmt::Display for LiveSessionStartedTypeEnum {
 }
 
 /// Returned when a Live session has started. Contains the resolved session configuration, including server defaults.
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct LiveSessionStarted {
     /// The event type, always `session.started`.
     #[serde(rename = "type")]
@@ -289,7 +297,7 @@ impl std::fmt::Display for LiveSessionStartEventTypeEnum {
 }
 
 /// Start a Live session on a primary WebSocket. Send this event before other commands and wait for `session.started`.
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct LiveSessionStartEvent {
     /// Optional API value serialized in the `event_id` wire field.
     #[serde(
@@ -359,7 +367,7 @@ impl std::fmt::Display for LiveSessionUpdatedTypeEnum {
 }
 
 /// Returned when a Live session update is accepted. Contains the resolved session configuration after the update.
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct LiveSessionUpdated {
     /// The event type, always `session.updated`.
     #[serde(rename = "type")]
@@ -541,12 +549,4 @@ pub enum LiveSessionUsageUpdatedTypeEnum {
     #[serde(rename = "session.usage.updated")]
     #[default]
     SessionUsageUpdated,
-}
-
-impl LiveSessionUsageUpdatedTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::SessionUsageUpdated => "session.usage.updated",
-        }
-    }
 }

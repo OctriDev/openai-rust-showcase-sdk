@@ -389,7 +389,7 @@ impl RunStepStreamEventVariant6 {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum RunStepStreamEvent {
     ThreadRunStepCreated(Box<RunStepStreamEventVariant0>),
@@ -399,6 +399,72 @@ pub enum RunStepStreamEvent {
     ThreadRunStepFailed(Box<RunStepStreamEventVariant4>),
     ThreadRunStepCancelled(Box<RunStepStreamEventVariant5>),
     ThreadRunStepExpired(Box<RunStepStreamEventVariant6>),
+}
+
+impl<'de> serde::Deserialize<'de> for RunStepStreamEvent {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<Box<RunStepStreamEventVariant0>>(value.clone())
+        {
+            let candidate = Self::ThreadRunStepCreated(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<RunStepStreamEventVariant1>>(value.clone())
+        {
+            let candidate = Self::ThreadRunStepInProgress(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<RunStepStreamEventVariant2>>(value.clone())
+        {
+            let candidate = Self::ThreadRunStepDelta(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<RunStepStreamEventVariant3>>(value.clone())
+        {
+            let candidate = Self::ThreadRunStepCompleted(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<RunStepStreamEventVariant4>>(value.clone())
+        {
+            let candidate = Self::ThreadRunStepFailed(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<RunStepStreamEventVariant5>>(value.clone())
+        {
+            let candidate = Self::ThreadRunStepCancelled(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<RunStepStreamEventVariant6>>(value.clone())
+        {
+            let candidate = Self::ThreadRunStepExpired(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom("no RunStepStreamEvent branch accepts this payload")
+        })
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
@@ -435,57 +501,5 @@ pub struct RunStreamEventVariant0 {
 impl RunStreamEventVariant0 {
     pub fn new(event: RunStreamEventVariant0EventEnum, data: RunObject) -> Self {
         Self { event, data }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum RunStreamEventVariant1EventEnum {
-    #[serde(rename = "thread.run.queued")]
-    #[default]
-    ThreadRunQueued,
-}
-
-impl RunStreamEventVariant1EventEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::ThreadRunQueued => "thread.run.queued",
-        }
-    }
-}
-
-impl std::fmt::Display for RunStreamEventVariant1EventEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            RunStreamEventVariant1EventEnum::ThreadRunQueued => f.write_str("thread.run.queued"),
-        }
-    }
-}
-
-/// Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) moves to a `queued` status.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct RunStreamEventVariant1 {
-    pub event: RunStreamEventVariant1EventEnum,
-    /// Represents an execution run on a [thread](https://developers.openai.com/api/docs/assistants/migration).
-    pub data: RunObject,
-}
-
-impl RunStreamEventVariant1 {
-    pub fn new(event: RunStreamEventVariant1EventEnum, data: RunObject) -> Self {
-        Self { event, data }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum RunStreamEventVariant2EventEnum {
-    #[serde(rename = "thread.run.in_progress")]
-    #[default]
-    ThreadRunInProgress,
-}
-
-impl RunStreamEventVariant2EventEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::ThreadRunInProgress => "thread.run.in_progress",
-        }
     }
 }

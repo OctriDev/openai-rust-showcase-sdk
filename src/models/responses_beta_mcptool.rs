@@ -110,91 +110,35 @@ impl std::fmt::Display for BetaMCPToolConnectorIdEnum {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum BetaMCPToolAllowedTools {
     StringArray(Vec<String>),
     BetaMCPToolFilter(Box<BetaMCPToolFilter>),
 }
 
-/// Specify which of the MCP server's tools require approval. Can be
-/// `always`, `never`, or a filter object associated with tools
-/// that require approval.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct BetaMCPToolRequireApprovalVariant0 {
-    /// A filter object to specify which tools are allowed.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub always: Option<BetaMCPToolFilter>,
-    /// A filter object to specify which tools are allowed.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub never: Option<BetaMCPToolFilter>,
-}
-
-impl BetaMCPToolRequireApprovalVariant0 {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        Self {
-            always: None,
-            never: None,
+impl<'de> serde::Deserialize<'de> for BetaMCPToolAllowedTools {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<Vec<String>>(value.clone()) {
+            let candidate = Self::StringArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
         }
-    }
-}
-
-/// Specify a single approval policy for all tools. One of `always` or
-/// `never`. When set to `always`, all tools will require approval. When
-/// set to `never`, all tools will not require approval.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum BetaMCPToolRequireApprovalVariant1Enum {
-    #[default]
-    Always,
-    Never,
-    Unknown(String),
-}
-
-impl BetaMCPToolRequireApprovalVariant1Enum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Always => "always",
-            Self::Never => "never",
-            Self::Unknown(value) => value.as_str(),
+        if let Ok(branch) = serde_json::from_value::<Box<BetaMCPToolFilter>>(value.clone()) {
+            let candidate = Self::BetaMCPToolFilter(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
         }
-    }
-}
-
-impl serde::Serialize for BetaMCPToolRequireApprovalVariant1Enum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for BetaMCPToolRequireApprovalVariant1Enum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "always" => Self::Always,
-            "never" => Self::Never,
-            _ => Self::Unknown(value),
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom("no BetaMCPToolAllowedTools branch accepts this payload")
         })
     }
-}
-
-impl std::fmt::Display for BetaMCPToolRequireApprovalVariant1Enum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum BetaMCPToolRequireApproval {
-    MCPToolApprovalFilter(Box<BetaMCPToolRequireApprovalVariant0>),
-    Literal(BetaMCPToolRequireApprovalVariant1Enum),
 }
 
 /// Give the model access to additional tools via remote Model Context Protocol
@@ -495,5 +439,70 @@ impl<'de> serde::Deserialize<'de> for BetaMCPToolCallStatus {
 impl std::fmt::Display for BetaMCPToolCallStatus {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
+    }
+}
+
+/// Required enumerated value serialized in the `type` wire field.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum BetaMCPToolExecutionErrorTypeEnum {
+    #[serde(rename = "mcp_tool_execution_error")]
+    #[default]
+    McpToolExecutionError,
+}
+
+impl BetaMCPToolExecutionErrorTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::McpToolExecutionError => "mcp_tool_execution_error",
+        }
+    }
+}
+
+impl std::fmt::Display for BetaMCPToolExecutionErrorTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            BetaMCPToolExecutionErrorTypeEnum::McpToolExecutionError => {
+                f.write_str("mcp_tool_execution_error")
+            }
+        }
+    }
+}
+
+/// Typed representation of the `BetaMCPToolExecutionError` API schema.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct BetaMCPToolExecutionError {
+    /// Required enumerated value serialized in the `type` wire field.
+    #[serde(rename = "type")]
+    pub type_: BetaMCPToolExecutionErrorTypeEnum,
+    /// Required API value serialized in the `content` wire field.
+    pub content: serde_json::Value,
+}
+
+impl BetaMCPToolExecutionError {
+    pub fn new(type_: BetaMCPToolExecutionErrorTypeEnum, content: serde_json::Value) -> Self {
+        Self { type_, content }
+    }
+}
+
+/// A filter object to specify which tools are allowed.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct BetaMCPToolFilter {
+    /// List of allowed tool names.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tool_names: Option<Vec<String>>,
+    /// Indicates whether or not a tool modifies data or is read-only. If an
+    /// MCP server is [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),
+    /// it will match this filter.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
+}
+
+impl BetaMCPToolFilter {
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Self {
+        Self {
+            tool_names: None,
+            read_only: None,
+        }
     }
 }

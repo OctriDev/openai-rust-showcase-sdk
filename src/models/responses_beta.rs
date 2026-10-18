@@ -302,20 +302,86 @@ impl std::fmt::Display for BetaComparisonFilterTypeEnum {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum BetaComparisonFilterValueVariant3Item {
     String(String),
     Number(f64),
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+impl<'de> serde::Deserialize<'de> for BetaComparisonFilterValueVariant3Item {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<f64>(value.clone()) {
+            let candidate = Self::Number(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no BetaComparisonFilterValueVariant3Item branch accepts this payload",
+            )
+        })
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum BetaComparisonFilterValue {
     String(String),
     Number(f64),
     Bool(bool),
     Variant3ItemArray(Vec<BetaComparisonFilterValueVariant3Item>),
+}
+
+impl<'de> serde::Deserialize<'de> for BetaComparisonFilterValue {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<String>(value.clone()) {
+            let candidate = Self::String(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<f64>(value.clone()) {
+            let candidate = Self::Number(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<bool>(value.clone()) {
+            let candidate = Self::Bool(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) =
+            serde_json::from_value::<Vec<BetaComparisonFilterValueVariant3Item>>(value.clone())
+        {
+            let candidate = Self::Variant3ItemArray(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom("no BetaComparisonFilterValue branch accepts this payload")
+        })
+    }
 }
 
 /// A filter used to compare a specified attribute key to a given value using a defined comparison operation.
@@ -425,59 +491,6 @@ impl BetaCyberAccessProgramEnum {
 }
 
 impl serde::Serialize for BetaCyberAccessProgramEnum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for BetaCyberAccessProgramEnum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "standard" => Self::Standard,
-            "daybreak_blue" => Self::DaybreakBlue,
-            "daybreak_red" => Self::DaybreakRed,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for BetaCyberAccessProgramEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-/// Typed representation of the `BetaDetailEnum` API schema.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum BetaDetailEnum {
-    #[default]
-    Low,
-    High,
-    Auto,
-    Original,
-    Unknown(String),
-}
-
-impl BetaDetailEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Low => "low",
-            Self::High => "high",
-            Self::Auto => "auto",
-            Self::Original => "original",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for BetaDetailEnum {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,

@@ -3,6 +3,65 @@
 
 // audio domain models (part 5)
 
+/// A consent recording used to authorize creation of a custom voice.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct VoiceConsentResource {
+    /// The object type, which is always `audio.voice_consent`.
+    pub object: VoiceConsentResourceObjectEnum,
+    /// The consent recording identifier.
+    pub id: String,
+    /// The label provided when the consent recording was uploaded.
+    pub name: String,
+    /// The BCP 47 language tag for the consent phrase (for example, `en-US`).
+    pub language: String,
+    /// The Unix timestamp (in seconds) for when the consent recording was created.
+    pub created_at: i64,
+}
+
+impl VoiceConsentResource {
+    pub fn new(
+        object: VoiceConsentResourceObjectEnum,
+        id: String,
+        name: String,
+        language: String,
+        created_at: i64,
+    ) -> Self {
+        Self {
+            object,
+            id,
+            name,
+            language,
+            created_at,
+        }
+    }
+}
+
+/// The object type, which is always `audio.voice`.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum VoiceResourceObjectEnum {
+    #[default]
+    AudioVoice,
+    Unknown(String),
+}
+
+impl VoiceResourceObjectEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::AudioVoice => "audio.voice",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for VoiceResourceObjectEnum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
 impl<'de> serde::Deserialize<'de> for VoiceResourceObjectEnum {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where

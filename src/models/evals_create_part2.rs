@@ -3,6 +3,90 @@
 
 // evals_create domain models (part 2)
 
+/// A LabelModelGrader object which uses a model to assign labels to each item
+/// in the evaluation.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct CreateEvalLabelModelGrader {
+    /// The object type, which is always `label_model`.
+    #[serde(rename = "type")]
+    pub type_: CreateEvalLabelModelGraderTypeEnum,
+    /// The name of the grader.
+    pub name: String,
+    /// The model to use for the evaluation. Must support structured outputs.
+    pub model: String,
+    /// A list of chat messages forming the prompt or context. May include variable references to the `item` namespace, ie {{item.name}}.
+    pub input: Vec<CreateEvalItem>,
+    /// The labels to classify to each item in the evaluation.
+    pub labels: Vec<String>,
+    /// The labels that indicate a passing result. Must be a subset of labels.
+    pub passing_labels: Vec<String>,
+}
+
+impl CreateEvalLabelModelGrader {
+    pub fn new(
+        type_: CreateEvalLabelModelGraderTypeEnum,
+        name: String,
+        model: String,
+        input: Vec<CreateEvalItem>,
+        labels: Vec<String>,
+        passing_labels: Vec<String>,
+    ) -> Self {
+        Self {
+            type_,
+            name,
+            model,
+            input,
+            labels,
+            passing_labels,
+        }
+    }
+}
+
+/// The type of data source. Always `logs`.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum CreateEvalLogsDataSourceConfigTypeEnum {
+    #[serde(rename = "logs")]
+    #[default]
+    Logs,
+}
+
+impl CreateEvalLogsDataSourceConfigTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Logs => "logs",
+        }
+    }
+}
+
+impl std::fmt::Display for CreateEvalLogsDataSourceConfigTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            CreateEvalLogsDataSourceConfigTypeEnum::Logs => f.write_str("logs"),
+        }
+    }
+}
+
+/// A data source config which specifies the metadata property of your logs query.
+/// This is usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct CreateEvalLogsDataSourceConfig {
+    /// The type of data source. Always `logs`.
+    #[serde(rename = "type")]
+    pub type_: CreateEvalLogsDataSourceConfigTypeEnum,
+    /// Metadata filters for the logs data source.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<std::collections::HashMap<String, serde_json::Value>>,
+}
+
+impl CreateEvalLogsDataSourceConfig {
+    pub fn new(type_: CreateEvalLogsDataSourceConfigTypeEnum) -> Self {
+        Self {
+            type_,
+            metadata: None,
+        }
+    }
+}
+
 /// Typed representation of the `CreateEvalRequest` API schema.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct CreateEvalRequest {
@@ -268,6 +352,55 @@ impl std::fmt::Display for CreateEvalResponsesRunDataSourceInputMessagesVariant0
     }
 }
 
+/// Required object value serialized in the `template[]` wire field.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItemVariant0 {
+    /// The role of the message (e.g. "system", "assistant", "user").
+    pub role: String,
+    /// The content of the message.
+    pub content: String,
+}
+
+impl CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItemVariant0 {
+    pub fn new(role: String, content: String) -> Self {
+        Self { role, content }
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(untagged)]
+pub enum CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItem {
+    ChatMessage(Box<CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItemVariant0>),
+    EvalItem(Box<EvalItem>),
+}
+
+impl<'de> serde::Deserialize<'de>
+    for CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItem
+{
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<
+            Box<CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItemVariant0>,
+        >(value.clone())
+        {
+            let candidate = Self::ChatMessage(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<Box<EvalItem>>(value.clone()) {
+            let candidate = Self::EvalItem(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| serde::de::Error::custom("no CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItem branch accepts this payload"))
+    }
+}
+
 /// Optional object value serialized in the `input_messages` wire field.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct CreateEvalResponsesRunDataSourceInputMessagesVariant0 {
@@ -275,13 +408,13 @@ pub struct CreateEvalResponsesRunDataSourceInputMessagesVariant0 {
     #[serde(rename = "type")]
     pub type_: CreateEvalResponsesRunDataSourceInputMessagesVariant0TypeEnum,
     /// A list of chat messages forming the prompt or context. May include variable references to the `item` namespace, ie {{item.name}}.
-    pub template: Vec<TemplateItem2>,
+    pub template: Vec<CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItem>,
 }
 
 impl CreateEvalResponsesRunDataSourceInputMessagesVariant0 {
     pub fn new(
         type_: CreateEvalResponsesRunDataSourceInputMessagesVariant0TypeEnum,
-        template: Vec<TemplateItem2>,
+        template: Vec<CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItem>,
     ) -> Self {
         Self { type_, template }
     }
@@ -335,11 +468,43 @@ impl CreateEvalResponsesRunDataSourceInputMessagesVariant1 {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum CreateEvalResponsesRunDataSourceInputMessages {
     InputMessagesTemplate(Box<CreateEvalResponsesRunDataSourceInputMessagesVariant0>),
     InputMessagesItemReference(Box<CreateEvalResponsesRunDataSourceInputMessagesVariant1>),
+}
+
+impl<'de> serde::Deserialize<'de> for CreateEvalResponsesRunDataSourceInputMessages {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<
+            Box<CreateEvalResponsesRunDataSourceInputMessagesVariant0>,
+        >(value.clone())
+        {
+            let candidate = Self::InputMessagesTemplate(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            Box<CreateEvalResponsesRunDataSourceInputMessagesVariant1>,
+        >(value.clone())
+        {
+            let candidate = Self::InputMessagesItemReference(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no CreateEvalResponsesRunDataSourceInputMessages branch accepts this payload",
+            )
+        })
+    }
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -362,106 +527,5 @@ impl CreateEvalResponsesRunDataSourceSource {
             "type",
             &["file_content", "file_id", "responses"],
         )
-    }
-}
-
-/// Typed representation of the `CreateEvalRunRequest` API schema.
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct CreateEvalRunRequest {
-    /// The name of the run.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
-    /// Set of 16 key-value pairs that can be attached to an object. This can be
-    /// useful for storing additional information about the object in a structured
-    /// format, and querying for objects via API or the dashboard.
-    ///
-    /// Keys are strings with a maximum length of 64 characters. Values are strings
-    /// with a maximum length of 512 characters.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub metadata: Option<Option<Metadata>>,
-    /// Details about the run's data source.
-    pub data_source: CreateEvalRunRequestDataSource,
-}
-
-impl CreateEvalRunRequest {
-    pub fn new(data_source: CreateEvalRunRequestDataSource) -> Self {
-        Self {
-            name: None,
-            metadata: None,
-            data_source,
-        }
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum CreateEvalRunRequestDataSource {
-    CreateEvalJsonlRunDataSource(Box<CreateEvalJsonlRunDataSource>),
-    CreateEvalCompletionsRunDataSource(Box<CreateEvalCompletionsRunDataSource>),
-    CreateEvalResponsesRunDataSource(Box<CreateEvalResponsesRunDataSource>),
-    /// A member whose `type` names no branch this SDK knows, kept as received.
-    #[serde(deserialize_with = "CreateEvalRunRequestDataSource::unknown_member")]
-    Unknown(serde_json::Value),
-}
-
-impl CreateEvalRunRequestDataSource {
-    fn unknown_member<'de, D: serde::Deserializer<'de>>(
-        deserializer: D,
-    ) -> Result<serde_json::Value, D::Error> {
-        crate::client::unknown_union_member(
-            deserializer,
-            "type",
-            &["jsonl", "completions", "responses"],
-        )
-    }
-}
-
-/// The type of data source. Always `stored_completions`.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum CreateEvalStoredCompletionsDataSourceConfigTypeEnum {
-    #[serde(rename = "stored_completions")]
-    #[default]
-    StoredCompletions,
-}
-
-impl CreateEvalStoredCompletionsDataSourceConfigTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::StoredCompletions => "stored_completions",
-        }
-    }
-}
-
-impl std::fmt::Display for CreateEvalStoredCompletionsDataSourceConfigTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            CreateEvalStoredCompletionsDataSourceConfigTypeEnum::StoredCompletions => {
-                f.write_str("stored_completions")
-            }
-        }
-    }
-}
-
-/// Deprecated in favor of LogsDataSourceConfig.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct CreateEvalStoredCompletionsDataSourceConfig {
-    /// The type of data source. Always `stored_completions`.
-    #[serde(rename = "type")]
-    pub type_: CreateEvalStoredCompletionsDataSourceConfigTypeEnum,
-    /// Metadata filters for the stored completions data source.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<std::collections::HashMap<String, serde_json::Value>>,
-}
-
-impl CreateEvalStoredCompletionsDataSourceConfig {
-    pub fn new(type_: CreateEvalStoredCompletionsDataSourceConfigTypeEnum) -> Self {
-        Self {
-            type_,
-            metadata: None,
-        }
     }
 }

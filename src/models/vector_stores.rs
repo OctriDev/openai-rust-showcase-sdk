@@ -59,10 +59,67 @@ impl ChunkingStrategyRequestParam {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum CreateVectorStoreFileBatchRequest {
-    Value(serde_json::Value),
+/// Typed representation of the `CreateVectorStoreFileBatchRequest` API schema.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct CreateVectorStoreFileBatchRequest {
+    /// A list of [File](https://developers.openai.com/api/reference/resources/files) IDs that the vector store should use. Useful for tools like `file_search` that can access files. If `attributes` or `chunking_strategy` are provided, they will be applied to all files in the batch. The maximum batch size is 2000 files. This endpoint is recommended for multi-file ingestion and helps reduce per-vector-store write request pressure. Mutually exclusive with `files`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub file_ids: Option<Vec<String>>,
+    /// A list of objects that each include a `file_id` plus optional `attributes` or `chunking_strategy`. Use this when you need to override metadata for specific files. The global `attributes` or `chunking_strategy` will be ignored and must be specified for each file. The maximum batch size is 2000 files. This endpoint is recommended for multi-file ingestion and helps reduce per-vector-store write request pressure. Mutually exclusive with `file_ids`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub files: Option<Vec<CreateVectorStoreFileRequest>>,
+    /// The chunking strategy used to chunk the file(s). If not set, will use the `auto` strategy.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub chunking_strategy: Option<ChunkingStrategyRequestParam>,
+    /// Set of 16 key-value pairs that can be attached to an object. This can be
+    /// useful for storing additional information about the object in a structured
+    /// format, and querying for objects via API or the dashboard. Keys are strings
+    /// with a maximum length of 64 characters. Values are strings with a maximum
+    /// length of 512 characters, booleans, or numbers.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub attributes: Option<Option<VectorStoreFileAttributes>>,
+}
+
+impl CreateVectorStoreFileBatchRequest {
+    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
+        if let Some(value) = self.file_ids.as_ref() {
+            crate::validation::validate_items(
+                "file_ids",
+                value.as_slice(),
+                crate::validation::LengthOpts {
+                    min: Some(1),
+                    max: Some(2000),
+                },
+            )?;
+        }
+        if let Some(value) = self.files.as_ref() {
+            crate::validation::validate_items(
+                "files",
+                value.as_slice(),
+                crate::validation::LengthOpts {
+                    min: Some(1),
+                    max: Some(2000),
+                },
+            )?;
+        }
+        Ok(())
+    }
+
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Result<Self, crate::errors::SdkError> {
+        let value = Self {
+            file_ids: None,
+            files: None,
+            chunking_strategy: None,
+            attributes: None,
+        };
+        value.validate_constraints()?;
+        Ok(value)
+    }
 }
 
 /// Typed representation of the `CreateVectorStoreFileRequest` API schema.
@@ -470,50 +527,6 @@ impl std::fmt::Display for StaticChunkingStrategyRequestParamTypeEnum {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             StaticChunkingStrategyRequestParamTypeEnum::Static => f.write_str("static"),
-        }
-    }
-}
-
-/// Customize your own chunking strategy by setting chunk size and chunk overlap.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct StaticChunkingStrategyRequestParam {
-    /// Always `static`.
-    #[serde(rename = "type")]
-    pub type_: StaticChunkingStrategyRequestParamTypeEnum,
-    /// Required object value serialized in the `static` wire field.
-    #[serde(rename = "static")]
-    pub static_: StaticChunkingStrategy,
-}
-
-impl StaticChunkingStrategyRequestParam {
-    pub fn new(
-        type_: StaticChunkingStrategyRequestParamTypeEnum,
-        static_: StaticChunkingStrategy,
-    ) -> Self {
-        Self { type_, static_ }
-    }
-}
-
-/// Always `static`.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum StaticChunkingStrategyResponseParamTypeEnum {
-    #[serde(rename = "static")]
-    #[default]
-    Static,
-}
-
-impl StaticChunkingStrategyResponseParamTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Static => "static",
-        }
-    }
-}
-
-impl std::fmt::Display for StaticChunkingStrategyResponseParamTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            StaticChunkingStrategyResponseParamTypeEnum::Static => f.write_str("static"),
         }
     }
 }
