@@ -191,6 +191,18 @@ impl<'de> serde::Deserialize<'de> for CreateMessageRequestContent {
     }
 }
 
+impl ::std::convert::From<String> for CreateMessageRequestContent {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<CreateMessageRequestContentItem>> for CreateMessageRequestContent {
+    fn from(value: Vec<CreateMessageRequestContentItem>) -> Self {
+        Self::ItemArray(value)
+    }
+}
+
 /// Required object value serialized in the `attachments[]` wire field.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct CreateMessageRequestAttachmentsItem {
@@ -505,11 +517,5 @@ impl<'de> serde::Deserialize<'de> for TruncationObjectTypeEnum {
             "last_messages" => Self::LastMessages,
             _ => Self::Unknown(value),
         })
-    }
-}
-
-impl std::fmt::Display for TruncationObjectTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
     }
 }

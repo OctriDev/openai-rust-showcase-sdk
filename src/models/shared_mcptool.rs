@@ -141,6 +141,18 @@ impl<'de> serde::Deserialize<'de> for MCPToolAllowedTools {
     }
 }
 
+impl ::std::convert::From<Vec<String>> for MCPToolAllowedTools {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
+    }
+}
+
+impl ::std::convert::From<Box<MCPToolFilter>> for MCPToolAllowedTools {
+    fn from(value: Box<MCPToolFilter>) -> Self {
+        Self::MCPToolFilter(value)
+    }
+}
+
 /// Give the model access to additional tools via remote Model Context Protocol
 /// (MCP) servers. [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
@@ -487,14 +499,4 @@ pub struct MCPToolFilter {
     /// it will match this filter.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
-}
-
-impl MCPToolFilter {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        Self {
-            tool_names: None,
-            read_only: None,
-        }
-    }
 }

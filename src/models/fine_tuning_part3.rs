@@ -3,6 +3,171 @@
 
 // fine_tuning domain models (part 3)
 
+impl<'de> serde::Deserialize<'de> for FineTuneDPOHyperparametersNEpochsVariant0Enum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "auto" => Self::Auto,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for FineTuneDPOHyperparametersNEpochsVariant0Enum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(untagged)]
+pub enum FineTuneDPOHyperparametersNEpochs {
+    Auto(FineTuneDPOHyperparametersNEpochsVariant0Enum),
+    Integer(i64),
+}
+
+impl<'de> serde::Deserialize<'de> for FineTuneDPOHyperparametersNEpochs {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) =
+            serde_json::from_value::<FineTuneDPOHyperparametersNEpochsVariant0Enum>(value.clone())
+        {
+            let candidate = Self::Auto(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<i64>(value.clone()) {
+            let candidate = Self::Integer(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no FineTuneDPOHyperparametersNEpochs branch accepts this payload",
+            )
+        })
+    }
+}
+
+impl ::std::convert::From<FineTuneDPOHyperparametersNEpochsVariant0Enum>
+    for FineTuneDPOHyperparametersNEpochs
+{
+    fn from(value: FineTuneDPOHyperparametersNEpochsVariant0Enum) -> Self {
+        Self::Auto(value)
+    }
+}
+
+impl ::std::convert::From<i64> for FineTuneDPOHyperparametersNEpochs {
+    fn from(value: i64) -> Self {
+        Self::Integer(value)
+    }
+}
+
+/// The hyperparameters used for the DPO fine-tuning job.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct FineTuneDPOHyperparameters {
+    /// The beta value for the DPO method. A higher beta value will increase the weight of the penalty between the policy and reference model.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub beta: Option<FineTuneDPOHyperparametersBeta>,
+    /// Number of examples in each batch. A larger batch size means that model parameters are updated less frequently, but with lower variance.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub batch_size: Option<FineTuneDPOHyperparametersBatchSize>,
+    /// Scaling factor for the learning rate. A smaller learning rate may be useful to avoid overfitting.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub learning_rate_multiplier: Option<FineTuneDPOHyperparametersLearningRateMultiplier>,
+    /// The number of epochs to train the model for. An epoch refers to one full cycle through the training dataset.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub n_epochs: Option<FineTuneDPOHyperparametersNEpochs>,
+}
+
+impl FineTuneDPOHyperparameters {
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Self {
+        Self {
+            beta: None,
+            batch_size: None,
+            learning_rate_multiplier: None,
+            n_epochs: None,
+        }
+    }
+}
+
+/// Configuration for the DPO fine-tuning method.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct FineTuneDPOMethod {
+    /// The hyperparameters used for the DPO fine-tuning job.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub hyperparameters: Option<FineTuneDPOHyperparameters>,
+}
+
+impl FineTuneDPOMethod {
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Self {
+        Self {
+            hyperparameters: None,
+        }
+    }
+}
+
+/// The type of method. Is either `supervised`, `dpo`, or `reinforcement`.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum FineTuneMethodTypeEnum {
+    #[default]
+    Supervised,
+    Dpo,
+    Reinforcement,
+    Unknown(String),
+}
+
+impl FineTuneMethodTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Supervised => "supervised",
+            Self::Dpo => "dpo",
+            Self::Reinforcement => "reinforcement",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for FineTuneMethodTypeEnum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for FineTuneMethodTypeEnum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "supervised" => Self::Supervised,
+            "dpo" => Self::Dpo,
+            "reinforcement" => Self::Reinforcement,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for FineTuneMethodTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// The method used for fine-tuning.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct FineTuneMethod {
@@ -112,6 +277,20 @@ impl<'de> serde::Deserialize<'de> for FineTuneReinforcementHyperparametersBatchS
     }
 }
 
+impl ::std::convert::From<FineTuneReinforcementHyperparametersBatchSizeVariant0Enum>
+    for FineTuneReinforcementHyperparametersBatchSize
+{
+    fn from(value: FineTuneReinforcementHyperparametersBatchSizeVariant0Enum) -> Self {
+        Self::Auto(value)
+    }
+}
+
+impl ::std::convert::From<i64> for FineTuneReinforcementHyperparametersBatchSize {
+    fn from(value: i64) -> Self {
+        Self::Integer(value)
+    }
+}
+
 /// Optional enumerated value serialized in the `learning_rate_multiplier` wire field.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub enum FineTuneReinforcementHyperparametersLearningRateMultiplierVariant0Enum {
@@ -188,6 +367,20 @@ impl<'de> serde::Deserialize<'de> for FineTuneReinforcementHyperparametersLearni
             lossy.get_or_insert(candidate);
         }
         lossy.ok_or_else(|| serde::de::Error::custom("no FineTuneReinforcementHyperparametersLearningRateMultiplier branch accepts this payload"))
+    }
+}
+
+impl ::std::convert::From<FineTuneReinforcementHyperparametersLearningRateMultiplierVariant0Enum>
+    for FineTuneReinforcementHyperparametersLearningRateMultiplier
+{
+    fn from(value: FineTuneReinforcementHyperparametersLearningRateMultiplierVariant0Enum) -> Self {
+        Self::Auto(value)
+    }
+}
+
+impl ::std::convert::From<f64> for FineTuneReinforcementHyperparametersLearningRateMultiplier {
+    fn from(value: f64) -> Self {
+        Self::Number(value)
     }
 }
 
@@ -272,6 +465,20 @@ impl<'de> serde::Deserialize<'de> for FineTuneReinforcementHyperparametersNEpoch
     }
 }
 
+impl ::std::convert::From<FineTuneReinforcementHyperparametersNEpochsVariant0Enum>
+    for FineTuneReinforcementHyperparametersNEpochs
+{
+    fn from(value: FineTuneReinforcementHyperparametersNEpochsVariant0Enum) -> Self {
+        Self::Auto(value)
+    }
+}
+
+impl ::std::convert::From<i64> for FineTuneReinforcementHyperparametersNEpochs {
+    fn from(value: i64) -> Self {
+        Self::Integer(value)
+    }
+}
+
 /// Level of reasoning effort.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub enum FineTuneReinforcementHyperparametersReasoningEffortEnum {
@@ -293,203 +500,4 @@ impl FineTuneReinforcementHyperparametersReasoningEffortEnum {
             Self::Unknown(value) => value.as_str(),
         }
     }
-}
-
-impl serde::Serialize for FineTuneReinforcementHyperparametersReasoningEffortEnum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for FineTuneReinforcementHyperparametersReasoningEffortEnum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "default" => Self::Default,
-            "low" => Self::Low,
-            "medium" => Self::Medium,
-            "high" => Self::High,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for FineTuneReinforcementHyperparametersReasoningEffortEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-/// Optional enumerated value serialized in the `compute_multiplier` wire field.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum FineTuneReinforcementHyperparametersComputeMultiplierVariant0Enum {
-    #[default]
-    Auto,
-    Unknown(String),
-}
-
-impl FineTuneReinforcementHyperparametersComputeMultiplierVariant0Enum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Auto => "auto",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for FineTuneReinforcementHyperparametersComputeMultiplierVariant0Enum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de>
-    for FineTuneReinforcementHyperparametersComputeMultiplierVariant0Enum
-{
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "auto" => Self::Auto,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for FineTuneReinforcementHyperparametersComputeMultiplierVariant0Enum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize)]
-#[serde(untagged)]
-pub enum FineTuneReinforcementHyperparametersComputeMultiplier {
-    Auto(FineTuneReinforcementHyperparametersComputeMultiplierVariant0Enum),
-    Number(f64),
-}
-
-impl<'de> serde::Deserialize<'de> for FineTuneReinforcementHyperparametersComputeMultiplier {
-    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
-        let mut lossy = None;
-        if let Ok(branch) = serde_json::from_value::<
-            FineTuneReinforcementHyperparametersComputeMultiplierVariant0Enum,
-        >(value.clone())
-        {
-            let candidate = Self::Auto(branch);
-            if crate::client::keeps_every_key(&value, &candidate) {
-                return Ok(candidate);
-            }
-            lossy.get_or_insert(candidate);
-        }
-        if let Ok(branch) = serde_json::from_value::<f64>(value.clone()) {
-            let candidate = Self::Number(branch);
-            if crate::client::keeps_every_key(&value, &candidate) {
-                return Ok(candidate);
-            }
-            lossy.get_or_insert(candidate);
-        }
-        lossy.ok_or_else(|| serde::de::Error::custom("no FineTuneReinforcementHyperparametersComputeMultiplier branch accepts this payload"))
-    }
-}
-
-/// Optional enumerated value serialized in the `eval_interval` wire field.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum FineTuneReinforcementHyperparametersEvalIntervalVariant0Enum {
-    #[default]
-    Auto,
-    Unknown(String),
-}
-
-impl FineTuneReinforcementHyperparametersEvalIntervalVariant0Enum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Auto => "auto",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for FineTuneReinforcementHyperparametersEvalIntervalVariant0Enum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for FineTuneReinforcementHyperparametersEvalIntervalVariant0Enum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "auto" => Self::Auto,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for FineTuneReinforcementHyperparametersEvalIntervalVariant0Enum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize)]
-#[serde(untagged)]
-pub enum FineTuneReinforcementHyperparametersEvalInterval {
-    Auto(FineTuneReinforcementHyperparametersEvalIntervalVariant0Enum),
-    Integer(i64),
-}
-
-impl<'de> serde::Deserialize<'de> for FineTuneReinforcementHyperparametersEvalInterval {
-    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
-        let mut lossy = None;
-        if let Ok(branch) = serde_json::from_value::<
-            FineTuneReinforcementHyperparametersEvalIntervalVariant0Enum,
-        >(value.clone())
-        {
-            let candidate = Self::Auto(branch);
-            if crate::client::keeps_every_key(&value, &candidate) {
-                return Ok(candidate);
-            }
-            lossy.get_or_insert(candidate);
-        }
-        if let Ok(branch) = serde_json::from_value::<i64>(value.clone()) {
-            let candidate = Self::Integer(branch);
-            if crate::client::keeps_every_key(&value, &candidate) {
-                return Ok(candidate);
-            }
-            lossy.get_or_insert(candidate);
-        }
-        lossy.ok_or_else(|| {
-            serde::de::Error::custom(
-                "no FineTuneReinforcementHyperparametersEvalInterval branch accepts this payload",
-            )
-        })
-    }
-}
-
-/// Optional enumerated value serialized in the `eval_samples` wire field.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum FineTuneReinforcementHyperparametersEvalSamplesVariant0Enum {
-    #[default]
-    Auto,
-    Unknown(String),
 }

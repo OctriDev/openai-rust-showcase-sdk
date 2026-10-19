@@ -3,6 +3,24 @@
 
 // responses_beta_function domain models (part 2)
 
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(untagged)]
+pub enum BetaFunctionShellCallEnvironment {
+    BetaLocalEnvironmentResource(Box<BetaLocalEnvironmentResource>),
+    BetaContainerReferenceResource(Box<BetaContainerReferenceResource>),
+    /// A member whose `type` names no branch this SDK knows, kept as received.
+    #[serde(deserialize_with = "BetaFunctionShellCallEnvironment::unknown_member")]
+    Unknown(serde_json::Value),
+}
+
+impl BetaFunctionShellCallEnvironment {
+    fn unknown_member<'de, D: serde::Deserializer<'de>>(
+        deserializer: D,
+    ) -> Result<serde_json::Value, D::Error> {
+        crate::client::unknown_union_member(deserializer, "type", &["local", "container_reference"])
+    }
+}
+
 /// The type of the item. Always `shell_call`.
 #[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
 pub enum BetaFunctionShellCallItemParamTypeEnum {

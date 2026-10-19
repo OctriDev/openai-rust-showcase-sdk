@@ -3,6 +3,30 @@
 
 // moderations domain models (part 3)
 
+impl<'de> serde::Deserialize<'de>
+    for CreateModerationResponseResultsItemCategoryAppliedInputTypesViolencegraphicItemEnum
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "text" => Self::Text,
+            "image" => Self::Image,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display
+    for CreateModerationResponseResultsItemCategoryAppliedInputTypesViolencegraphicItemEnum
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// A list of the categories along with the input type(s) that the score applies to.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct CreateModerationResponseResultsItemCategoryAppliedInputTypes {

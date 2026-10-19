@@ -247,6 +247,20 @@ impl<'de> serde::Deserialize<'de> for LiveDataChannelConfigParamAllowedClientEve
     }
 }
 
+impl ::std::convert::From<LiveDataChannelConfigParamAllowedClientEventsVariant0Enum>
+    for LiveDataChannelConfigParamAllowedClientEvents
+{
+    fn from(value: LiveDataChannelConfigParamAllowedClientEventsVariant0Enum) -> Self {
+        Self::All(value)
+    }
+}
+
+impl ::std::convert::From<Vec<String>> for LiveDataChannelConfigParamAllowedClientEvents {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
+    }
+}
+
 /// Optional enumerated value serialized in the `allowed_server_events` wire field.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub enum LiveDataChannelConfigParamAllowedServerEventsVariant0Enum {
@@ -327,6 +341,22 @@ impl<'de> serde::Deserialize<'de> for LiveDataChannelConfigParamAllowedServerEve
                 "no LiveDataChannelConfigParamAllowedServerEvents branch accepts this payload",
             )
         })
+    }
+}
+
+impl ::std::convert::From<LiveDataChannelConfigParamAllowedServerEventsVariant0Enum>
+    for LiveDataChannelConfigParamAllowedServerEvents
+{
+    fn from(value: LiveDataChannelConfigParamAllowedServerEventsVariant0Enum) -> Self {
+        Self::All(value)
+    }
+}
+
+impl ::std::convert::From<Vec<LiveAllowedServerEventParam>>
+    for LiveDataChannelConfigParamAllowedServerEvents
+{
+    fn from(value: Vec<LiveAllowedServerEventParam>) -> Self {
+        Self::LiveAllowedServerEventParamArray(value)
     }
 }
 
@@ -451,30 +481,6 @@ impl LiveErrorEvent {
             client_event_id: None,
             type_,
             error,
-        }
-    }
-}
-
-/// Required enumerated value serialized in the `type` wire field.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum LiveFileSearchToolInputParamTypeEnum {
-    #[serde(rename = "file_search")]
-    #[default]
-    FileSearch,
-}
-
-impl LiveFileSearchToolInputParamTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::FileSearch => "file_search",
-        }
-    }
-}
-
-impl std::fmt::Display for LiveFileSearchToolInputParamTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            LiveFileSearchToolInputParamTypeEnum::FileSearch => f.write_str("file_search"),
         }
     }
 }

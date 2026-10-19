@@ -141,6 +141,18 @@ impl<'de> serde::Deserialize<'de> for BetaMCPToolAllowedTools {
     }
 }
 
+impl ::std::convert::From<Vec<String>> for BetaMCPToolAllowedTools {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
+    }
+}
+
+impl ::std::convert::From<Box<BetaMCPToolFilter>> for BetaMCPToolAllowedTools {
+    fn from(value: Box<BetaMCPToolFilter>) -> Self {
+        Self::BetaMCPToolFilter(value)
+    }
+}
+
 /// Give the model access to additional tools via remote Model Context Protocol
 /// (MCP) servers. [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
@@ -481,28 +493,5 @@ pub struct BetaMCPToolExecutionError {
 impl BetaMCPToolExecutionError {
     pub fn new(type_: BetaMCPToolExecutionErrorTypeEnum, content: serde_json::Value) -> Self {
         Self { type_, content }
-    }
-}
-
-/// A filter object to specify which tools are allowed.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct BetaMCPToolFilter {
-    /// List of allowed tool names.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tool_names: Option<Vec<String>>,
-    /// Indicates whether or not a tool modifies data or is read-only. If an
-    /// MCP server is [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),
-    /// it will match this filter.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub read_only: Option<bool>,
-}
-
-impl BetaMCPToolFilter {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        Self {
-            tool_names: None,
-            read_only: None,
-        }
     }
 }

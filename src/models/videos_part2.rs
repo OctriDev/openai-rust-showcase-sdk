@@ -3,6 +3,46 @@
 
 // videos domain models (part 2)
 
+impl VideoCharacterResource {
+    pub fn new(id: Option<String>, name: Option<String>, created_at: i64) -> Self {
+        Self {
+            id,
+            name,
+            created_at,
+        }
+    }
+}
+
+/// Typed representation of the `VideoContentVariant` API schema.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum VideoContentVariant {
+    #[default]
+    Video,
+    Thumbnail,
+    Spritesheet,
+    Unknown(String),
+}
+
+impl VideoContentVariant {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Video => "video",
+            Self::Thumbnail => "thumbnail",
+            Self::Spritesheet => "spritesheet",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for VideoContentVariant {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
 impl<'de> serde::Deserialize<'de> for VideoContentVariant {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where

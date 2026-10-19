@@ -3,6 +3,37 @@
 
 // realtime_realtime_response domain models (part 3)
 
+impl RealtimeResponseCreateParams {
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Self {
+        Self {
+            output_modalities: None,
+            instructions: None,
+            audio: None,
+            tools: None,
+            tool_choice: None,
+            parallel_tool_calls: None,
+            reasoning: None,
+            max_output_tokens: None,
+            conversation: None,
+            metadata: None,
+            prompt: None,
+            input: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(untagged)]
+pub enum RealtimeResponseCreateParamsToolChoice {
+    ToolChoiceOptions(ToolChoiceOptions),
+    ToolChoiceFunction(Box<ToolChoiceFunction>),
+    ToolChoiceMCP(Box<ToolChoiceMCP>),
+    /// A member whose `type` names no branch this SDK knows, kept as received.
+    #[serde(deserialize_with = "RealtimeResponseCreateParamsToolChoice::unknown_member")]
+    Unknown(serde_json::Value),
+}
+
 impl RealtimeResponseCreateParamsToolChoice {
     fn unknown_member<'de, D: serde::Deserializer<'de>>(
         deserializer: D,

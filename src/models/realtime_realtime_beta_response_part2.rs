@@ -104,6 +104,20 @@ impl<'de> serde::Deserialize<'de> for RealtimeBetaResponseMaxOutputTokens {
     }
 }
 
+impl ::std::convert::From<i64> for RealtimeBetaResponseMaxOutputTokens {
+    fn from(value: i64) -> Self {
+        Self::Integer(value)
+    }
+}
+
+impl ::std::convert::From<RealtimeBetaResponseMaxOutputTokensVariant1Enum>
+    for RealtimeBetaResponseMaxOutputTokens
+{
+    fn from(value: RealtimeBetaResponseMaxOutputTokensVariant1Enum) -> Self {
+        Self::Inf(value)
+    }
+}
+
 /// The response resource.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct RealtimeBetaResponse {
@@ -449,6 +463,20 @@ impl<'de> serde::Deserialize<'de> for RealtimeBetaResponseCreateParamsMaxOutputT
     }
 }
 
+impl ::std::convert::From<i64> for RealtimeBetaResponseCreateParamsMaxOutputTokens {
+    fn from(value: i64) -> Self {
+        Self::Integer(value)
+    }
+}
+
+impl ::std::convert::From<RealtimeBetaResponseCreateParamsMaxOutputTokensVariant1Enum>
+    for RealtimeBetaResponseCreateParamsMaxOutputTokens
+{
+    fn from(value: RealtimeBetaResponseCreateParamsMaxOutputTokensVariant1Enum) -> Self {
+        Self::Inf(value)
+    }
+}
+
 /// Optional enumerated value serialized in the `conversation` wire field.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub enum RealtimeBetaResponseCreateParamsConversation {
@@ -456,23 +484,4 @@ pub enum RealtimeBetaResponseCreateParamsConversation {
     Auto,
     None,
     Unknown(String),
-}
-
-impl RealtimeBetaResponseCreateParamsConversation {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Auto => "auto",
-            Self::None => "none",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for RealtimeBetaResponseCreateParamsConversation {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
 }

@@ -34,6 +34,18 @@ impl<'de> serde::Deserialize<'de> for BetaTokenCountsBodyInput {
     }
 }
 
+impl ::std::convert::From<String> for BetaTokenCountsBodyInput {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<BetaInputItem>> for BetaTokenCountsBodyInput {
+    fn from(value: Vec<BetaInputItem>) -> Self {
+        Self::BetaInputItemArray(value)
+    }
+}
+
 /// Typed representation of the `BetaTokenCountsBody` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct BetaTokenCountsBody {

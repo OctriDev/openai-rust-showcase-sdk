@@ -52,6 +52,30 @@ impl<'de> serde::Deserialize<'de> for ChatkitWorkflowStateVariablesValue {
     }
 }
 
+impl ::std::convert::From<String> for ChatkitWorkflowStateVariablesValue {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<i64> for ChatkitWorkflowStateVariablesValue {
+    fn from(value: i64) -> Self {
+        Self::Integer(value)
+    }
+}
+
+impl ::std::convert::From<bool> for ChatkitWorkflowStateVariablesValue {
+    fn from(value: bool) -> Self {
+        Self::Bool(value)
+    }
+}
+
+impl ::std::convert::From<f64> for ChatkitWorkflowStateVariablesValue {
+    fn from(value: f64) -> Self {
+        Self::Number(value)
+    }
+}
+
 /// Workflow metadata and state returned for the session.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct ChatkitWorkflow {

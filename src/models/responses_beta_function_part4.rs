@@ -241,6 +241,20 @@ impl<'de> serde::Deserialize<'de> for BetaFunctionToolCallOutputOutput {
     }
 }
 
+impl ::std::convert::From<String> for BetaFunctionToolCallOutputOutput {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<BetaFunctionAndCustomToolCallOutput>>
+    for BetaFunctionToolCallOutputOutput
+{
+    fn from(value: Vec<BetaFunctionAndCustomToolCallOutput>) -> Self {
+        Self::BetaFunctionAndCustomToolCallOutputArray(value)
+    }
+}
+
 /// Typed representation of the `BetaFunctionToolCallOutputResource` API schema.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct BetaFunctionToolCallOutputResource {

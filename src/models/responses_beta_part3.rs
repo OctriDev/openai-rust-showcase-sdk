@@ -3,6 +3,46 @@
 
 // responses_beta domain models (part 3)
 
+/// Typed representation of the `BetaHTTPError` API schema.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct BetaHTTPError {
+    /// Required enumerated value serialized in the `type` wire field.
+    #[serde(rename = "type")]
+    pub type_: BetaHTTPErrorTypeEnum,
+    /// Required `integer` value serialized in the `code` wire field.
+    pub code: i64,
+    /// Required `string` value serialized in the `message` wire field.
+    pub message: String,
+}
+
+impl BetaHTTPError {
+    pub fn new(type_: BetaHTTPErrorTypeEnum, code: i64, message: String) -> Self {
+        Self {
+            type_,
+            code,
+            message,
+        }
+    }
+}
+
+/// Typed representation of the `BetaHybridSearchOptions` API schema.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct BetaHybridSearchOptions {
+    /// The weight of the embedding in the reciprocal ranking fusion.
+    pub embedding_weight: f64,
+    /// The weight of the text in the reciprocal ranking fusion.
+    pub text_weight: f64,
+}
+
+impl BetaHybridSearchOptions {
+    pub fn new(embedding_weight: f64, text_weight: f64) -> Self {
+        Self {
+            embedding_weight,
+            text_weight,
+        }
+    }
+}
+
 /// Specify additional output data to include in the model response. Currently supported values are:
 /// \- `web_search_call.results`: Include the search results of the web search tool call.
 /// \- `web_search_call.action.sources`: Include the sources of the web search tool call.
@@ -438,29 +478,5 @@ pub struct BetaScreenshotParam {
 impl BetaScreenshotParam {
     pub fn new(type_: BetaScreenshotParamTypeEnum) -> Self {
         Self { type_ }
-    }
-}
-
-/// Specifies the event type. For a scroll action, this property is always set to `scroll`.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum BetaScrollParamTypeEnum {
-    #[serde(rename = "scroll")]
-    #[default]
-    Scroll,
-}
-
-impl BetaScrollParamTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Scroll => "scroll",
-        }
-    }
-}
-
-impl std::fmt::Display for BetaScrollParamTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            BetaScrollParamTypeEnum::Scroll => f.write_str("scroll"),
-        }
     }
 }

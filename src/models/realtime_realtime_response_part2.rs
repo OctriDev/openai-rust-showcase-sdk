@@ -83,6 +83,20 @@ impl<'de> serde::Deserialize<'de> for RealtimeResponseMaxOutputTokens {
     }
 }
 
+impl ::std::convert::From<i64> for RealtimeResponseMaxOutputTokens {
+    fn from(value: i64) -> Self {
+        Self::Integer(value)
+    }
+}
+
+impl ::std::convert::From<RealtimeResponseMaxOutputTokensVariant1Enum>
+    for RealtimeResponseMaxOutputTokens
+{
+    fn from(value: RealtimeResponseMaxOutputTokensVariant1Enum) -> Self {
+        Self::Inf(value)
+    }
+}
+
 /// The response resource.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct RealtimeResponse {
@@ -332,6 +346,20 @@ impl<'de> serde::Deserialize<'de> for RealtimeResponseCreateParamsMaxOutputToken
     }
 }
 
+impl ::std::convert::From<i64> for RealtimeResponseCreateParamsMaxOutputTokens {
+    fn from(value: i64) -> Self {
+        Self::Integer(value)
+    }
+}
+
+impl ::std::convert::From<RealtimeResponseCreateParamsMaxOutputTokensVariant1Enum>
+    for RealtimeResponseCreateParamsMaxOutputTokens
+{
+    fn from(value: RealtimeResponseCreateParamsMaxOutputTokensVariant1Enum) -> Self {
+        Self::Inf(value)
+    }
+}
+
 /// Optional enumerated value serialized in the `conversation` wire field.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub enum RealtimeResponseCreateParamsConversation {
@@ -449,35 +477,4 @@ pub struct RealtimeResponseCreateParams {
     /// using their id.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub input: Option<Vec<RealtimeConversationItem>>,
-}
-
-impl RealtimeResponseCreateParams {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        Self {
-            output_modalities: None,
-            instructions: None,
-            audio: None,
-            tools: None,
-            tool_choice: None,
-            parallel_tool_calls: None,
-            reasoning: None,
-            max_output_tokens: None,
-            conversation: None,
-            metadata: None,
-            prompt: None,
-            input: None,
-        }
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum RealtimeResponseCreateParamsToolChoice {
-    ToolChoiceOptions(ToolChoiceOptions),
-    ToolChoiceFunction(Box<ToolChoiceFunction>),
-    ToolChoiceMCP(Box<ToolChoiceMCP>),
-    /// A member whose `type` names no branch this SDK knows, kept as received.
-    #[serde(deserialize_with = "RealtimeResponseCreateParamsToolChoice::unknown_member")]
-    Unknown(serde_json::Value),
 }

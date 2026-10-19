@@ -99,6 +99,20 @@ impl<'de> serde::Deserialize<'de> for CreateFineTuningJobRequestHyperparametersB
     }
 }
 
+impl ::std::convert::From<CreateFineTuningJobRequestHyperparametersBatchSizeVariant0Enum>
+    for CreateFineTuningJobRequestHyperparametersBatchSize
+{
+    fn from(value: CreateFineTuningJobRequestHyperparametersBatchSizeVariant0Enum) -> Self {
+        Self::Auto(value)
+    }
+}
+
+impl ::std::convert::From<i64> for CreateFineTuningJobRequestHyperparametersBatchSize {
+    fn from(value: i64) -> Self {
+        Self::Integer(value)
+    }
+}
+
 /// Optional enumerated value serialized in the `learning_rate_multiplier` wire field.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub enum CreateFineTuningJobRequestHyperparametersLearningRateMultiplierVariant0Enum {
@@ -184,6 +198,24 @@ impl<'de> serde::Deserialize<'de>
     }
 }
 
+impl
+    ::std::convert::From<
+        CreateFineTuningJobRequestHyperparametersLearningRateMultiplierVariant0Enum,
+    > for CreateFineTuningJobRequestHyperparametersLearningRateMultiplier
+{
+    fn from(
+        value: CreateFineTuningJobRequestHyperparametersLearningRateMultiplierVariant0Enum,
+    ) -> Self {
+        Self::Auto(value)
+    }
+}
+
+impl ::std::convert::From<f64> for CreateFineTuningJobRequestHyperparametersLearningRateMultiplier {
+    fn from(value: f64) -> Self {
+        Self::Number(value)
+    }
+}
+
 /// Optional enumerated value serialized in the `n_epochs` wire field.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub enum CreateFineTuningJobRequestHyperparametersNEpochsVariant0Enum {
@@ -262,6 +294,20 @@ impl<'de> serde::Deserialize<'de> for CreateFineTuningJobRequestHyperparametersN
                 "no CreateFineTuningJobRequestHyperparametersNEpochs branch accepts this payload",
             )
         })
+    }
+}
+
+impl ::std::convert::From<CreateFineTuningJobRequestHyperparametersNEpochsVariant0Enum>
+    for CreateFineTuningJobRequestHyperparametersNEpochs
+{
+    fn from(value: CreateFineTuningJobRequestHyperparametersNEpochsVariant0Enum) -> Self {
+        Self::Auto(value)
+    }
+}
+
+impl ::std::convert::From<i64> for CreateFineTuningJobRequestHyperparametersNEpochs {
+    fn from(value: i64) -> Self {
+        Self::Integer(value)
     }
 }
 
@@ -397,125 +443,5 @@ impl CreateFineTuningJobRequestIntegrationsItem {
         wandb: CreateFineTuningJobRequestIntegrationsItemWandb,
     ) -> Self {
         Self { type_, wandb }
-    }
-}
-
-/// Typed representation of the `CreateFineTuningJobRequest` API schema.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct CreateFineTuningJobRequest {
-    /// The name of the model to fine-tune. You can select one of the
-    /// [supported models](https://developers.openai.com/api/docs/guides/model-optimization#fine-tuning-methods).
-    pub model: String,
-    /// The ID of an uploaded file that contains training data.
-    ///
-    /// See [upload file](https://developers.openai.com/api/reference/resources/files/methods/create) for how to upload a file.
-    ///
-    /// Your dataset must be formatted as a JSONL file. Additionally, you must upload your file with the purpose `fine-tune`.
-    ///
-    /// The contents of the file should differ depending on if the model uses the [chat](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#formatting-your-data), [completions](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#formatting-your-data) format, or if the fine-tuning method uses the [preference](https://developers.openai.com/api/docs/guides/direct-preference-optimization) format.
-    ///
-    /// See the [fine-tuning guide](https://developers.openai.com/api/docs/guides/model-optimization) for more details.
-    pub training_file: String,
-    /// The hyperparameters used for the fine-tuning job.
-    /// This value is now deprecated in favor of `method`, and should be passed in under the `method` parameter.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub hyperparameters: Option<CreateFineTuningJobRequestHyperparameters>,
-    /// A string of up to 64 characters that will be added to your fine-tuned model name.
-    ///
-    /// For example, a `suffix` of "custom-model-name" would produce a model name like `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub suffix: Option<Option<String>>,
-    /// The ID of an uploaded file that contains validation data.
-    ///
-    /// If you provide this file, the data is used to generate validation
-    /// metrics periodically during fine-tuning. These metrics can be viewed in
-    /// the fine-tuning results file.
-    /// The same data should not be present in both train and validation files.
-    ///
-    /// Your dataset must be formatted as a JSONL file. You must upload your file with the purpose `fine-tune`.
-    ///
-    /// See the [fine-tuning guide](https://developers.openai.com/api/docs/guides/model-optimization) for more details.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub validation_file: Option<Option<String>>,
-    /// A list of integrations to enable for your fine-tuning job.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub integrations: Option<Option<Vec<CreateFineTuningJobRequestIntegrationsItem>>>,
-    /// The seed controls the reproducibility of the job. Passing in the same seed and job parameters should produce the same results, but may differ in rare cases.
-    /// If a seed is not specified, one will be generated for you.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub seed: Option<Option<i64>>,
-    /// The method used for fine-tuning.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub method: Option<FineTuneMethod>,
-    /// Set of 16 key-value pairs that can be attached to an object. This can be
-    /// useful for storing additional information about the object in a structured
-    /// format, and querying for objects via API or the dashboard.
-    ///
-    /// Keys are strings with a maximum length of 64 characters. Values are strings
-    /// with a maximum length of 512 characters.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "crate::client::double_option"
-    )]
-    pub metadata: Option<Option<Metadata>>,
-}
-
-impl CreateFineTuningJobRequest {
-    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
-        if let Some(Some(value)) = self.suffix.as_ref() {
-            crate::validation::validate_length(
-                "suffix",
-                value,
-                crate::validation::LengthOpts {
-                    min: Some(1),
-                    max: Some(64),
-                },
-            )?;
-        }
-        if let Some(Some(value)) = self.seed.as_ref() {
-            crate::validation::validate_range(
-                "seed",
-                *value as f64,
-                crate::validation::RangeOpts {
-                    min: Some(0_f64),
-                    max: Some(2147483647_f64),
-                    ..Default::default()
-                },
-            )?;
-        }
-        Ok(())
-    }
-
-    pub fn new(model: String, training_file: String) -> Result<Self, crate::errors::SdkError> {
-        let value = Self {
-            model,
-            training_file,
-            hyperparameters: None,
-            suffix: None,
-            validation_file: None,
-            integrations: None,
-            seed: None,
-            method: None,
-            metadata: None,
-        };
-        value.validate_constraints()?;
-        Ok(value)
     }
 }

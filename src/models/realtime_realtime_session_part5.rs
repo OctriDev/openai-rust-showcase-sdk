@@ -3,6 +3,220 @@
 
 // realtime_realtime_session domain models (part 5)
 
+/// Optional object value serialized in the `input` wire field.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct RealtimeSessionCreateResponseAudioInput {
+    /// Optional API value serialized in the `format` wire field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub format: Option<RealtimeAudioFormats>,
+    /// Configuration for input audio transcription.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transcription: Option<AudioTranscriptionResponse>,
+    /// Configuration for input audio noise reduction.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub noise_reduction: Option<Option<RealtimeSessionCreateResponseAudioInputNoiseReduction>>,
+    /// Configuration for turn detection.
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        default,
+        with = "crate::client::double_option"
+    )]
+    pub turn_detection: Option<Option<RealtimeSessionCreateResponseAudioInputTurnDetection>>,
+}
+
+impl RealtimeSessionCreateResponseAudioInput {
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Self {
+        Self {
+            format: None,
+            transcription: None,
+            noise_reduction: None,
+            turn_detection: None,
+        }
+    }
+}
+
+/// Optional object value serialized in the `output` wire field.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct RealtimeSessionCreateResponseAudioOutput {
+    /// Optional API value serialized in the `format` wire field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub format: Option<RealtimeAudioFormats>,
+    /// Optional `string` value serialized in the `voice` wire field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub voice: Option<VoiceIdsShared>,
+    /// Optional `number` value serialized in the `speed` wire field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub speed: Option<f64>,
+}
+
+impl RealtimeSessionCreateResponseAudioOutput {
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Self {
+        Self {
+            format: None,
+            voice: None,
+            speed: None,
+        }
+    }
+}
+
+/// Configuration for input and output audio for the session.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct RealtimeSessionCreateResponseAudio {
+    /// Optional object value serialized in the `input` wire field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub input: Option<RealtimeSessionCreateResponseAudioInput>,
+    /// Optional object value serialized in the `output` wire field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub output: Option<RealtimeSessionCreateResponseAudioOutput>,
+}
+
+impl RealtimeSessionCreateResponseAudio {
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Self {
+        Self {
+            input: None,
+            output: None,
+        }
+    }
+}
+
+/// Configuration for turn detection. Can be set to `null` to turn off. Server
+/// VAD means that the model will detect the start and end of speech based on
+/// audio volume and respond at the end of user speech.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct RealtimeSessionCreateResponseTurnDetection {
+    /// Type of turn detection, only `server_vad` is currently supported.
+    #[serde(rename = "type", skip_serializing_if = "Option::is_none")]
+    pub type_: Option<String>,
+    /// Activation threshold for VAD (0.0 to 1.0), this defaults to 0.5. A
+    /// higher threshold will require louder audio to activate the model, and
+    /// thus might perform better in noisy environments.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub threshold: Option<f64>,
+    /// Amount of audio to include before the VAD detected speech (in
+    /// milliseconds). Defaults to 300ms.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub prefix_padding_ms: Option<i64>,
+    /// Duration of silence to detect speech stop (in milliseconds). Defaults
+    /// to 500ms. With shorter values the model will respond more quickly,
+    /// but may jump in on short pauses from the user.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub silence_duration_ms: Option<i64>,
+}
+
+impl RealtimeSessionCreateResponseTurnDetection {
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Self {
+        Self {
+            type_: None,
+            threshold: None,
+            prefix_padding_ms: None,
+            silence_duration_ms: None,
+        }
+    }
+}
+
+/// Optional enumerated value serialized in the `max_output_tokens` wire field.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum {
+    #[default]
+    Inf,
+    Unknown(String),
+}
+
+impl RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Inf => "inf",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "inf" => Self::Inf,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(untagged)]
+pub enum RealtimeSessionCreateResponseMaxOutputTokens {
+    Integer(i64),
+    Inf(RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum),
+}
+
+impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateResponseMaxOutputTokens {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<i64>(value.clone()) {
+            let candidate = Self::Integer(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum,
+        >(value.clone())
+        {
+            let candidate = Self::Inf(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no RealtimeSessionCreateResponseMaxOutputTokens branch accepts this payload",
+            )
+        })
+    }
+}
+
+impl ::std::convert::From<i64> for RealtimeSessionCreateResponseMaxOutputTokens {
+    fn from(value: i64) -> Self {
+        Self::Integer(value)
+    }
+}
+
+impl ::std::convert::From<RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum>
+    for RealtimeSessionCreateResponseMaxOutputTokens
+{
+    fn from(value: RealtimeSessionCreateResponseMaxOutputTokensVariant1Enum) -> Self {
+        Self::Inf(value)
+    }
+}
+
 /// A Realtime session configuration object.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct RealtimeSessionCreateResponse {
@@ -276,202 +490,5 @@ impl RealtimeSessionCreateResponseGAAudioInput {
             noise_reduction: None,
             turn_detection: None,
         }
-    }
-}
-
-/// Optional object value serialized in the `output` wire field.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct RealtimeSessionCreateResponseGAAudioOutput {
-    /// The format of the output audio.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub format: Option<RealtimeAudioFormats>,
-    /// The voice the model uses to respond. Voice cannot be changed during the
-    /// session once the model has responded with audio at least once. Current
-    /// voice options are `alloy`, `ash`, `ballad`, `coral`, `echo`, `sage`,
-    /// `shimmer`, `verse`, `marin`, and `cedar`. We recommend `marin` and `cedar` for
-    /// best quality.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub voice: Option<VoiceIdsShared>,
-    /// The speed of the model's spoken response as a multiple of the original speed.
-    /// 1.0 is the default speed. 0.25 is the minimum speed. 1.5 is the maximum speed. This value can only be changed in between model turns, not while a response is in progress.
-    ///
-    /// This parameter is a post-processing adjustment to the audio after it is generated, it's
-    /// also possible to prompt the model to speak faster or slower.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub speed: Option<f64>,
-}
-
-impl RealtimeSessionCreateResponseGAAudioOutput {
-    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
-        if let Some(value) = self.speed.as_ref() {
-            crate::validation::validate_range(
-                "speed",
-                *value,
-                crate::validation::RangeOpts {
-                    min: Some(0.25_f64),
-                    max: Some(1.5_f64),
-                    ..Default::default()
-                },
-            )?;
-        }
-        Ok(())
-    }
-
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Result<Self, crate::errors::SdkError> {
-        let value = Self {
-            format: None,
-            voice: None,
-            speed: None,
-        };
-        value.validate_constraints()?;
-        Ok(value)
-    }
-}
-
-/// Configuration for input and output audio.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct RealtimeSessionCreateResponseGAAudio {
-    /// Optional object value serialized in the `input` wire field.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub input: Option<RealtimeSessionCreateResponseGAAudioInput>,
-    /// Optional object value serialized in the `output` wire field.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub output: Option<RealtimeSessionCreateResponseGAAudioOutput>,
-}
-
-impl RealtimeSessionCreateResponseGAAudio {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        Self {
-            input: None,
-            output: None,
-        }
-    }
-}
-
-/// Required enumerated value serialized in the `include[]` wire field.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum RealtimeSessionCreateResponseGAIncludeItemEnum {
-    #[default]
-    ItemInputAudioTranscriptionLogprobs,
-    Unknown(String),
-}
-
-impl RealtimeSessionCreateResponseGAIncludeItemEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::ItemInputAudioTranscriptionLogprobs => "item.input_audio_transcription.logprobs",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for RealtimeSessionCreateResponseGAIncludeItemEnum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateResponseGAIncludeItemEnum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "item.input_audio_transcription.logprobs" => Self::ItemInputAudioTranscriptionLogprobs,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for RealtimeSessionCreateResponseGAIncludeItemEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-/// Optional enumerated value serialized in the `max_output_tokens` wire field.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum {
-    #[default]
-    Inf,
-    Unknown(String),
-}
-
-impl RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Inf => "inf",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "inf" => Self::Inf,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize)]
-#[serde(untagged)]
-pub enum RealtimeSessionCreateResponseGAMaxOutputTokens {
-    Integer(i64),
-    Inf(RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum),
-}
-
-impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateResponseGAMaxOutputTokens {
-    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
-        let mut lossy = None;
-        if let Ok(branch) = serde_json::from_value::<i64>(value.clone()) {
-            let candidate = Self::Integer(branch);
-            if crate::client::keeps_every_key(&value, &candidate) {
-                return Ok(candidate);
-            }
-            lossy.get_or_insert(candidate);
-        }
-        if let Ok(branch) = serde_json::from_value::<
-            RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum,
-        >(value.clone())
-        {
-            let candidate = Self::Inf(branch);
-            if crate::client::keeps_every_key(&value, &candidate) {
-                return Ok(candidate);
-            }
-            lossy.get_or_insert(candidate);
-        }
-        lossy.ok_or_else(|| {
-            serde::de::Error::custom(
-                "no RealtimeSessionCreateResponseGAMaxOutputTokens branch accepts this payload",
-            )
-        })
     }
 }

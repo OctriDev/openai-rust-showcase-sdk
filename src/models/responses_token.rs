@@ -34,6 +34,18 @@ impl<'de> serde::Deserialize<'de> for TokenCountsBodyInput {
     }
 }
 
+impl ::std::convert::From<String> for TokenCountsBodyInput {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<InputItem>> for TokenCountsBodyInput {
+    fn from(value: Vec<InputItem>) -> Self {
+        Self::InputItemArray(value)
+    }
+}
+
 /// Typed representation of the `TokenCountsBody` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct TokenCountsBody {

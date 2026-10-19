@@ -3,6 +3,14 @@
 
 // evals_create domain models (part 2)
 
+impl std::fmt::Display for CreateEvalLabelModelGraderTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            CreateEvalLabelModelGraderTypeEnum::LabelModel => f.write_str("label_model"),
+        }
+    }
+}
+
 /// A LabelModelGrader object which uses a model to assign labels to each item
 /// in the evaluation.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
@@ -401,6 +409,26 @@ impl<'de> serde::Deserialize<'de>
     }
 }
 
+impl
+    ::std::convert::From<
+        Box<CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItemVariant0>,
+    > for CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItem
+{
+    fn from(
+        value: Box<CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItemVariant0>,
+    ) -> Self {
+        Self::ChatMessage(value)
+    }
+}
+
+impl ::std::convert::From<Box<EvalItem>>
+    for CreateEvalResponsesRunDataSourceInputMessagesVariant0TemplateItem
+{
+    fn from(value: Box<EvalItem>) -> Self {
+        Self::EvalItem(value)
+    }
+}
+
 /// Optional object value serialized in the `input_messages` wire field.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct CreateEvalResponsesRunDataSourceInputMessagesVariant0 {
@@ -516,16 +544,4 @@ pub enum CreateEvalResponsesRunDataSourceSource {
     /// A member whose `type` names no branch this SDK knows, kept as received.
     #[serde(deserialize_with = "CreateEvalResponsesRunDataSourceSource::unknown_member")]
     Unknown(serde_json::Value),
-}
-
-impl CreateEvalResponsesRunDataSourceSource {
-    fn unknown_member<'de, D: serde::Deserializer<'de>>(
-        deserializer: D,
-    ) -> Result<serde_json::Value, D::Error> {
-        crate::client::unknown_union_member(
-            deserializer,
-            "type",
-            &["file_content", "file_id", "responses"],
-        )
-    }
 }
