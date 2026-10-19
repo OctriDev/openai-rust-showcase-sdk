@@ -84,6 +84,20 @@ impl<'de> serde::Deserialize<'de> for PredictionContentContent {
     }
 }
 
+impl ::std::convert::From<String> for PredictionContentContent {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<ChatCompletionRequestMessageContentPartText>>
+    for PredictionContentContent
+{
+    fn from(value: Vec<ChatCompletionRequestMessageContentPartText>) -> Self {
+        Self::ChatCompletionRequestMessageContentPartTextArray(value)
+    }
+}
+
 /// Static predicted output content, such as the content of a text file that is
 /// being regenerated.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]

@@ -107,6 +107,20 @@ impl<'de> serde::Deserialize<'de> for BetaUserMessageItemParamContent {
     }
 }
 
+impl ::std::convert::From<Vec<BetaUserMessageItemParamContentItem>>
+    for BetaUserMessageItemParamContent
+{
+    fn from(value: Vec<BetaUserMessageItemParamContentItem>) -> Self {
+        Self::ItemArray(value)
+    }
+}
+
+impl ::std::convert::From<String> for BetaUserMessageItemParamContent {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
 /// Typed representation of the `BetaUserMessageItemParam` API schema.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct BetaUserMessageItemParam {

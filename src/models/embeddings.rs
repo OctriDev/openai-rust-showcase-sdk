@@ -50,6 +50,30 @@ impl<'de> serde::Deserialize<'de> for CreateEmbeddingRequestInput {
     }
 }
 
+impl ::std::convert::From<String> for CreateEmbeddingRequestInput {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<String>> for CreateEmbeddingRequestInput {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
+    }
+}
+
+impl ::std::convert::From<Vec<i64>> for CreateEmbeddingRequestInput {
+    fn from(value: Vec<i64>) -> Self {
+        Self::IntegerArray(value)
+    }
+}
+
+impl ::std::convert::From<Vec<Vec<i64>>> for CreateEmbeddingRequestInput {
+    fn from(value: Vec<Vec<i64>>) -> Self {
+        Self::IntegerArrayArray(value)
+    }
+}
+
 /// The format to return the embeddings in. Can be either `float` or [`base64`](https://pypi.org/project/pybase64/).
 #[derive(Debug, Clone, PartialEq, Default)]
 pub enum CreateEmbeddingRequestEncodingFormatEnum {
@@ -267,6 +291,18 @@ impl<'de> serde::Deserialize<'de> for EmbeddingEmbedding {
         lossy.ok_or_else(|| {
             serde::de::Error::custom("no EmbeddingEmbedding branch accepts this payload")
         })
+    }
+}
+
+impl ::std::convert::From<Vec<f64>> for EmbeddingEmbedding {
+    fn from(value: Vec<f64>) -> Self {
+        Self::NumberArray(value)
+    }
+}
+
+impl ::std::convert::From<String> for EmbeddingEmbedding {
+    fn from(value: String) -> Self {
+        Self::String(value)
     }
 }
 

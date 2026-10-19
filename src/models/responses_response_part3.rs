@@ -3,6 +3,18 @@
 
 // responses_response domain models (part 3)
 
+/// Emitted when a response is queued and waiting to be processed.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct ResponseQueuedEvent {
+    /// The type of the event. Always 'response.queued'.
+    #[serde(rename = "type")]
+    pub type_: ResponseQueuedEventTypeEnum,
+    /// The full response object that is queued.
+    pub response: Response,
+    /// The sequence number for this event.
+    pub sequence_number: i64,
+}
+
 impl ResponseQueuedEvent {
     pub fn new(
         type_: ResponseQueuedEventTypeEnum,

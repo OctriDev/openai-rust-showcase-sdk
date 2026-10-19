@@ -3,6 +3,18 @@
 
 // assistants_create domain models (part 4)
 
+impl CreateThreadAndRunRequestToolsItem {
+    fn unknown_member<'de, D: serde::Deserializer<'de>>(
+        deserializer: D,
+    ) -> Result<serde_json::Value, D::Error> {
+        crate::client::unknown_union_member(
+            deserializer,
+            "type",
+            &["code_interpreter", "file_search", "function"],
+        )
+    }
+}
+
 /// Optional object value serialized in the `code_interpreter` wire field.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct CreateThreadRequestToolResourcesCodeInterpreter {

@@ -3,6 +3,217 @@
 
 // realtime_realtime_session domain models (part 6)
 
+/// Optional object value serialized in the `output` wire field.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct RealtimeSessionCreateResponseGAAudioOutput {
+    /// The format of the output audio.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub format: Option<RealtimeAudioFormats>,
+    /// The voice the model uses to respond. Voice cannot be changed during the
+    /// session once the model has responded with audio at least once. Current
+    /// voice options are `alloy`, `ash`, `ballad`, `coral`, `echo`, `sage`,
+    /// `shimmer`, `verse`, `marin`, and `cedar`. We recommend `marin` and `cedar` for
+    /// best quality.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub voice: Option<VoiceIdsShared>,
+    /// The speed of the model's spoken response as a multiple of the original speed.
+    /// 1.0 is the default speed. 0.25 is the minimum speed. 1.5 is the maximum speed. This value can only be changed in between model turns, not while a response is in progress.
+    ///
+    /// This parameter is a post-processing adjustment to the audio after it is generated, it's
+    /// also possible to prompt the model to speak faster or slower.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub speed: Option<f64>,
+}
+
+impl RealtimeSessionCreateResponseGAAudioOutput {
+    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
+        if let Some(value) = self.speed.as_ref() {
+            crate::validation::validate_range(
+                "speed",
+                *value,
+                crate::validation::RangeOpts {
+                    min: Some(0.25_f64),
+                    max: Some(1.5_f64),
+                    ..Default::default()
+                },
+            )?;
+        }
+        Ok(())
+    }
+
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Result<Self, crate::errors::SdkError> {
+        let value = Self {
+            format: None,
+            voice: None,
+            speed: None,
+        };
+        value.validate_constraints()?;
+        Ok(value)
+    }
+}
+
+/// Configuration for input and output audio.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct RealtimeSessionCreateResponseGAAudio {
+    /// Optional object value serialized in the `input` wire field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub input: Option<RealtimeSessionCreateResponseGAAudioInput>,
+    /// Optional object value serialized in the `output` wire field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub output: Option<RealtimeSessionCreateResponseGAAudioOutput>,
+}
+
+impl RealtimeSessionCreateResponseGAAudio {
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Self {
+        Self {
+            input: None,
+            output: None,
+        }
+    }
+}
+
+/// Required enumerated value serialized in the `include[]` wire field.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum RealtimeSessionCreateResponseGAIncludeItemEnum {
+    #[default]
+    ItemInputAudioTranscriptionLogprobs,
+    Unknown(String),
+}
+
+impl RealtimeSessionCreateResponseGAIncludeItemEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::ItemInputAudioTranscriptionLogprobs => "item.input_audio_transcription.logprobs",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for RealtimeSessionCreateResponseGAIncludeItemEnum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateResponseGAIncludeItemEnum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "item.input_audio_transcription.logprobs" => Self::ItemInputAudioTranscriptionLogprobs,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for RealtimeSessionCreateResponseGAIncludeItemEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+/// Optional enumerated value serialized in the `max_output_tokens` wire field.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum {
+    #[default]
+    Inf,
+    Unknown(String),
+}
+
+impl RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Inf => "inf",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "inf" => Self::Inf,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(untagged)]
+pub enum RealtimeSessionCreateResponseGAMaxOutputTokens {
+    Integer(i64),
+    Inf(RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum),
+}
+
+impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateResponseGAMaxOutputTokens {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
+        let mut lossy = None;
+        if let Ok(branch) = serde_json::from_value::<i64>(value.clone()) {
+            let candidate = Self::Integer(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        if let Ok(branch) = serde_json::from_value::<
+            RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum,
+        >(value.clone())
+        {
+            let candidate = Self::Inf(branch);
+            if crate::client::keeps_every_key(&value, &candidate) {
+                return Ok(candidate);
+            }
+            lossy.get_or_insert(candidate);
+        }
+        lossy.ok_or_else(|| {
+            serde::de::Error::custom(
+                "no RealtimeSessionCreateResponseGAMaxOutputTokens branch accepts this payload",
+            )
+        })
+    }
+}
+
+impl ::std::convert::From<i64> for RealtimeSessionCreateResponseGAMaxOutputTokens {
+    fn from(value: i64) -> Self {
+        Self::Integer(value)
+    }
+}
+
+impl ::std::convert::From<RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum>
+    for RealtimeSessionCreateResponseGAMaxOutputTokens
+{
+    fn from(value: RealtimeSessionCreateResponseGAMaxOutputTokensVariant1Enum) -> Self {
+        Self::Inf(value)
+    }
+}
+
 /// A Realtime session configuration object.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct RealtimeSessionCreateResponseGA {
@@ -287,157 +498,5 @@ impl serde::Serialize for RealtimeSessionCreateResponseTracingVariant0Enum {
         S: serde::Serializer,
     {
         serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for RealtimeSessionCreateResponseTracingVariant0Enum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "auto" => Self::Auto,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for RealtimeSessionCreateResponseTracingVariant0Enum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-/// Granular configuration for tracing.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct RealtimeSessionCreateResponseTracingVariant1 {
-    /// The name of the workflow to attach to this trace. This is used to
-    /// name the trace in the traces dashboard.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub workflow_name: Option<String>,
-    /// The group id to attach to this trace to enable filtering and
-    /// grouping in the traces dashboard.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub group_id: Option<String>,
-    /// The arbitrary metadata to attach to this trace to enable
-    /// filtering in the traces dashboard.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<serde_json::Value>,
-}
-
-impl RealtimeSessionCreateResponseTracingVariant1 {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        Self {
-            workflow_name: None,
-            group_id: None,
-            metadata: None,
-        }
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum RealtimeSessionCreateResponseTracing {
-    Auto(RealtimeSessionCreateResponseTracingVariant0Enum),
-    TracingConfiguration(Box<RealtimeSessionCreateResponseTracingVariant1>),
-}
-
-impl RealtimeSessionCreateResponseTracing {
-    pub fn as_string_wire_value(&self) -> Option<&str> {
-        match self {
-            Self::Auto(value) => Some(value.as_str()),
-            _ => None,
-        }
-    }
-}
-
-/// Default tracing mode for the session.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum RealtimeSessionTracingVariant0Enum {
-    #[default]
-    Auto,
-    Unknown(String),
-}
-
-impl RealtimeSessionTracingVariant0Enum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Auto => "auto",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for RealtimeSessionTracingVariant0Enum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for RealtimeSessionTracingVariant0Enum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "auto" => Self::Auto,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for RealtimeSessionTracingVariant0Enum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-/// Granular configuration for tracing.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct RealtimeSessionTracingVariant1 {
-    /// The name of the workflow to attach to this trace. This is used to
-    /// name the trace in the traces dashboard.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub workflow_name: Option<String>,
-    /// The group id to attach to this trace to enable filtering and
-    /// grouping in the traces dashboard.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub group_id: Option<String>,
-    /// The arbitrary metadata to attach to this trace to enable
-    /// filtering in the traces dashboard.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<serde_json::Value>,
-}
-
-impl RealtimeSessionTracingVariant1 {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        Self {
-            workflow_name: None,
-            group_id: None,
-            metadata: None,
-        }
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum RealtimeSessionTracing {
-    Auto(RealtimeSessionTracingVariant0Enum),
-    TracingConfiguration(Box<RealtimeSessionTracingVariant1>),
-}
-
-impl RealtimeSessionTracing {
-    pub fn as_string_wire_value(&self) -> Option<&str> {
-        match self {
-            Self::Auto(value) => Some(value.as_str()),
-            _ => None,
-        }
     }
 }

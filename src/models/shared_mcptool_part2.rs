@@ -3,6 +3,16 @@
 
 // shared_mcptool domain models (part 2)
 
+impl MCPToolFilter {
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Self {
+        Self {
+            tool_names: None,
+            read_only: None,
+        }
+    }
+}
+
 /// Specify which of the MCP server's tools require approval. Can be
 /// `always`, `never`, or a filter object associated with tools
 /// that require approval.

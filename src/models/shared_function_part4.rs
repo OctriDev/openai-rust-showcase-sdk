@@ -3,6 +3,47 @@
 
 // shared_function domain models (part 4)
 
+impl FunctionToolCallStatusEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::InProgress => "in_progress",
+            Self::Completed => "completed",
+            Self::Incomplete => "incomplete",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for FunctionToolCallStatusEnum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for FunctionToolCallStatusEnum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "in_progress" => Self::InProgress,
+            "completed" => Self::Completed,
+            "incomplete" => Self::Incomplete,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for FunctionToolCallStatusEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// A tool call to run a function. See the
 /// [function calling guide](https://developers.openai.com/api/docs/guides/function-calling) for more information.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
@@ -115,6 +156,18 @@ impl<'de> serde::Deserialize<'de> for FunctionToolCallOutputOutput {
         lossy.ok_or_else(|| {
             serde::de::Error::custom("no FunctionToolCallOutputOutput branch accepts this payload")
         })
+    }
+}
+
+impl ::std::convert::From<String> for FunctionToolCallOutputOutput {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<FunctionAndCustomToolCallOutput>> for FunctionToolCallOutputOutput {
+    fn from(value: Vec<FunctionAndCustomToolCallOutput>) -> Self {
+        Self::FunctionAndCustomToolCallOutputArray(value)
     }
 }
 

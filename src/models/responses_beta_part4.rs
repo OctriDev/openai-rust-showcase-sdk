@@ -3,6 +3,30 @@
 
 // responses_beta domain models (part 4)
 
+/// Specifies the event type. For a scroll action, this property is always set to `scroll`.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum BetaScrollParamTypeEnum {
+    #[serde(rename = "scroll")]
+    #[default]
+    Scroll,
+}
+
+impl BetaScrollParamTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Scroll => "scroll",
+        }
+    }
+}
+
+impl std::fmt::Display for BetaScrollParamTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            BetaScrollParamTypeEnum::Scroll => f.write_str("scroll"),
+        }
+    }
+}
+
 /// A scroll action.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct BetaScrollParam {

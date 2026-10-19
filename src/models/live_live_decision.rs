@@ -34,6 +34,18 @@ impl<'de> serde::Deserialize<'de> for LiveDecisionChoiceParamValue {
     }
 }
 
+impl ::std::convert::From<String> for LiveDecisionChoiceParamValue {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<bool> for LiveDecisionChoiceParamValue {
+    fn from(value: bool) -> Self {
+        Self::Bool(value)
+    }
+}
+
 /// Typed representation of the `LiveDecisionChoiceParam` API schema.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct LiveDecisionChoiceParam {
@@ -491,18 +503,5 @@ impl serde::Serialize for LiveDecisionInputItemParamRoleEnum {
         S: serde::Serializer,
     {
         serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for LiveDecisionInputItemParamRoleEnum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "user" => Self::User,
-            _ => Self::Unknown(value),
-        })
     }
 }

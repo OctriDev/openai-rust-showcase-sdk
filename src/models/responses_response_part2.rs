@@ -3,6 +3,14 @@
 
 // responses_response domain models (part 2)
 
+impl std::fmt::Display for ResponseCompletedEventTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ResponseCompletedEventTypeEnum::ResponseCompleted => f.write_str("response.completed"),
+        }
+    }
+}
+
 /// Emitted when the model response is complete.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct ResponseCompletedEvent {
@@ -513,16 +521,4 @@ impl std::fmt::Display for ResponseQueuedEventTypeEnum {
             ResponseQueuedEventTypeEnum::ResponseQueued => f.write_str("response.queued"),
         }
     }
-}
-
-/// Emitted when a response is queued and waiting to be processed.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct ResponseQueuedEvent {
-    /// The type of the event. Always 'response.queued'.
-    #[serde(rename = "type")]
-    pub type_: ResponseQueuedEventTypeEnum,
-    /// The full response object that is queued.
-    pub response: Response,
-    /// The sequence number for this event.
-    pub sequence_number: i64,
 }

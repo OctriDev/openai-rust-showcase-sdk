@@ -50,6 +50,30 @@ impl<'de> serde::Deserialize<'de> for CreateCompletionRequestPrompt {
     }
 }
 
+impl ::std::convert::From<String> for CreateCompletionRequestPrompt {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<String>> for CreateCompletionRequestPrompt {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
+    }
+}
+
+impl ::std::convert::From<Vec<i64>> for CreateCompletionRequestPrompt {
+    fn from(value: Vec<i64>) -> Self {
+        Self::IntegerArray(value)
+    }
+}
+
+impl ::std::convert::From<Vec<Vec<i64>>> for CreateCompletionRequestPrompt {
+    fn from(value: Vec<Vec<i64>>) -> Self {
+        Self::IntegerArrayArray(value)
+    }
+}
+
 /// Typed representation of the `CreateCompletionRequest` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct CreateCompletionRequest {

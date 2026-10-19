@@ -335,6 +335,18 @@ impl<'de> serde::Deserialize<'de> for BetaComparisonFilterValueVariant3Item {
     }
 }
 
+impl ::std::convert::From<String> for BetaComparisonFilterValueVariant3Item {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<f64> for BetaComparisonFilterValueVariant3Item {
+    fn from(value: f64) -> Self {
+        Self::Number(value)
+    }
+}
+
 #[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum BetaComparisonFilterValue {
@@ -381,6 +393,32 @@ impl<'de> serde::Deserialize<'de> for BetaComparisonFilterValue {
         lossy.ok_or_else(|| {
             serde::de::Error::custom("no BetaComparisonFilterValue branch accepts this payload")
         })
+    }
+}
+
+impl ::std::convert::From<String> for BetaComparisonFilterValue {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<f64> for BetaComparisonFilterValue {
+    fn from(value: f64) -> Self {
+        Self::Number(value)
+    }
+}
+
+impl ::std::convert::From<bool> for BetaComparisonFilterValue {
+    fn from(value: bool) -> Self {
+        Self::Bool(value)
+    }
+}
+
+impl ::std::convert::From<Vec<BetaComparisonFilterValueVariant3Item>>
+    for BetaComparisonFilterValue
+{
+    fn from(value: Vec<BetaComparisonFilterValueVariant3Item>) -> Self {
+        Self::Variant3ItemArray(value)
     }
 }
 
@@ -466,35 +504,5 @@ pub struct BetaCoordParam {
 impl BetaCoordParam {
     pub fn new(x: i64, y: i64) -> Self {
         Self { x, y }
-    }
-}
-
-/// Typed representation of the `BetaCyberAccessProgramEnum` API schema.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum BetaCyberAccessProgramEnum {
-    #[default]
-    Standard,
-    DaybreakBlue,
-    DaybreakRed,
-    Unknown(String),
-}
-
-impl BetaCyberAccessProgramEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Standard => "standard",
-            Self::DaybreakBlue => "daybreak_blue",
-            Self::DaybreakRed => "daybreak_red",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for BetaCyberAccessProgramEnum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
     }
 }

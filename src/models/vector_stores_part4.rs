@@ -3,6 +3,27 @@
 
 // vector_stores domain models (part 4)
 
+impl<'de> serde::Deserialize<'de> for VectorStoreSearchRequestRankingOptionsRankerEnum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "none" => Self::None,
+            "auto" => Self::Auto,
+            "default-2024-11-15" => Self::Default20241115,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for VectorStoreSearchRequestRankingOptionsRankerEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// Ranking options for search.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct VectorStoreSearchRequestRankingOptions {

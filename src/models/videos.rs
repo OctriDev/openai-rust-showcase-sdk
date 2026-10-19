@@ -100,6 +100,18 @@ impl<'de> serde::Deserialize<'de> for CreateVideoEditMultipartBodyVideo {
     }
 }
 
+impl ::std::convert::From<crate::client::Base64Bytes> for CreateVideoEditMultipartBodyVideo {
+    fn from(value: crate::client::Base64Bytes) -> Self {
+        Self::Bytes(value)
+    }
+}
+
+impl ::std::convert::From<Box<VideoReferenceInputParam>> for CreateVideoEditMultipartBodyVideo {
+    fn from(value: Box<VideoReferenceInputParam>) -> Self {
+        Self::VideoReferenceInputParam(value)
+    }
+}
+
 /// Parameters for editing an existing generated video.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct CreateVideoEditMultipartBody {
@@ -201,6 +213,18 @@ impl<'de> serde::Deserialize<'de> for CreateVideoExtendMultipartBodyVideo {
                 "no CreateVideoExtendMultipartBodyVideo branch accepts this payload",
             )
         })
+    }
+}
+
+impl ::std::convert::From<Box<VideoReferenceInputParam>> for CreateVideoExtendMultipartBodyVideo {
+    fn from(value: Box<VideoReferenceInputParam>) -> Self {
+        Self::VideoReferenceInputParam(value)
+    }
+}
+
+impl ::std::convert::From<crate::client::Base64Bytes> for CreateVideoExtendMultipartBodyVideo {
+    fn from(value: crate::client::Base64Bytes) -> Self {
+        Self::Bytes(value)
     }
 }
 
@@ -318,6 +342,18 @@ impl<'de> serde::Deserialize<'de> for CreateVideoMultipartBodyInputReference {
                 "no CreateVideoMultipartBodyInputReference branch accepts this payload",
             )
         })
+    }
+}
+
+impl ::std::convert::From<crate::client::Base64Bytes> for CreateVideoMultipartBodyInputReference {
+    fn from(value: crate::client::Base64Bytes) -> Self {
+        Self::Bytes(value)
+    }
+}
+
+impl ::std::convert::From<Box<ImageRefParam2>> for CreateVideoMultipartBodyInputReference {
+    fn from(value: Box<ImageRefParam2>) -> Self {
+        Self::ImageRefParam2(value)
     }
 }
 
@@ -551,44 +587,4 @@ pub struct VideoCharacterResource {
     pub name: Option<String>,
     /// Unix timestamp (in seconds) when the character was created.
     pub created_at: i64,
-}
-
-impl VideoCharacterResource {
-    pub fn new(id: Option<String>, name: Option<String>, created_at: i64) -> Self {
-        Self {
-            id,
-            name,
-            created_at,
-        }
-    }
-}
-
-/// Typed representation of the `VideoContentVariant` API schema.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum VideoContentVariant {
-    #[default]
-    Video,
-    Thumbnail,
-    Spritesheet,
-    Unknown(String),
-}
-
-impl VideoContentVariant {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Video => "video",
-            Self::Thumbnail => "thumbnail",
-            Self::Spritesheet => "spritesheet",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for VideoContentVariant {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
 }

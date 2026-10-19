@@ -621,18 +621,26 @@ impl<'de> serde::Deserialize<'de> for BetaResponsesWebSocketStreamEventVariant0 
     }
 }
 
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct BetaResponsesWebSocketStreamEventVariant1 {
-    /// The WebSocket lane that emitted this event. This field is present
-    /// when the originating `response.create` event supplied a
-    /// `stream_id`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub stream_id: Option<String>,
+impl ::std::convert::From<Box<BetaResponseAudioDeltaEvent>>
+    for BetaResponsesWebSocketStreamEventVariant0
+{
+    fn from(value: Box<BetaResponseAudioDeltaEvent>) -> Self {
+        Self::BetaResponseAudioDeltaEvent(value)
+    }
 }
 
-impl BetaResponsesWebSocketStreamEventVariant1 {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        Self { stream_id: None }
+impl ::std::convert::From<Box<BetaResponseAudioDoneEvent>>
+    for BetaResponsesWebSocketStreamEventVariant0
+{
+    fn from(value: Box<BetaResponseAudioDoneEvent>) -> Self {
+        Self::BetaResponseAudioDoneEvent(value)
+    }
+}
+
+impl ::std::convert::From<Box<BetaResponseAudioTranscriptDeltaEvent>>
+    for BetaResponsesWebSocketStreamEventVariant0
+{
+    fn from(value: Box<BetaResponseAudioTranscriptDeltaEvent>) -> Self {
+        Self::BetaResponseAudioTranscriptDeltaEvent(value)
     }
 }

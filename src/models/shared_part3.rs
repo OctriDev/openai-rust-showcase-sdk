@@ -3,6 +3,71 @@
 
 // shared domain models (part 3)
 
+impl DragParam {
+    pub fn new(type_: DragParamTypeEnum, path: Vec<CoordParam>) -> Self {
+        Self {
+            type_,
+            path,
+            keys: None,
+        }
+    }
+}
+
+/// The role of the message input. One of `user`, `assistant`, `system`, or
+/// `developer`.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum EasyInputMessageRoleEnum {
+    #[default]
+    User,
+    Assistant,
+    System,
+    Developer,
+    Unknown(String),
+}
+
+impl EasyInputMessageRoleEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::User => "user",
+            Self::Assistant => "assistant",
+            Self::System => "system",
+            Self::Developer => "developer",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for EasyInputMessageRoleEnum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for EasyInputMessageRoleEnum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "user" => Self::User,
+            "assistant" => Self::Assistant,
+            "system" => Self::System,
+            "developer" => Self::Developer,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for EasyInputMessageRoleEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, serde::Serialize)]
 #[serde(untagged)]
 pub enum EasyInputMessageContent {
@@ -31,6 +96,18 @@ impl<'de> serde::Deserialize<'de> for EasyInputMessageContent {
         lossy.ok_or_else(|| {
             serde::de::Error::custom("no EasyInputMessageContent branch accepts this payload")
         })
+    }
+}
+
+impl ::std::convert::From<String> for EasyInputMessageContent {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Box<InputMessageContentList>> for EasyInputMessageContent {
+    fn from(value: Box<InputMessageContentList>) -> Self {
+        Self::InputMessageContentList(value)
     }
 }
 
@@ -428,78 +505,4 @@ pub enum KeyPressActionTypeEnum {
     #[serde(rename = "keypress")]
     #[default]
     Keypress,
-}
-
-impl KeyPressActionTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Keypress => "keypress",
-        }
-    }
-}
-
-impl std::fmt::Display for KeyPressActionTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            KeyPressActionTypeEnum::Keypress => f.write_str("keypress"),
-        }
-    }
-}
-
-/// A collection of keypresses the model would like to perform.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct KeyPressAction {
-    /// Specifies the event type. For a keypress action, this property is always set to `keypress`.
-    #[serde(rename = "type")]
-    pub type_: KeyPressActionTypeEnum,
-    /// The combination of keys the model is requesting to be pressed. This is an array of strings, each representing a key.
-    pub keys: Vec<String>,
-}
-
-impl KeyPressAction {
-    pub fn new(type_: KeyPressActionTypeEnum, keys: Vec<String>) -> Self {
-        Self { type_, keys }
-    }
-}
-
-/// The order in which paginated resources are returned.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum ListOrderParam {
-    #[default]
-    Asc,
-    Desc,
-    Unknown(String),
-}
-
-impl ListOrderParam {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Asc => "asc",
-            Self::Desc => "desc",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for ListOrderParam {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for ListOrderParam {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "asc" => Self::Asc,
-            "desc" => Self::Desc,
-            _ => Self::Unknown(value),
-        })
-    }
 }

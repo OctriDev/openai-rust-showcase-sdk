@@ -3,6 +3,40 @@
 
 // responses_beta_response domain models (part 2)
 
+/// Emitted when new summary content is sampled for a compaction trigger. Contains no summary content.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct BetaResponseCompactionCompactingStreamingEvent {
+    /// The type of the event, always `response.compaction.compacting`.
+    #[serde(rename = "type")]
+    pub type_: BetaResponseCompactionCompactingStreamingEventTypeEnum,
+    /// The sequence number of the event that was emitted.
+    pub sequence_number: i64,
+    /// The agent that owns this multi-agent streaming event.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub agent: Option<BetaAgentTag>,
+    /// The index of the compaction output item.
+    pub output_index: i64,
+    /// The ID of the compaction output item.
+    pub item_id: String,
+}
+
+impl BetaResponseCompactionCompactingStreamingEvent {
+    pub fn new(
+        type_: BetaResponseCompactionCompactingStreamingEventTypeEnum,
+        sequence_number: i64,
+        output_index: i64,
+        item_id: String,
+    ) -> Self {
+        Self {
+            type_,
+            sequence_number,
+            agent: None,
+            output_index,
+            item_id,
+        }
+    }
+}
+
 /// The type of the event. Always `response.completed`.
 #[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
 pub enum BetaResponseCompletedEventTypeEnum {
@@ -506,28 +540,4 @@ pub struct BetaResponseProperties {
         with = "crate::client::double_option"
     )]
     pub prompt: Option<Option<BetaPrompt>>,
-}
-
-impl BetaResponseProperties {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        Self {
-            previous_response_id: None,
-            model: None,
-            background: None,
-            max_tool_calls: None,
-            text: None,
-            tools: None,
-            tool_choice: None,
-            prompt: None,
-        }
-    }
-}
-
-/// The type of the event. Always 'response.queued'.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum BetaResponseQueuedEventTypeEnum {
-    #[serde(rename = "response.queued")]
-    #[default]
-    ResponseQueued,
 }

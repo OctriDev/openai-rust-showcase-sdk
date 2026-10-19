@@ -3,6 +3,18 @@
 
 // evals_create domain models (part 3)
 
+impl CreateEvalResponsesRunDataSourceSource {
+    fn unknown_member<'de, D: serde::Deserializer<'de>>(
+        deserializer: D,
+    ) -> Result<serde_json::Value, D::Error> {
+        crate::client::unknown_union_member(
+            deserializer,
+            "type",
+            &["file_content", "file_id", "responses"],
+        )
+    }
+}
+
 /// Typed representation of the `CreateEvalRunRequest` API schema.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct CreateEvalRunRequest {
