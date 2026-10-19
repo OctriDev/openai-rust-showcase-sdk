@@ -516,35 +516,92 @@ impl<'de> serde::Deserialize<'de> for ResponsesWebSocketStreamEventVariant0 {
     }
 }
 
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct ResponsesWebSocketStreamEventVariant1 {
-    /// The WebSocket lane that emitted this event. This field is present
-    /// when the originating `response.create` event supplied a
-    /// `stream_id`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub stream_id: Option<String>,
-}
-
-impl ResponsesWebSocketStreamEventVariant1 {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        Self { stream_id: None }
+impl ::std::convert::From<Box<ResponseAudioDeltaEvent>> for ResponsesWebSocketStreamEventVariant0 {
+    fn from(value: Box<ResponseAudioDeltaEvent>) -> Self {
+        Self::ResponseAudioDeltaEvent(value)
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct ResponsesWebSocketStreamEvent {
-    #[serde(flatten)]
-    pub member_0: ResponsesWebSocketStreamEventVariant0,
-    #[serde(flatten)]
-    pub member_1: ResponsesWebSocketStreamEventVariant1,
+impl ::std::convert::From<Box<ResponseAudioDoneEvent>> for ResponsesWebSocketStreamEventVariant0 {
+    fn from(value: Box<ResponseAudioDoneEvent>) -> Self {
+        Self::ResponseAudioDoneEvent(value)
+    }
 }
 
-impl ResponsesWebSocketStreamEvent {
-    pub fn new(
-        member_0: ResponsesWebSocketStreamEventVariant0,
-        member_1: ResponsesWebSocketStreamEventVariant1,
-    ) -> Self {
-        Self { member_0, member_1 }
+impl ::std::convert::From<Box<ResponseAudioTranscriptDeltaEvent>>
+    for ResponsesWebSocketStreamEventVariant0
+{
+    fn from(value: Box<ResponseAudioTranscriptDeltaEvent>) -> Self {
+        Self::ResponseAudioTranscriptDeltaEvent(value)
+    }
+}
+
+impl ::std::convert::From<Box<ResponseAudioTranscriptDoneEvent>>
+    for ResponsesWebSocketStreamEventVariant0
+{
+    fn from(value: Box<ResponseAudioTranscriptDoneEvent>) -> Self {
+        Self::ResponseAudioTranscriptDoneEvent(value)
+    }
+}
+
+impl ::std::convert::From<Box<ResponseCodeInterpreterCallCodeDeltaEvent>>
+    for ResponsesWebSocketStreamEventVariant0
+{
+    fn from(value: Box<ResponseCodeInterpreterCallCodeDeltaEvent>) -> Self {
+        Self::ResponseCodeInterpreterCallCodeDeltaEvent(value)
+    }
+}
+
+impl ::std::convert::From<Box<ResponseCodeInterpreterCallCodeDoneEvent>>
+    for ResponsesWebSocketStreamEventVariant0
+{
+    fn from(value: Box<ResponseCodeInterpreterCallCodeDoneEvent>) -> Self {
+        Self::ResponseCodeInterpreterCallCodeDoneEvent(value)
+    }
+}
+
+impl ::std::convert::From<Box<ResponseCodeInterpreterCallCompletedEvent>>
+    for ResponsesWebSocketStreamEventVariant0
+{
+    fn from(value: Box<ResponseCodeInterpreterCallCompletedEvent>) -> Self {
+        Self::ResponseCodeInterpreterCallCompletedEvent(value)
+    }
+}
+
+impl ::std::convert::From<Box<ResponseCodeInterpreterCallInProgressEvent>>
+    for ResponsesWebSocketStreamEventVariant0
+{
+    fn from(value: Box<ResponseCodeInterpreterCallInProgressEvent>) -> Self {
+        Self::ResponseCodeInterpreterCallInProgressEvent(value)
+    }
+}
+
+impl ::std::convert::From<Box<ResponseCodeInterpreterCallInterpretingEvent>>
+    for ResponsesWebSocketStreamEventVariant0
+{
+    fn from(value: Box<ResponseCodeInterpreterCallInterpretingEvent>) -> Self {
+        Self::ResponseCodeInterpreterCallInterpretingEvent(value)
+    }
+}
+
+impl ::std::convert::From<Box<ResponseCompactionCompactingStreamingEvent>>
+    for ResponsesWebSocketStreamEventVariant0
+{
+    fn from(value: Box<ResponseCompactionCompactingStreamingEvent>) -> Self {
+        Self::ResponseCompactionCompactingStreamingEvent(value)
+    }
+}
+
+impl ::std::convert::From<Box<ResponseCompletedEvent>> for ResponsesWebSocketStreamEventVariant0 {
+    fn from(value: Box<ResponseCompletedEvent>) -> Self {
+        Self::ResponseCompletedEvent(value)
+    }
+}
+
+impl ::std::convert::From<Box<ResponseContentPartAddedEvent>>
+    for ResponsesWebSocketStreamEventVariant0
+{
+    fn from(value: Box<ResponseContentPartAddedEvent>) -> Self {
+        Self::ResponseContentPartAddedEvent(value)
     }
 }

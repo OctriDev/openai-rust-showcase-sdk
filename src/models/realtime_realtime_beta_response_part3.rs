@@ -3,6 +3,25 @@
 
 // realtime_realtime_beta_response domain models (part 3)
 
+impl RealtimeBetaResponseCreateParamsConversation {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Auto => "auto",
+            Self::None => "none",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for RealtimeBetaResponseCreateParamsConversation {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
 impl<'de> serde::Deserialize<'de> for RealtimeBetaResponseCreateParamsConversation {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where

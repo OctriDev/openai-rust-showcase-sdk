@@ -270,6 +270,18 @@ impl<'de> serde::Deserialize<'de> for BetaResponseVariant2Instructions {
     }
 }
 
+impl ::std::convert::From<String> for BetaResponseVariant2Instructions {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<BetaInputItem>> for BetaResponseVariant2Instructions {
+    fn from(value: Vec<BetaInputItem>) -> Self {
+        Self::BetaInputItemArray(value)
+    }
+}
+
 /// Required object value serialized in the `response` wire field.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct BetaResponseVariant2 {
@@ -464,40 +476,6 @@ impl std::fmt::Display for BetaResponseCompactionCompactingStreamingEventTypeEnu
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             BetaResponseCompactionCompactingStreamingEventTypeEnum::ResponseCompactionCompacting => f.write_str("response.compaction.compacting"),
-        }
-    }
-}
-
-/// Emitted when new summary content is sampled for a compaction trigger. Contains no summary content.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct BetaResponseCompactionCompactingStreamingEvent {
-    /// The type of the event, always `response.compaction.compacting`.
-    #[serde(rename = "type")]
-    pub type_: BetaResponseCompactionCompactingStreamingEventTypeEnum,
-    /// The sequence number of the event that was emitted.
-    pub sequence_number: i64,
-    /// The agent that owns this multi-agent streaming event.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub agent: Option<BetaAgentTag>,
-    /// The index of the compaction output item.
-    pub output_index: i64,
-    /// The ID of the compaction output item.
-    pub item_id: String,
-}
-
-impl BetaResponseCompactionCompactingStreamingEvent {
-    pub fn new(
-        type_: BetaResponseCompactionCompactingStreamingEventTypeEnum,
-        sequence_number: i64,
-        output_index: i64,
-        item_id: String,
-    ) -> Self {
-        Self {
-            type_,
-            sequence_number,
-            agent: None,
-            output_index,
-            item_id,
         }
     }
 }

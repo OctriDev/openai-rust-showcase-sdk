@@ -3,6 +3,30 @@
 
 // responses_beta_response domain models (part 3)
 
+impl BetaResponseProperties {
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Self {
+        Self {
+            previous_response_id: None,
+            model: None,
+            background: None,
+            max_tool_calls: None,
+            text: None,
+            tools: None,
+            tool_choice: None,
+            prompt: None,
+        }
+    }
+}
+
+/// The type of the event. Always 'response.queued'.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum BetaResponseQueuedEventTypeEnum {
+    #[serde(rename = "response.queued")]
+    #[default]
+    ResponseQueued,
+}
+
 impl BetaResponseQueuedEventTypeEnum {
     pub fn as_str(&self) -> &str {
         match self {

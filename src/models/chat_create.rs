@@ -196,6 +196,30 @@ impl<'de> serde::Deserialize<'de> for CreateChatCompletionRequestVariant1Respons
     }
 }
 
+impl ::std::convert::From<Box<ResponseFormatText>>
+    for CreateChatCompletionRequestVariant1ResponseFormat
+{
+    fn from(value: Box<ResponseFormatText>) -> Self {
+        Self::ResponseFormatText(value)
+    }
+}
+
+impl ::std::convert::From<Box<ResponseFormatJsonSchema>>
+    for CreateChatCompletionRequestVariant1ResponseFormat
+{
+    fn from(value: Box<ResponseFormatJsonSchema>) -> Self {
+        Self::ResponseFormatJsonSchema(value)
+    }
+}
+
+impl ::std::convert::From<Box<ResponseFormatJsonObject>>
+    for CreateChatCompletionRequestVariant1ResponseFormat
+{
+    fn from(value: Box<ResponseFormatJsonObject>) -> Self {
+        Self::ResponseFormatJsonObject(value)
+    }
+}
+
 /// Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`,
 /// `opus`, or `pcm16`.
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -315,6 +339,22 @@ impl<'de> serde::Deserialize<'de> for CreateChatCompletionRequestVariant1ToolsIt
     }
 }
 
+impl ::std::convert::From<Box<ChatCompletionTool>>
+    for CreateChatCompletionRequestVariant1ToolsItem
+{
+    fn from(value: Box<ChatCompletionTool>) -> Self {
+        Self::ChatCompletionTool(value)
+    }
+}
+
+impl ::std::convert::From<Box<CustomToolChatCompletions>>
+    for CreateChatCompletionRequestVariant1ToolsItem
+{
+    fn from(value: Box<CustomToolChatCompletions>) -> Self {
+        Self::CustomToolChatCompletions(value)
+    }
+}
+
 /// `none` means the model will not call a function and instead generates a message. `auto` means the model can pick between generating a message or calling a function.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub enum CreateChatCompletionRequestVariant1FunctionCallVariant0Enum {
@@ -398,5 +438,21 @@ impl<'de> serde::Deserialize<'de> for CreateChatCompletionRequestVariant1Functio
                 "no CreateChatCompletionRequestVariant1FunctionCall branch accepts this payload",
             )
         })
+    }
+}
+
+impl ::std::convert::From<CreateChatCompletionRequestVariant1FunctionCallVariant0Enum>
+    for CreateChatCompletionRequestVariant1FunctionCall
+{
+    fn from(value: CreateChatCompletionRequestVariant1FunctionCallVariant0Enum) -> Self {
+        Self::Literal(value)
+    }
+}
+
+impl ::std::convert::From<Box<ChatCompletionFunctionCallOption>>
+    for CreateChatCompletionRequestVariant1FunctionCall
+{
+    fn from(value: Box<ChatCompletionFunctionCallOption>) -> Self {
+        Self::ChatCompletionFunctionCallOption(value)
     }
 }

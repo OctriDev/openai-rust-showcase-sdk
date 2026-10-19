@@ -441,6 +441,18 @@ impl<'de> serde::Deserialize<'de> for VectorStoreSearchRequestQuery {
     }
 }
 
+impl ::std::convert::From<String> for VectorStoreSearchRequestQuery {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<String>> for VectorStoreSearchRequestQuery {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
+    }
+}
+
 /// Enable re-ranking; set to `none` to disable, which can help reduce latency.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub enum VectorStoreSearchRequestRankingOptionsRankerEnum {
@@ -468,26 +480,5 @@ impl serde::Serialize for VectorStoreSearchRequestRankingOptionsRankerEnum {
         S: serde::Serializer,
     {
         serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for VectorStoreSearchRequestRankingOptionsRankerEnum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "none" => Self::None,
-            "auto" => Self::Auto,
-            "default-2024-11-15" => Self::Default20241115,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for VectorStoreSearchRequestRankingOptionsRankerEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
     }
 }

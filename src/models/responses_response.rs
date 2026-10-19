@@ -268,6 +268,18 @@ impl<'de> serde::Deserialize<'de> for ResponseVariant2Instructions {
     }
 }
 
+impl ::std::convert::From<String> for ResponseVariant2Instructions {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<InputItem>> for ResponseVariant2Instructions {
+    fn from(value: Vec<InputItem>) -> Self {
+        Self::InputItemArray(value)
+    }
+}
+
 /// Required object value serialized in the `response` wire field.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct ResponseVariant2 {
@@ -484,14 +496,6 @@ impl ResponseCompletedEventTypeEnum {
     pub fn as_str(&self) -> &str {
         match self {
             Self::ResponseCompleted => "response.completed",
-        }
-    }
-}
-
-impl std::fmt::Display for ResponseCompletedEventTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ResponseCompletedEventTypeEnum::ResponseCompleted => f.write_str("response.completed"),
         }
     }
 }

@@ -3,6 +3,80 @@
 
 // shared domain models (part 4)
 
+impl KeyPressActionTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Keypress => "keypress",
+        }
+    }
+}
+
+impl std::fmt::Display for KeyPressActionTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            KeyPressActionTypeEnum::Keypress => f.write_str("keypress"),
+        }
+    }
+}
+
+/// A collection of keypresses the model would like to perform.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct KeyPressAction {
+    /// Specifies the event type. For a keypress action, this property is always set to `keypress`.
+    #[serde(rename = "type")]
+    pub type_: KeyPressActionTypeEnum,
+    /// The combination of keys the model is requesting to be pressed. This is an array of strings, each representing a key.
+    pub keys: Vec<String>,
+}
+
+impl KeyPressAction {
+    pub fn new(type_: KeyPressActionTypeEnum, keys: Vec<String>) -> Self {
+        Self { type_, keys }
+    }
+}
+
+/// The order in which paginated resources are returned.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum ListOrderParam {
+    #[default]
+    Asc,
+    Desc,
+    Unknown(String),
+}
+
+impl ListOrderParam {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Asc => "asc",
+            Self::Desc => "desc",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for ListOrderParam {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for ListOrderParam {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "asc" => Self::Asc,
+            "desc" => Self::Desc,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
 impl std::fmt::Display for ListOrderParam {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
@@ -415,79 +489,4 @@ pub enum OrderEnum {
     Asc,
     Desc,
     Unknown(String),
-}
-
-impl OrderEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Asc => "asc",
-            Self::Desc => "desc",
-            Self::Unknown(value) => value.as_str(),
-        }
-    }
-}
-
-impl serde::Serialize for OrderEnum {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for OrderEnum {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "asc" => Self::Asc,
-            "desc" => Self::Desc,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display for OrderEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-pub type ParallelToolCalls = bool;
-
-/// The type of the tool. Always `programmatic_tool_calling`.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum ProgrammaticToolCallingParamTypeEnum {
-    #[serde(rename = "programmatic_tool_calling")]
-    #[default]
-    ProgrammaticToolCalling,
-}
-
-impl ProgrammaticToolCallingParamTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::ProgrammaticToolCalling => "programmatic_tool_calling",
-        }
-    }
-}
-
-impl std::fmt::Display for ProgrammaticToolCallingParamTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ProgrammaticToolCallingParamTypeEnum::ProgrammaticToolCalling => {
-                f.write_str("programmatic_tool_calling")
-            }
-        }
-    }
-}
-
-/// Typed representation of the `ProgrammaticToolCallingParam` API schema.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct ProgrammaticToolCallingParam {
-    /// The type of the tool. Always `programmatic_tool_calling`.
-    #[serde(rename = "type")]
-    pub type_: ProgrammaticToolCallingParamTypeEnum,
 }

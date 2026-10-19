@@ -44,6 +44,24 @@ impl<'de> serde::Deserialize<'de> for CreateModerationRequestInput {
     }
 }
 
+impl ::std::convert::From<String> for CreateModerationRequestInput {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<String>> for CreateModerationRequestInput {
+    fn from(value: Vec<String>) -> Self {
+        Self::StringArray(value)
+    }
+}
+
+impl ::std::convert::From<Vec<CreateModerationRequestInputItem>> for CreateModerationRequestInput {
+    fn from(value: Vec<CreateModerationRequestInputItem>) -> Self {
+        Self::ItemArray(value)
+    }
+}
+
 /// Typed representation of the `CreateModerationRequest` API schema.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct CreateModerationRequest {
@@ -500,22 +518,5 @@ impl std::fmt::Display
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
-    }
-}
-
-/// Required enumerated value serialized in the `harassment/threatening[]` wire field.
-#[derive(Debug, Clone, PartialEq, Default)]
-pub enum CreateModerationResponseResultsItemCategoryAppliedInputTypesHarassmentthreateningItemEnum {
-    #[default]
-    Text,
-    Unknown(String),
-}
-
-impl CreateModerationResponseResultsItemCategoryAppliedInputTypesHarassmentthreateningItemEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Text => "text",
-            Self::Unknown(value) => value.as_str(),
-        }
     }
 }

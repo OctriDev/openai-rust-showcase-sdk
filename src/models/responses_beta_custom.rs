@@ -234,6 +234,20 @@ impl<'de> serde::Deserialize<'de> for BetaCustomToolCallOutputOutput {
     }
 }
 
+impl ::std::convert::From<String> for BetaCustomToolCallOutputOutput {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<BetaFunctionAndCustomToolCallOutput>>
+    for BetaCustomToolCallOutputOutput
+{
+    fn from(value: Vec<BetaFunctionAndCustomToolCallOutput>) -> Self {
+        Self::BetaFunctionAndCustomToolCallOutputArray(value)
+    }
+}
+
 /// The output of a custom tool call from your code, being sent back to the model.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct BetaCustomToolCallOutput {

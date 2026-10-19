@@ -3,6 +3,90 @@
 
 // shared domain models (part 6)
 
+impl SkillReferenceParam {
+    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
+        crate::validation::validate_length(
+            "skill_id",
+            &self.skill_id,
+            crate::validation::LengthOpts {
+                min: Some(1),
+                max: Some(64),
+            },
+        )?;
+        Ok(())
+    }
+
+    pub fn new(
+        type_: SkillReferenceParamTypeEnum,
+        skill_id: String,
+    ) -> Result<Self, crate::errors::SdkError> {
+        let value = Self {
+            type_,
+            skill_id,
+            version: None,
+        };
+        value.validate_constraints()?;
+        Ok(value)
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(untagged)]
+pub enum StopConfiguration {
+    String(String),
+    StringArray(Vec<String>),
+    Value(serde_json::Value),
+}
+
+impl StopConfiguration {
+    pub fn as_string_wire_value(&self) -> Option<&str> {
+        match self {
+            Self::String(value) => Some(value.as_str()),
+            _ => None,
+        }
+    }
+}
+
+/// The type of the object. Always `summary_text`.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum SummaryTextContentTypeEnum {
+    #[serde(rename = "summary_text")]
+    #[default]
+    SummaryText,
+}
+
+impl SummaryTextContentTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::SummaryText => "summary_text",
+        }
+    }
+}
+
+impl std::fmt::Display for SummaryTextContentTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            SummaryTextContentTypeEnum::SummaryText => f.write_str("summary_text"),
+        }
+    }
+}
+
+/// A summary text from the model.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct SummaryTextContent {
+    /// The type of the object. Always `summary_text`.
+    #[serde(rename = "type")]
+    pub type_: SummaryTextContentTypeEnum,
+    /// A summary of the reasoning output from the model so far.
+    pub text: String,
+}
+
+impl SummaryTextContent {
+    pub fn new(type_: SummaryTextContentTypeEnum, text: String) -> Self {
+        Self { type_, text }
+    }
+}
+
 /// The top log probability of a token.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct TopLogProb {

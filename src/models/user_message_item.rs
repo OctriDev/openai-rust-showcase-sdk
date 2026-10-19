@@ -105,6 +105,18 @@ impl<'de> serde::Deserialize<'de> for UserMessageItemParamContent {
     }
 }
 
+impl ::std::convert::From<Vec<UserMessageItemParamContentItem>> for UserMessageItemParamContent {
+    fn from(value: Vec<UserMessageItemParamContentItem>) -> Self {
+        Self::ItemArray(value)
+    }
+}
+
+impl ::std::convert::From<String> for UserMessageItemParamContent {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
 /// Typed representation of the `UserMessageItemParam` API schema.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct UserMessageItemParam {

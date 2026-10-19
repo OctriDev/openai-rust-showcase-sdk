@@ -138,6 +138,20 @@ impl<'de> serde::Deserialize<'de> for BetaFunctionCallOutputItemParamOutput {
     }
 }
 
+impl ::std::convert::From<String> for BetaFunctionCallOutputItemParamOutput {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<BetaFunctionCallOutputItemParamOutputItem>>
+    for BetaFunctionCallOutputItemParamOutput
+{
+    fn from(value: Vec<BetaFunctionCallOutputItemParamOutputItem>) -> Self {
+        Self::ItemArray(value)
+    }
+}
+
 /// The output of a function tool call.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct BetaFunctionCallOutputItemParam {
@@ -512,23 +526,5 @@ impl BetaFunctionShellCall {
             environment,
             created_by: None,
         }
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum BetaFunctionShellCallEnvironment {
-    BetaLocalEnvironmentResource(Box<BetaLocalEnvironmentResource>),
-    BetaContainerReferenceResource(Box<BetaContainerReferenceResource>),
-    /// A member whose `type` names no branch this SDK knows, kept as received.
-    #[serde(deserialize_with = "BetaFunctionShellCallEnvironment::unknown_member")]
-    Unknown(serde_json::Value),
-}
-
-impl BetaFunctionShellCallEnvironment {
-    fn unknown_member<'de, D: serde::Deserializer<'de>>(
-        deserializer: D,
-    ) -> Result<serde_json::Value, D::Error> {
-        crate::client::unknown_union_member(deserializer, "type", &["local", "container_reference"])
     }
 }

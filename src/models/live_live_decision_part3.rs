@@ -3,6 +3,33 @@
 
 // live_live_decision domain models (part 3)
 
+/// Typed representation of the `LiveDecisionScoreLevelParam` API schema.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct LiveDecisionScoreLevelParam {
+    /// Required `string` value serialized in the `label` wire field.
+    pub label: String,
+    /// Optional `string` value serialized in the `description` wire field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+}
+
+impl LiveDecisionScoreLevelParam {
+    pub fn new(label: String) -> Self {
+        Self {
+            label,
+            description: None,
+        }
+    }
+}
+
+/// Required enumerated value serialized in the `type` wire field.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum LiveDecisionScoreQuestionParamTypeEnum {
+    #[serde(rename = "score")]
+    #[default]
+    Score,
+}
+
 impl LiveDecisionScoreQuestionParamTypeEnum {
     pub fn as_str(&self) -> &str {
         match self {
@@ -185,6 +212,20 @@ impl<'de> serde::Deserialize<'de> for LiveDecisionStoredInputItemParamContent {
                 "no LiveDecisionStoredInputItemParamContent branch accepts this payload",
             )
         })
+    }
+}
+
+impl ::std::convert::From<String> for LiveDecisionStoredInputItemParamContent {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<LiveDecisionStoredInputItemParamContentItem>>
+    for LiveDecisionStoredInputItemParamContent
+{
+    fn from(value: Vec<LiveDecisionStoredInputItemParamContentItem>) -> Self {
+        Self::ItemArray(value)
     }
 }
 
@@ -457,18 +498,4 @@ pub struct LiveDecisionTriggerInputParam2 {
     pub event_type: LiveDecisionTriggerInputParam2EventTypeEnum,
     /// Questions evaluated using the current transcript and the session's shared Decision items.
     pub decisions: LiveDecisionQuestionsInputParam2,
-}
-
-impl LiveDecisionTriggerInputParam2 {
-    pub fn new(
-        type_: LiveDecisionTriggerInputParam2TypeEnum,
-        event_type: LiveDecisionTriggerInputParam2EventTypeEnum,
-        decisions: LiveDecisionQuestionsInputParam2,
-    ) -> Self {
-        Self {
-            type_,
-            event_type,
-            decisions,
-        }
-    }
 }

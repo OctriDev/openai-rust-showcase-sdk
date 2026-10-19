@@ -3,6 +3,81 @@
 
 // shared domain models (part 5)
 
+impl OrderEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Asc => "asc",
+            Self::Desc => "desc",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for OrderEnum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for OrderEnum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "asc" => Self::Asc,
+            "desc" => Self::Desc,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
+impl std::fmt::Display for OrderEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+pub type ParallelToolCalls = bool;
+
+/// The type of the tool. Always `programmatic_tool_calling`.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum ProgrammaticToolCallingParamTypeEnum {
+    #[serde(rename = "programmatic_tool_calling")]
+    #[default]
+    ProgrammaticToolCalling,
+}
+
+impl ProgrammaticToolCallingParamTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::ProgrammaticToolCalling => "programmatic_tool_calling",
+        }
+    }
+}
+
+impl std::fmt::Display for ProgrammaticToolCallingParamTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ProgrammaticToolCallingParamTypeEnum::ProgrammaticToolCalling => {
+                f.write_str("programmatic_tool_calling")
+            }
+        }
+    }
+}
+
+/// Typed representation of the `ProgrammaticToolCallingParam` API schema.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct ProgrammaticToolCallingParam {
+    /// The type of the tool. Always `programmatic_tool_calling`.
+    #[serde(rename = "type")]
+    pub type_: ProgrammaticToolCallingParamTypeEnum,
+}
+
 impl ProgrammaticToolCallingParam {
     pub fn new(type_: ProgrammaticToolCallingParamTypeEnum) -> Self {
         Self { type_ }
@@ -391,88 +466,4 @@ pub struct SkillReferenceParam {
     /// Optional skill version. Use a positive integer or 'latest'. Omit for default.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
-}
-
-impl SkillReferenceParam {
-    pub(super) fn validate_constraints(&self) -> Result<(), crate::errors::SdkError> {
-        crate::validation::validate_length(
-            "skill_id",
-            &self.skill_id,
-            crate::validation::LengthOpts {
-                min: Some(1),
-                max: Some(64),
-            },
-        )?;
-        Ok(())
-    }
-
-    pub fn new(
-        type_: SkillReferenceParamTypeEnum,
-        skill_id: String,
-    ) -> Result<Self, crate::errors::SdkError> {
-        let value = Self {
-            type_,
-            skill_id,
-            version: None,
-        };
-        value.validate_constraints()?;
-        Ok(value)
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum StopConfiguration {
-    String(String),
-    StringArray(Vec<String>),
-    Value(serde_json::Value),
-}
-
-impl StopConfiguration {
-    pub fn as_string_wire_value(&self) -> Option<&str> {
-        match self {
-            Self::String(value) => Some(value.as_str()),
-            _ => None,
-        }
-    }
-}
-
-/// The type of the object. Always `summary_text`.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum SummaryTextContentTypeEnum {
-    #[serde(rename = "summary_text")]
-    #[default]
-    SummaryText,
-}
-
-impl SummaryTextContentTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::SummaryText => "summary_text",
-        }
-    }
-}
-
-impl std::fmt::Display for SummaryTextContentTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            SummaryTextContentTypeEnum::SummaryText => f.write_str("summary_text"),
-        }
-    }
-}
-
-/// A summary text from the model.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct SummaryTextContent {
-    /// The type of the object. Always `summary_text`.
-    #[serde(rename = "type")]
-    pub type_: SummaryTextContentTypeEnum,
-    /// A summary of the reasoning output from the model so far.
-    pub text: String,
-}
-
-impl SummaryTextContent {
-    pub fn new(type_: SummaryTextContentTypeEnum, text: String) -> Self {
-        Self { type_, text }
-    }
 }

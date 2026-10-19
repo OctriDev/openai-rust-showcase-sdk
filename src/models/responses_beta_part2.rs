@@ -3,6 +3,36 @@
 
 // responses_beta domain models (part 2)
 
+/// Typed representation of the `BetaCyberAccessProgramEnum` API schema.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum BetaCyberAccessProgramEnum {
+    #[default]
+    Standard,
+    DaybreakBlue,
+    DaybreakRed,
+    Unknown(String),
+}
+
+impl BetaCyberAccessProgramEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Standard => "standard",
+            Self::DaybreakBlue => "daybreak_blue",
+            Self::DaybreakRed => "daybreak_red",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
+impl serde::Serialize for BetaCyberAccessProgramEnum {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
 impl<'de> serde::Deserialize<'de> for BetaCyberAccessProgramEnum {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -273,6 +303,18 @@ impl<'de> serde::Deserialize<'de> for BetaEasyInputMessageContent {
     }
 }
 
+impl ::std::convert::From<String> for BetaEasyInputMessageContent {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Box<BetaInputMessageContentList>> for BetaEasyInputMessageContent {
+    fn from(value: Box<BetaInputMessageContentList>) -> Self {
+        Self::BetaInputMessageContentList(value)
+    }
+}
+
 /// The type of the message input. Always `message`.
 #[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
 pub enum BetaEasyInputMessageTypeEnum {
@@ -441,46 +483,6 @@ impl std::fmt::Display for BetaHTTPErrorTypeEnum {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             BetaHTTPErrorTypeEnum::HttpError => f.write_str("http_error"),
-        }
-    }
-}
-
-/// Typed representation of the `BetaHTTPError` API schema.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct BetaHTTPError {
-    /// Required enumerated value serialized in the `type` wire field.
-    #[serde(rename = "type")]
-    pub type_: BetaHTTPErrorTypeEnum,
-    /// Required `integer` value serialized in the `code` wire field.
-    pub code: i64,
-    /// Required `string` value serialized in the `message` wire field.
-    pub message: String,
-}
-
-impl BetaHTTPError {
-    pub fn new(type_: BetaHTTPErrorTypeEnum, code: i64, message: String) -> Self {
-        Self {
-            type_,
-            code,
-            message,
-        }
-    }
-}
-
-/// Typed representation of the `BetaHybridSearchOptions` API schema.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct BetaHybridSearchOptions {
-    /// The weight of the embedding in the reciprocal ranking fusion.
-    pub embedding_weight: f64,
-    /// The weight of the text in the reciprocal ranking fusion.
-    pub text_weight: f64,
-}
-
-impl BetaHybridSearchOptions {
-    pub fn new(embedding_weight: f64, text_weight: f64) -> Self {
-        Self {
-            embedding_weight,
-            text_weight,
         }
     }
 }

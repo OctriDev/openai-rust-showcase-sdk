@@ -224,6 +224,18 @@ impl<'de> serde::Deserialize<'de> for CustomToolCallOutputOutput {
     }
 }
 
+impl ::std::convert::From<String> for CustomToolCallOutputOutput {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<FunctionAndCustomToolCallOutput>> for CustomToolCallOutputOutput {
+    fn from(value: Vec<FunctionAndCustomToolCallOutput>) -> Self {
+        Self::FunctionAndCustomToolCallOutputArray(value)
+    }
+}
+
 /// The output of a custom tool call from your code, being sent back to the model.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct CustomToolCallOutput {

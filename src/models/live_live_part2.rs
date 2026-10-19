@@ -3,6 +3,30 @@
 
 // live_live domain models (part 2)
 
+/// Required enumerated value serialized in the `type` wire field.
+#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
+pub enum LiveFileSearchToolInputParamTypeEnum {
+    #[serde(rename = "file_search")]
+    #[default]
+    FileSearch,
+}
+
+impl LiveFileSearchToolInputParamTypeEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::FileSearch => "file_search",
+        }
+    }
+}
+
+impl std::fmt::Display for LiveFileSearchToolInputParamTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LiveFileSearchToolInputParamTypeEnum::FileSearch => f.write_str("file_search"),
+        }
+    }
+}
+
 /// Typed representation of the `LiveFileSearchToolInputParam` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct LiveFileSearchToolInputParam {

@@ -172,6 +172,22 @@ impl<'de> serde::Deserialize<'de>
     }
 }
 
+impl ::std::convert::From<Box<EasyInputMessage>>
+    for CreateEvalCompletionsRunDataSourceInputMessagesVariant0TemplateItem
+{
+    fn from(value: Box<EasyInputMessage>) -> Self {
+        Self::EasyInputMessage(value)
+    }
+}
+
+impl ::std::convert::From<Box<EvalItem>>
+    for CreateEvalCompletionsRunDataSourceInputMessagesVariant0TemplateItem
+{
+    fn from(value: Box<EvalItem>) -> Self {
+        Self::EvalItem(value)
+    }
+}
+
 /// Optional object value serialized in the `input_messages` wire field.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct CreateEvalCompletionsRunDataSourceInputMessagesVariant0 {
@@ -498,14 +514,6 @@ impl CreateEvalLabelModelGraderTypeEnum {
     pub fn as_str(&self) -> &str {
         match self {
             Self::LabelModel => "label_model",
-        }
-    }
-}
-
-impl std::fmt::Display for CreateEvalLabelModelGraderTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            CreateEvalLabelModelGraderTypeEnum::LabelModel => f.write_str("label_model"),
         }
     }
 }

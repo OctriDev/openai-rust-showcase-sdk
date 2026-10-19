@@ -3,6 +3,46 @@
 
 // chat_chat_completion_request domain models (part 2)
 
+/// Required object value serialized in the `file` wire field.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct ChatCompletionRequestMessageContentPartFileFile {
+    /// The name of the file, used when passing the file to the model as a
+    /// string.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub filename: Option<String>,
+    /// The base64 encoded file data, used when passing the file to the model
+    /// as a string.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub file_data: Option<String>,
+    /// The ID of an uploaded file to use as input.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub file_id: Option<String>,
+}
+
+impl ChatCompletionRequestMessageContentPartFileFile {
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> Self {
+        Self {
+            filename: None,
+            file_data: None,
+            file_id: None,
+        }
+    }
+}
+
+/// Learn about [file inputs](https://developers.openai.com/api/docs/guides/text) for text generation.
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct ChatCompletionRequestMessageContentPartFile {
+    /// The type of the content part. Always `file`.
+    #[serde(rename = "type")]
+    pub type_: ChatCompletionRequestMessageContentPartFileTypeEnum,
+    /// Required object value serialized in the `file` wire field.
+    pub file: ChatCompletionRequestMessageContentPartFileFile,
+    /// Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL from the request's `prompt_cache_options.ttl`; the boundary is not rounded to a token block.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub prompt_cache_breakpoint: Option<PromptCacheBreakpointParam>,
+}
+
 impl ChatCompletionRequestMessageContentPartFile {
     pub fn new(
         type_: ChatCompletionRequestMessageContentPartFileTypeEnum,
@@ -275,6 +315,20 @@ impl<'de> serde::Deserialize<'de> for ChatCompletionRequestSystemMessageContent 
     }
 }
 
+impl ::std::convert::From<String> for ChatCompletionRequestSystemMessageContent {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<ChatCompletionRequestSystemMessageContentPart>>
+    for ChatCompletionRequestSystemMessageContent
+{
+    fn from(value: Vec<ChatCompletionRequestSystemMessageContentPart>) -> Self {
+        Self::PartArray(value)
+    }
+}
+
 /// The role of the messages author, in this case `system`.
 #[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
 pub enum ChatCompletionRequestSystemMessageRoleEnum {
@@ -388,6 +442,20 @@ impl<'de> serde::Deserialize<'de> for ChatCompletionRequestToolMessageContent {
     }
 }
 
+impl ::std::convert::From<String> for ChatCompletionRequestToolMessageContent {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<ChatCompletionRequestToolMessageContentPart>>
+    for ChatCompletionRequestToolMessageContent
+{
+    fn from(value: Vec<ChatCompletionRequestToolMessageContentPart>) -> Self {
+        Self::PartArray(value)
+    }
+}
+
 /// Typed representation of the `ChatCompletionRequestToolMessage` API schema.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct ChatCompletionRequestToolMessage {
@@ -450,76 +518,8 @@ impl<'de> serde::Deserialize<'de> for ChatCompletionRequestUserMessageContent {
     }
 }
 
-/// The role of the messages author, in this case `user`.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum ChatCompletionRequestUserMessageRoleEnum {
-    #[serde(rename = "user")]
-    #[default]
-    User,
-}
-
-impl ChatCompletionRequestUserMessageRoleEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::User => "user",
-        }
-    }
-}
-
-impl std::fmt::Display for ChatCompletionRequestUserMessageRoleEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ChatCompletionRequestUserMessageRoleEnum::User => f.write_str("user"),
-        }
-    }
-}
-
-/// Messages sent by an end user, containing prompts or additional context
-/// information.
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct ChatCompletionRequestUserMessage {
-    /// The contents of the user message.
-    pub content: ChatCompletionRequestUserMessageContent,
-    /// The role of the messages author, in this case `user`.
-    pub role: ChatCompletionRequestUserMessageRoleEnum,
-    /// An optional name for the participant. Provides the model information to differentiate between participants of the same role.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
-}
-
-impl ChatCompletionRequestUserMessage {
-    pub fn new(
-        content: ChatCompletionRequestUserMessageContent,
-        role: ChatCompletionRequestUserMessageRoleEnum,
-    ) -> Self {
-        Self {
-            content,
-            role,
-            name: None,
-        }
-    }
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(untagged)]
-pub enum ChatCompletionRequestUserMessageContentPart {
-    ChatCompletionRequestMessageContentPartText(Box<ChatCompletionRequestMessageContentPartText>),
-    ChatCompletionRequestMessageContentPartImage(Box<ChatCompletionRequestMessageContentPartImage>),
-    ChatCompletionRequestMessageContentPartAudio(Box<ChatCompletionRequestMessageContentPartAudio>),
-    ChatCompletionRequestMessageContentPartFile(Box<ChatCompletionRequestMessageContentPartFile>),
-    /// A member whose `type` names no branch this SDK knows, kept as received.
-    #[serde(deserialize_with = "ChatCompletionRequestUserMessageContentPart::unknown_member")]
-    Unknown(serde_json::Value),
-}
-
-impl ChatCompletionRequestUserMessageContentPart {
-    fn unknown_member<'de, D: serde::Deserializer<'de>>(
-        deserializer: D,
-    ) -> Result<serde_json::Value, D::Error> {
-        crate::client::unknown_union_member(
-            deserializer,
-            "type",
-            &["text", "image_url", "input_audio", "file"],
-        )
+impl ::std::convert::From<String> for ChatCompletionRequestUserMessageContent {
+    fn from(value: String) -> Self {
+        Self::String(value)
     }
 }

@@ -3,6 +3,12 @@
 
 // assistants_create domain models (part 3)
 
+impl std::fmt::Display for TruncationObjectTypeEnum {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// Optional API value serialized in the `truncation_strategy` wire field.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct CreateRunRequestTruncationStrategy {
@@ -593,16 +599,4 @@ pub enum CreateThreadAndRunRequestToolsItem {
     /// A member whose `type` names no branch this SDK knows, kept as received.
     #[serde(deserialize_with = "CreateThreadAndRunRequestToolsItem::unknown_member")]
     Unknown(serde_json::Value),
-}
-
-impl CreateThreadAndRunRequestToolsItem {
-    fn unknown_member<'de, D: serde::Deserializer<'de>>(
-        deserializer: D,
-    ) -> Result<serde_json::Value, D::Error> {
-        crate::client::unknown_union_member(
-            deserializer,
-            "type",
-            &["code_interpreter", "file_search", "function"],
-        )
-    }
 }

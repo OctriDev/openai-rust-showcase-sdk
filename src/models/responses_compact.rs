@@ -114,6 +114,18 @@ impl<'de> serde::Deserialize<'de> for CompactResponseMethodPublicBodyInput {
     }
 }
 
+impl ::std::convert::From<String> for CompactResponseMethodPublicBodyInput {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<InputItem>> for CompactResponseMethodPublicBodyInput {
+    fn from(value: Vec<InputItem>) -> Self {
+        Self::InputItemArray(value)
+    }
+}
+
 /// Typed representation of the `CompactResponseMethodPublicBody` API schema.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct CompactResponseMethodPublicBody {

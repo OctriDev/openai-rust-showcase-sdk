@@ -3,6 +3,19 @@
 
 // live_live_decision domain models (part 2)
 
+impl<'de> serde::Deserialize<'de> for LiveDecisionInputItemParamRoleEnum {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
+        Ok(match value.as_str() {
+            "user" => Self::User,
+            _ => Self::Unknown(value),
+        })
+    }
+}
+
 impl std::fmt::Display for LiveDecisionInputItemParamRoleEnum {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
@@ -41,6 +54,20 @@ impl<'de> serde::Deserialize<'de> for LiveDecisionInputItemParamContent {
                 "no LiveDecisionInputItemParamContent branch accepts this payload",
             )
         })
+    }
+}
+
+impl ::std::convert::From<String> for LiveDecisionInputItemParamContent {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<LiveDecisionInputItemParamContentItem>>
+    for LiveDecisionInputItemParamContent
+{
+    fn from(value: Vec<LiveDecisionInputItemParamContentItem>) -> Self {
+        Self::ItemArray(value)
     }
 }
 
@@ -530,31 +557,4 @@ impl LiveDecisionQuestionsInputParam2 {
         value.validate_constraints()?;
         Ok(value)
     }
-}
-
-/// Typed representation of the `LiveDecisionScoreLevelParam` API schema.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct LiveDecisionScoreLevelParam {
-    /// Required `string` value serialized in the `label` wire field.
-    pub label: String,
-    /// Optional `string` value serialized in the `description` wire field.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub description: Option<String>,
-}
-
-impl LiveDecisionScoreLevelParam {
-    pub fn new(label: String) -> Self {
-        Self {
-            label,
-            description: None,
-        }
-    }
-}
-
-/// Required enumerated value serialized in the `type` wire field.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum LiveDecisionScoreQuestionParamTypeEnum {
-    #[serde(rename = "score")]
-    #[default]
-    Score,
 }

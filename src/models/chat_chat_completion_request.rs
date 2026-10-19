@@ -39,6 +39,20 @@ impl<'de> serde::Deserialize<'de> for ChatCompletionRequestAssistantMessageConte
     }
 }
 
+impl ::std::convert::From<String> for ChatCompletionRequestAssistantMessageContent {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<ChatCompletionRequestAssistantMessageContentPart>>
+    for ChatCompletionRequestAssistantMessageContent
+{
+    fn from(value: Vec<ChatCompletionRequestAssistantMessageContentPart>) -> Self {
+        Self::PartArray(value)
+    }
+}
+
 /// The role of the messages author, in this case `assistant`.
 #[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
 pub enum ChatCompletionRequestAssistantMessageRoleEnum {
@@ -202,6 +216,20 @@ impl<'de> serde::Deserialize<'de> for ChatCompletionRequestDeveloperMessageConte
                 "no ChatCompletionRequestDeveloperMessageContent branch accepts this payload",
             )
         })
+    }
+}
+
+impl ::std::convert::From<String> for ChatCompletionRequestDeveloperMessageContent {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+impl ::std::convert::From<Vec<ChatCompletionRequestMessageContentPartText>>
+    for ChatCompletionRequestDeveloperMessageContent
+{
+    fn from(value: Vec<ChatCompletionRequestMessageContentPartText>) -> Self {
+        Self::ChatCompletionRequestMessageContentPartTextArray(value)
     }
 }
 
@@ -481,44 +509,4 @@ impl std::fmt::Display for ChatCompletionRequestMessageContentPartFileTypeEnum {
             ChatCompletionRequestMessageContentPartFileTypeEnum::File => f.write_str("file"),
         }
     }
-}
-
-/// Required object value serialized in the `file` wire field.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct ChatCompletionRequestMessageContentPartFileFile {
-    /// The name of the file, used when passing the file to the model as a
-    /// string.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub filename: Option<String>,
-    /// The base64 encoded file data, used when passing the file to the model
-    /// as a string.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub file_data: Option<String>,
-    /// The ID of an uploaded file to use as input.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub file_id: Option<String>,
-}
-
-impl ChatCompletionRequestMessageContentPartFileFile {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        Self {
-            filename: None,
-            file_data: None,
-            file_id: None,
-        }
-    }
-}
-
-/// Learn about [file inputs](https://developers.openai.com/api/docs/guides/text) for text generation.
-#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct ChatCompletionRequestMessageContentPartFile {
-    /// The type of the content part. Always `file`.
-    #[serde(rename = "type")]
-    pub type_: ChatCompletionRequestMessageContentPartFileTypeEnum,
-    /// Required object value serialized in the `file` wire field.
-    pub file: ChatCompletionRequestMessageContentPartFileFile,
-    /// Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL from the request's `prompt_cache_options.ttl`; the boundary is not rounded to a token block.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub prompt_cache_breakpoint: Option<PromptCacheBreakpointParam>,
 }

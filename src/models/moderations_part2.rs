@@ -3,6 +3,23 @@
 
 // moderations domain models (part 2)
 
+/// Required enumerated value serialized in the `harassment/threatening[]` wire field.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum CreateModerationResponseResultsItemCategoryAppliedInputTypesHarassmentthreateningItemEnum {
+    #[default]
+    Text,
+    Unknown(String),
+}
+
+impl CreateModerationResponseResultsItemCategoryAppliedInputTypesHarassmentthreateningItemEnum {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Text => "text",
+            Self::Unknown(value) => value.as_str(),
+        }
+    }
+}
+
 impl serde::Serialize
     for CreateModerationResponseResultsItemCategoryAppliedInputTypesHarassmentthreateningItemEnum
 {
@@ -487,29 +504,5 @@ impl serde::Serialize
         S: serde::Serializer,
     {
         serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de> serde::Deserialize<'de>
-    for CreateModerationResponseResultsItemCategoryAppliedInputTypesViolencegraphicItemEnum
-{
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value = <String as serde::Deserialize>::deserialize(deserializer)?;
-        Ok(match value.as_str() {
-            "text" => Self::Text,
-            "image" => Self::Image,
-            _ => Self::Unknown(value),
-        })
-    }
-}
-
-impl std::fmt::Display
-    for CreateModerationResponseResultsItemCategoryAppliedInputTypesViolencegraphicItemEnum
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.as_str())
     }
 }
