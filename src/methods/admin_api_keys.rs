@@ -115,16 +115,26 @@ impl std::fmt::Display for ListAdminApiKeysEnum {
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ListAdminApiKeysParams {
+    pub after: Option<Option<String>>,
+    pub order: Option<ListAdminApiKeysEnum>,
+    pub limit: Option<i64>,
+}
+
 /// Lists organization API keys, including keys associated with projects. Use `after` to continue from a key ID and `order` to control creation-time sorting. The response includes pagination metadata to help you determine whether more keys are available.
 ///
 /// List organization API keys
 pub fn list_admin_api_keys(
     config: &ClientConfig,
-    after: Option<Option<String>>,
-    order: Option<ListAdminApiKeysEnum>,
-    limit: Option<i64>,
+    params: ListAdminApiKeysParams,
     options: Option<&RequestOptions>,
 ) -> Result<ApiKeyList, SdkError> {
+    let ListAdminApiKeysParams {
+        after,
+        order,
+        limit,
+    } = params;
     let mut __query: Vec<(&str, String)> = Vec::with_capacity(3);
     if let Some(ref v) = after {
         __query.push(("after", crate::client::query_value(v)));
@@ -157,15 +167,27 @@ pub fn list_admin_api_keys(
 /// List organization API keys
 pub fn list_admin_api_keys_paginated(
     config: &ClientConfig,
-    after: Option<Option<String>>,
-    order: Option<ListAdminApiKeysEnum>,
-    limit: Option<i64>,
+    params: ListAdminApiKeysParams,
     options: Option<&RequestOptions>,
     mut yield_fn: impl FnMut(&AdminApiKey) -> bool,
 ) -> Result<(), SdkError> {
+    let ListAdminApiKeysParams {
+        after,
+        order,
+        limit,
+    } = params;
+
     let mut _cursor: Option<Option<String>> = after;
     loop {
-        let _page = list_admin_api_keys(config, _cursor, order.clone(), limit, options)?;
+        let _page = list_admin_api_keys(
+            config,
+            ListAdminApiKeysParams {
+                after: _cursor,
+                order: order.clone(),
+                limit,
+            },
+            options,
+        )?;
         let _items: Vec<_> = _page.data.iter().collect();
         if _items.is_empty() {
             return Ok(());
@@ -194,15 +216,27 @@ pub struct ListAdminApiKeysPage<'a> {
 
 pub fn list_admin_api_keys_pages(
     config: &ClientConfig,
-    after: Option<Option<String>>,
-    order: Option<ListAdminApiKeysEnum>,
-    limit: Option<i64>,
+    params: ListAdminApiKeysParams,
     options: Option<&RequestOptions>,
     mut yield_page: impl FnMut(ListAdminApiKeysPage<'_>) -> bool,
 ) -> Result<(), SdkError> {
+    let ListAdminApiKeysParams {
+        after,
+        order,
+        limit,
+    } = params;
+
     let mut _cursor: Option<Option<String>> = after;
     loop {
-        let _page = list_admin_api_keys(config, _cursor, order.clone(), limit, options)?;
+        let _page = list_admin_api_keys(
+            config,
+            ListAdminApiKeysParams {
+                after: _cursor,
+                order: order.clone(),
+                limit,
+            },
+            options,
+        )?;
         let _items: Vec<_> = _page.data.iter().collect();
         if _items.is_empty() {
             return Ok(());
@@ -226,6 +260,12 @@ pub fn list_admin_api_keys_pages(
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct CreateAdminApiKeysParams {
+    pub name: String,
+    pub expires_in_seconds: Option<i64>,
+}
+
 /// Creates an organization admin API key. Provide a `name` and, optionally, `expires_in_seconds` to set the key's lifetime. The response includes the key value, which is returned only once when the key is created.
 ///
 /// Create an organization admin API key
@@ -236,10 +276,13 @@ pub fn list_admin_api_keys_pages(
 ///   Omit this field for a key that does not expire.
 pub fn create_admin_api_keys(
     config: &ClientConfig,
-    name: String,
-    expires_in_seconds: Option<i64>,
+    params: CreateAdminApiKeysParams,
     options: Option<&RequestOptions>,
 ) -> Result<AdminApiKeyCreateResponse, SdkError> {
+    let CreateAdminApiKeysParams {
+        name,
+        expires_in_seconds,
+    } = params;
     if let Some(ref expires_in_seconds_v) = expires_in_seconds {
         validate_range(
             "expires_in_seconds",
@@ -295,14 +338,20 @@ pub fn create_admin_api_keys(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveAdminApiKeysParams {
+    pub key_id: String,
+}
+
 /// Retrieves details for an organization API key. Use `key_id` to identify the key whose metadata you need. The response includes the redacted key value, creation and expiration timestamps, last-use time, and owner details.
 ///
 /// Retrieve a single organization API key
 pub fn retrieve_admin_api_keys(
     config: &ClientConfig,
-    key_id: String,
+    params: RetrieveAdminApiKeysParams,
     options: Option<&RequestOptions>,
 ) -> Result<AdminApiKey, SdkError> {
+    let RetrieveAdminApiKeysParams { key_id } = params;
     Ok(sdk_request::<AdminApiKey>(
         "GET",
         &format!(
@@ -321,14 +370,20 @@ pub fn retrieve_admin_api_keys(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct DeleteAdminApiKeysParams {
+    pub key_id: String,
+}
+
 /// Deletes an organization admin API key. Use `key_id` to identify the key to remove. The response confirms deletion with the key identifier and a `deleted` flag.
 ///
 /// Delete an organization admin API key
 pub fn delete_admin_api_keys(
     config: &ClientConfig,
-    key_id: String,
+    params: DeleteAdminApiKeysParams,
     options: Option<&RequestOptions>,
 ) -> Result<DeleteAdminApiKeysResponse, SdkError> {
+    let DeleteAdminApiKeysParams { key_id } = params;
     Ok(sdk_request::<DeleteAdminApiKeysResponse>(
         "DELETE",
         &format!(

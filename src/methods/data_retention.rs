@@ -32,6 +32,11 @@ pub fn retrieve_organization_data_retention(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct UpdateOrganizationDataRetentionParams {
+    pub retention_type: UpdateOrganizationDataRetentionBodyRetentionTypeEnum,
+}
+
 /// Updates the organization's data retention controls. Set `retention_type` to one of the supported retention modes; the requested setting or transition must be valid for the organization.
 ///
 /// Updates organization data retention controls.
@@ -41,9 +46,10 @@ pub fn retrieve_organization_data_retention(
 /// * `retention_type` - The desired organization data retention type.
 pub fn update_organization_data_retention(
     config: &ClientConfig,
-    retention_type: UpdateOrganizationDataRetentionBodyRetentionTypeEnum,
+    params: UpdateOrganizationDataRetentionParams,
     options: Option<&RequestOptions>,
 ) -> Result<OrganizationDataRetention, SdkError> {
+    let UpdateOrganizationDataRetentionParams { retention_type } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "retention_type".to_string(),
@@ -76,6 +82,11 @@ pub fn update_organization_data_retention(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveProjectDataRetentionParams {
+    pub project_id: String,
+}
+
 /// Retrieves the data retention controls configured for a project. Use this operation to inspect the project's current retention type before changing its settings.
 ///
 /// Retrieves project data retention controls.
@@ -85,9 +96,10 @@ pub fn update_organization_data_retention(
 /// * `project_id` - The ID of the project to inspect.
 pub fn retrieve_project_data_retention(
     config: &ClientConfig,
-    project_id: String,
+    params: RetrieveProjectDataRetentionParams,
     options: Option<&RequestOptions>,
 ) -> Result<ProjectDataRetention, SdkError> {
+    let RetrieveProjectDataRetentionParams { project_id } = params;
     Ok(sdk_request::<ProjectDataRetention>(
         "GET",
         &format!(
@@ -110,6 +122,12 @@ pub fn retrieve_project_data_retention(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct UpdateProjectDataRetentionParams {
+    pub project_id: String,
+    pub retention_type: UpdateProjectDataRetentionBodyRetentionTypeEnum,
+}
+
 /// Updates the data retention controls for a project. Set `retention_type` to one of the supported retention settings to configure the project.
 ///
 /// Updates project data retention controls.
@@ -120,10 +138,13 @@ pub fn retrieve_project_data_retention(
 /// * `retention_type` - The desired project data retention type.
 pub fn update_project_data_retention(
     config: &ClientConfig,
-    project_id: String,
-    retention_type: UpdateProjectDataRetentionBodyRetentionTypeEnum,
+    params: UpdateProjectDataRetentionParams,
     options: Option<&RequestOptions>,
 ) -> Result<ProjectDataRetention, SdkError> {
+    let UpdateProjectDataRetentionParams {
+        project_id,
+        retention_type,
+    } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "retention_type".to_string(),

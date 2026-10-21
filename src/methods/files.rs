@@ -56,6 +56,14 @@ impl std::fmt::Display for ListFilesEnum {
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ListFilesParams {
+    pub purpose: Option<String>,
+    pub limit: Option<i64>,
+    pub order: Option<ListFilesEnum>,
+    pub after: Option<String>,
+}
+
 /// Lists uploaded files, with optional filtering, sorting, and cursor-based pagination. Use `purpose` to filter the results, and use `after` with the last file ID from a page to retrieve the next page.
 ///
 /// Returns a list of files.
@@ -73,12 +81,15 @@ impl std::fmt::Display for ListFilesEnum {
 ///   after=obj_foo in order to fetch the next page of the list.
 pub fn list_files(
     config: &ClientConfig,
-    purpose: Option<String>,
-    limit: Option<i64>,
-    order: Option<ListFilesEnum>,
-    after: Option<String>,
+    params: ListFilesParams,
     options: Option<&RequestOptions>,
 ) -> Result<ListFilesResponse, SdkError> {
+    let ListFilesParams {
+        purpose,
+        limit,
+        order,
+        after,
+    } = params;
     let mut __query: Vec<(&str, String)> = Vec::with_capacity(4);
     if let Some(ref v) = purpose {
         __query.push(("purpose", crate::client::query_value(v)));
@@ -130,21 +141,27 @@ pub fn list_files(
 ///   after=obj_foo in order to fetch the next page of the list.
 pub fn list_files_paginated(
     config: &ClientConfig,
-    purpose: Option<String>,
-    limit: Option<i64>,
-    order: Option<ListFilesEnum>,
-    after: Option<String>,
+    params: ListFilesParams,
     options: Option<&RequestOptions>,
     mut yield_fn: impl FnMut(&OpenAIFile) -> bool,
 ) -> Result<(), SdkError> {
+    let ListFilesParams {
+        purpose,
+        limit,
+        order,
+        after,
+    } = params;
+
     let mut _cursor: Option<String> = after;
     loop {
         let _page = list_files(
             config,
-            purpose.clone(),
-            limit,
-            order.clone(),
-            _cursor,
+            ListFilesParams {
+                purpose: purpose.clone(),
+                limit,
+                order: order.clone(),
+                after: _cursor,
+            },
             options,
         )?;
         let _items: Vec<_> = _page.data.iter().collect();
@@ -172,21 +189,27 @@ pub struct ListFilesPage<'a> {
 
 pub fn list_files_pages(
     config: &ClientConfig,
-    purpose: Option<String>,
-    limit: Option<i64>,
-    order: Option<ListFilesEnum>,
-    after: Option<String>,
+    params: ListFilesParams,
     options: Option<&RequestOptions>,
     mut yield_page: impl FnMut(ListFilesPage<'_>) -> bool,
 ) -> Result<(), SdkError> {
+    let ListFilesParams {
+        purpose,
+        limit,
+        order,
+        after,
+    } = params;
+
     let mut _cursor: Option<String> = after;
     loop {
         let _page = list_files(
             config,
-            purpose.clone(),
-            limit,
-            order.clone(),
-            _cursor,
+            ListFilesParams {
+                purpose: purpose.clone(),
+                limit,
+                order: order.clone(),
+                after: _cursor,
+            },
             options,
         )?;
         let _items: Vec<_> = _page.data.iter().collect();
@@ -209,6 +232,13 @@ pub fn list_files_pages(
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct CreateFileParams {
+    pub file: crate::client::UploadFile,
+    pub purpose: CreateFileRequestPurposeEnum,
+    pub expires_after: Option<FileExpirationAfter>,
+}
+
 /// Uploads a file for use across supported API endpoints. Send the file and its `purpose` as multipart form data, and use `expires_after` when you want to set an expiration policy. File uploads are limited to 512 MB per file and 2.5 TB of storage per project.
 ///
 /// Upload a file that can be used across various endpoints. Individual files can be up to 512 MB, and each project can store up to 2.5 TB of files in total. There is no organization-wide storage limit. Uploads to this endpoint are rate-limited to 1,000 requests per minute per authenticated user. \- The Assistants API supports files up to 2 million tokens and of specific file types. See the [Assistants Tools guide](https://developers.openai.com/api/docs/guides/tools) for details. \- The Fine-tuning API only supports `.jsonl` files. The input also has certain required formats for fine-tuning [chat](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#formatting-your-data) or [completions](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#formatting-your-data) models. \- The Batch API only supports `.jsonl` files up to 200 MB in size. The input also has a specific required [format](https://developers.openai.com/api/docs/guides/batch#1-prepare-your-batch-file). \- For Retrieval or `file_search` ingestion, upload files here first. If you need to attach multiple uploaded files to the same vector store, use [`/vector_stores/{vector_store_id}/file_batches`](https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/create) instead of attaching them one by one. Vector store attachment has separate limits from file upload, including 2,000 attached files per minute per organization. Please [contact us](https://help.openai.com/) if you need to increase these storage limits.
@@ -226,11 +256,14 @@ pub fn list_files_pages(
 ///   they are manually deleted.
 pub fn create_file(
     config: &ClientConfig,
-    file: crate::client::UploadFile,
-    purpose: CreateFileRequestPurposeEnum,
-    expires_after: Option<FileExpirationAfter>,
+    params: CreateFileParams,
     options: Option<&RequestOptions>,
 ) -> Result<OpenAIFile, SdkError> {
+    let CreateFileParams {
+        file,
+        purpose,
+        expires_after,
+    } = params;
     let __boundary = format!(
         "----InterfacerFormBoundary{:x}",
         std::time::SystemTime::now()
@@ -293,6 +326,11 @@ pub fn create_file(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct DeleteFileParams {
+    pub file_id: String,
+}
+
 /// Deletes a file and removes it from all vector stores. Use `file_id` to identify the file to remove.
 ///
 /// Delete a file and remove it from all vector stores.
@@ -302,9 +340,10 @@ pub fn create_file(
 /// * `file_id` - The ID of the file to use for this request.
 pub fn delete_file(
     config: &ClientConfig,
-    file_id: String,
+    params: DeleteFileParams,
     options: Option<&RequestOptions>,
 ) -> Result<DeleteFileResponse, SdkError> {
+    let DeleteFileParams { file_id } = params;
     Ok(sdk_request::<DeleteFileResponse>(
         "DELETE",
         &format!("/files/{}", crate::client::encode_path_segment(&file_id)),
@@ -320,6 +359,11 @@ pub fn delete_file(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveFileParams {
+    pub file_id: String,
+}
+
 /// Retrieves metadata for a specific uploaded file. Use `file_id` to identify the file whose purpose, size, status, and timestamps you need.
 ///
 /// Returns information about a specific file.
@@ -329,9 +373,10 @@ pub fn delete_file(
 /// * `file_id` - The ID of the file to use for this request.
 pub fn retrieve_file(
     config: &ClientConfig,
-    file_id: String,
+    params: RetrieveFileParams,
     options: Option<&RequestOptions>,
 ) -> Result<OpenAIFile, SdkError> {
+    let RetrieveFileParams { file_id } = params;
     Ok(sdk_request::<OpenAIFile>(
         "GET",
         &format!("/files/{}", crate::client::encode_path_segment(&file_id)),
@@ -347,6 +392,11 @@ pub fn retrieve_file(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct DownloadFileParams {
+    pub file_id: String,
+}
+
 /// Retrieves the contents of a specific uploaded file. Use `file_id` to identify the file, and note that some file purposes or account permissions do not allow downloads.
 ///
 /// Returns a response containing the contents of the specified file.
@@ -356,9 +406,10 @@ pub fn retrieve_file(
 /// * `file_id` - The ID of the file to use for this request.
 pub fn download_file(
     config: &ClientConfig,
-    file_id: String,
+    params: DownloadFileParams,
     options: Option<&RequestOptions>,
 ) -> Result<Vec<u8>, SdkError> {
+    let DownloadFileParams { file_id } = params;
     Ok(sdk_request::<Vec<u8>>(
         "GET",
         &format!(

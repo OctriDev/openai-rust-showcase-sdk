@@ -9,6 +9,12 @@ use crate::types::{
     InviteRequestRoleEnum,
 };
 
+#[derive(Debug, Clone, Default)]
+pub struct ListInvitesParams {
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+}
+
 /// Lists organization invites and their status, role, and project access details. Use `limit` to control the number of results and `after` to continue from an invite ID. The response includes `has_more` and cursor IDs to help you paginate.
 ///
 /// Returns a list of invites in the organization.
@@ -23,10 +29,10 @@ use crate::types::{
 ///   after=obj_foo in order to fetch the next page of the list.
 pub fn list_invites(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
+    params: ListInvitesParams,
     options: Option<&RequestOptions>,
 ) -> Result<InviteListResponse, SdkError> {
+    let ListInvitesParams { limit, after } = params;
     let mut __query: Vec<(&str, String)> = Vec::with_capacity(2);
     if let Some(ref v) = limit {
         __query.push(("limit", crate::client::query_value(v)));
@@ -70,14 +76,22 @@ pub fn list_invites(
 ///   after=obj_foo in order to fetch the next page of the list.
 pub fn list_invites_paginated(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
+    params: ListInvitesParams,
     options: Option<&RequestOptions>,
     mut yield_fn: impl FnMut(&Invite) -> bool,
 ) -> Result<(), SdkError> {
+    let ListInvitesParams { limit, after } = params;
+
     let mut _cursor: Option<String> = after;
     loop {
-        let _page = list_invites(config, limit, _cursor, options)?;
+        let _page = list_invites(
+            config,
+            ListInvitesParams {
+                limit,
+                after: _cursor,
+            },
+            options,
+        )?;
         let _items: Vec<_> = _page.data.iter().collect();
         if _items.is_empty() {
             return Ok(());
@@ -106,14 +120,22 @@ pub struct ListInvitesPage<'a> {
 
 pub fn list_invites_pages(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
+    params: ListInvitesParams,
     options: Option<&RequestOptions>,
     mut yield_page: impl FnMut(ListInvitesPage<'_>) -> bool,
 ) -> Result<(), SdkError> {
+    let ListInvitesParams { limit, after } = params;
+
     let mut _cursor: Option<String> = after;
     loop {
-        let _page = list_invites(config, limit, _cursor, options)?;
+        let _page = list_invites(
+            config,
+            ListInvitesParams {
+                limit,
+                after: _cursor,
+            },
+            options,
+        )?;
         let _items: Vec<_> = _page.data.iter().collect();
         if _items.is_empty() {
             return Ok(());
@@ -137,6 +159,13 @@ pub fn list_invites_pages(
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct CreateInvitesParams {
+    pub email: String,
+    pub role: InviteRequestRoleEnum,
+    pub projects: Option<Vec<InviteRequestProjectsItem>>,
+}
+
 /// Create an invite for a user to the organization. The invite must be accepted by the user before they have access to the organization.
 ///
 /// # Arguments
@@ -150,11 +179,14 @@ pub fn list_invites_pages(
 ///   default one.
 pub fn create_invites(
     config: &ClientConfig,
-    email: String,
-    role: InviteRequestRoleEnum,
-    projects: Option<Vec<InviteRequestProjectsItem>>,
+    params: CreateInvitesParams,
     options: Option<&RequestOptions>,
 ) -> Result<Invite, SdkError> {
+    let CreateInvitesParams {
+        email,
+        role,
+        projects,
+    } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "email".to_string(),
@@ -207,6 +239,11 @@ pub fn create_invites(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveInviteParams {
+    pub invite_id: String,
+}
+
 /// Retrieves an organization invite by its identifier. Use `invite_id` to select the invite whose email address, role, status, and project access you need to inspect.
 ///
 /// Retrieves an invite.
@@ -216,9 +253,10 @@ pub fn create_invites(
 /// * `invite_id` - The ID of the invite to retrieve.
 pub fn retrieve_invite(
     config: &ClientConfig,
-    invite_id: String,
+    params: RetrieveInviteParams,
     options: Option<&RequestOptions>,
 ) -> Result<Invite, SdkError> {
+    let RetrieveInviteParams { invite_id } = params;
     Ok(sdk_request::<Invite>(
         "GET",
         &format!(
@@ -243,6 +281,11 @@ pub fn retrieve_invite(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct DeleteInviteParams {
+    pub invite_id: String,
+}
+
 /// Delete an invite. If the invite has already been accepted, it cannot be deleted.
 ///
 /// # Arguments
@@ -250,9 +293,10 @@ pub fn retrieve_invite(
 /// * `invite_id` - The ID of the invite to delete.
 pub fn delete_invite(
     config: &ClientConfig,
-    invite_id: String,
+    params: DeleteInviteParams,
     options: Option<&RequestOptions>,
 ) -> Result<InviteDeleteResponse, SdkError> {
+    let DeleteInviteParams { invite_id } = params;
     Ok(sdk_request::<InviteDeleteResponse>(
         "DELETE",
         &format!(

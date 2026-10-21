@@ -248,6 +248,13 @@ pub fn list_project_group_role_assignments_pages(
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct AssignProjectGroupRoleParams {
+    pub project_id: String,
+    pub group_id: String,
+    pub role_id: String,
+}
+
 /// Assigns a project role to a group within a project.
 ///
 /// # Arguments
@@ -257,11 +264,14 @@ pub fn list_project_group_role_assignments_pages(
 /// * `role_id` - Identifier of the role to assign.
 pub fn assign_project_group_role(
     config: &ClientConfig,
-    project_id: String,
-    group_id: String,
-    role_id: String,
+    params: AssignProjectGroupRoleParams,
     options: Option<&RequestOptions>,
 ) -> Result<GroupRoleAssignment, SdkError> {
+    let AssignProjectGroupRoleParams {
+        project_id,
+        group_id,
+        role_id,
+    } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "role_id".to_string(),
@@ -299,6 +309,13 @@ pub fn assign_project_group_role(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveProjectGroupRoleParams {
+    pub project_id: String,
+    pub group_id: String,
+    pub role_id: String,
+}
+
 /// Retrieves a role assigned to a group within a project. Use the project, group, and role identifiers to locate the assignment and inspect its permissions and assignment details.
 ///
 /// Retrieves a project role assigned to a group.
@@ -310,11 +327,14 @@ pub fn assign_project_group_role(
 /// * `role_id` - The ID of the project role to retrieve for the group.
 pub fn retrieve_project_group_role(
     config: &ClientConfig,
-    project_id: String,
-    group_id: String,
-    role_id: String,
+    params: RetrieveProjectGroupRoleParams,
     options: Option<&RequestOptions>,
 ) -> Result<AssignedRoleDetails, SdkError> {
+    let RetrieveProjectGroupRoleParams {
+        project_id,
+        group_id,
+        role_id,
+    } = params;
     Ok(sdk_request::<AssignedRoleDetails>(
         "GET",
         &format!(
@@ -340,6 +360,13 @@ pub fn retrieve_project_group_role(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct UnassignProjectGroupRoleParams {
+    pub project_id: String,
+    pub group_id: String,
+    pub role_id: String,
+}
+
 /// Unassigns a project role from a group within a project.
 ///
 /// # Arguments
@@ -350,11 +377,14 @@ pub fn retrieve_project_group_role(
 /// * `role_id` - The ID of the project role to remove from the group.
 pub fn unassign_project_group_role(
     config: &ClientConfig,
-    project_id: String,
-    group_id: String,
-    role_id: String,
+    params: UnassignProjectGroupRoleParams,
     options: Option<&RequestOptions>,
 ) -> Result<DeletedRoleAssignmentResource, SdkError> {
+    let UnassignProjectGroupRoleParams {
+        project_id,
+        group_id,
+        role_id,
+    } = params;
     Ok(sdk_request::<DeletedRoleAssignmentResource>(
         "DELETE",
         &format!(

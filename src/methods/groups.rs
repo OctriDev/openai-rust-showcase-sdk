@@ -56,6 +56,13 @@ impl std::fmt::Display for ListGroupsEnum {
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ListGroupsParams {
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub order: Option<ListGroupsEnum>,
+}
+
 /// Lists groups in the organization, with controls for page size, cursor position, and sort order. Use `after` with a group ID from the previous page to continue through the results.
 ///
 /// Lists all groups in the organization.
@@ -71,11 +78,14 @@ impl std::fmt::Display for ListGroupsEnum {
 /// * `order` - Specifies the sort order of the returned groups.
 pub fn list_groups(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
-    order: Option<ListGroupsEnum>,
+    params: ListGroupsParams,
     options: Option<&RequestOptions>,
 ) -> Result<GroupListResource, SdkError> {
+    let ListGroupsParams {
+        limit,
+        after,
+        order,
+    } = params;
     if let Some(ref limit_v) = limit {
         validate_range(
             "limit",
@@ -135,15 +145,27 @@ pub fn list_groups(
 /// * `order` - Specifies the sort order of the returned groups.
 pub fn list_groups_paginated(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
-    order: Option<ListGroupsEnum>,
+    params: ListGroupsParams,
     options: Option<&RequestOptions>,
     mut yield_fn: impl FnMut(&GroupResponse) -> bool,
 ) -> Result<(), SdkError> {
+    let ListGroupsParams {
+        limit,
+        after,
+        order,
+    } = params;
+
     let mut _cursor: Option<String> = after;
     loop {
-        let _page = list_groups(config, limit, _cursor, order.clone(), options)?;
+        let _page = list_groups(
+            config,
+            ListGroupsParams {
+                limit,
+                after: _cursor,
+                order: order.clone(),
+            },
+            options,
+        )?;
         let _items: Vec<_> = _page.data.iter().collect();
         if _items.is_empty() {
             return Ok(());
@@ -172,15 +194,27 @@ pub struct ListGroupsPage<'a> {
 
 pub fn list_groups_pages(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
-    order: Option<ListGroupsEnum>,
+    params: ListGroupsParams,
     options: Option<&RequestOptions>,
     mut yield_page: impl FnMut(ListGroupsPage<'_>) -> bool,
 ) -> Result<(), SdkError> {
+    let ListGroupsParams {
+        limit,
+        after,
+        order,
+    } = params;
+
     let mut _cursor: Option<String> = after;
     loop {
-        let _page = list_groups(config, limit, _cursor, order.clone(), options)?;
+        let _page = list_groups(
+            config,
+            ListGroupsParams {
+                limit,
+                after: _cursor,
+                order: order.clone(),
+            },
+            options,
+        )?;
         let _items: Vec<_> = _page.data.iter().collect();
         if _items.is_empty() {
             return Ok(());
@@ -204,6 +238,11 @@ pub fn list_groups_pages(
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct CreateGroupParams {
+    pub name: String,
+}
+
 /// Creates a new group in the organization. Provide a human-readable `name` between 1 and 255 characters; the response includes the group's generated ID and management details.
 ///
 /// Creates a new group in the organization.
@@ -213,9 +252,10 @@ pub fn list_groups_pages(
 /// * `name` - Human readable name for the group.
 pub fn create_group(
     config: &ClientConfig,
-    name: String,
+    params: CreateGroupParams,
     options: Option<&RequestOptions>,
 ) -> Result<GroupResponse, SdkError> {
+    let CreateGroupParams { name } = params;
     validate_length(
         "name",
         &name,
@@ -260,6 +300,11 @@ pub fn create_group(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveGroupParams {
+    pub group_id: String,
+}
+
 /// Retrieves a group from the organization by its ID. Use `group_id` to identify the group whose name, creation time, management status, and type you need.
 ///
 /// Retrieves a group.
@@ -269,9 +314,10 @@ pub fn create_group(
 /// * `group_id` - The ID of the group to retrieve.
 pub fn retrieve_group(
     config: &ClientConfig,
-    group_id: String,
+    params: RetrieveGroupParams,
     options: Option<&RequestOptions>,
 ) -> Result<GroupResponse, SdkError> {
+    let RetrieveGroupParams { group_id } = params;
     Ok(sdk_request::<GroupResponse>(
         "GET",
         &format!(
@@ -296,6 +342,12 @@ pub fn retrieve_group(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct UpdateGroupParams {
+    pub group_id: String,
+    pub name: String,
+}
+
 /// Updates a group's display name in the organization. Supply `name` as a string between 1 and 255 characters. The response includes the group's identifier, updated name, creation timestamp, and SCIM management status.
 ///
 /// Updates a group's information.
@@ -306,10 +358,10 @@ pub fn retrieve_group(
 /// * `name` - New display name for the group.
 pub fn update_group(
     config: &ClientConfig,
-    group_id: String,
-    name: String,
+    params: UpdateGroupParams,
     options: Option<&RequestOptions>,
 ) -> Result<GroupResourceWithSuccess, SdkError> {
+    let UpdateGroupParams { group_id, name } = params;
     validate_length(
         "name",
         &name,
@@ -356,6 +408,11 @@ pub fn update_group(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct DeleteGroupParams {
+    pub group_id: String,
+}
+
 /// Deletes a group from the organization. Use the group's identifier to select which group to remove. The response confirms the deleted group by its identifier and deletion status.
 ///
 /// Deletes a group from the organization.
@@ -365,9 +422,10 @@ pub fn update_group(
 /// * `group_id` - The ID of the group to delete.
 pub fn delete_group(
     config: &ClientConfig,
-    group_id: String,
+    params: DeleteGroupParams,
     options: Option<&RequestOptions>,
 ) -> Result<GroupDeletedResource, SdkError> {
+    let DeleteGroupParams { group_id } = params;
     Ok(sdk_request::<GroupDeletedResource>(
         "DELETE",
         &format!(

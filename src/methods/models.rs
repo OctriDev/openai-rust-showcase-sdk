@@ -28,6 +28,11 @@ pub fn list_models(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveModelParams {
+    pub model: String,
+}
+
 /// Retrieves information about a specific model, including its owner and permissioning details. Use the model identifier to look up the model before referencing it in other API requests.
 ///
 /// Retrieves a model instance, providing basic information about the model such as the owner and permissioning.
@@ -37,9 +42,10 @@ pub fn list_models(
 /// * `model` - The ID of the model to use for this request
 pub fn retrieve_model(
     config: &ClientConfig,
-    model: String,
+    params: RetrieveModelParams,
     options: Option<&RequestOptions>,
 ) -> Result<Model, SdkError> {
+    let RetrieveModelParams { model } = params;
     Ok(sdk_request::<Model>(
         "GET",
         &format!("/models/{}", crate::client::encode_path_segment(&model)),
@@ -55,6 +61,11 @@ pub fn retrieve_model(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct DeleteModelParams {
+    pub model: String,
+}
+
 /// Deletes a fine-tuned model. The authenticated user must have the Owner role in the organization and a credential that permits model deletion. Use `model` to identify the fine-tuned model to remove.
 ///
 /// Delete a fine-tuned model. You must have the Owner role in your organization to delete a model.
@@ -64,9 +75,10 @@ pub fn retrieve_model(
 /// * `model` - The model to delete
 pub fn delete_model(
     config: &ClientConfig,
-    model: String,
+    params: DeleteModelParams,
     options: Option<&RequestOptions>,
 ) -> Result<DeleteModelResponse, SdkError> {
+    let DeleteModelParams { model } = params;
     Ok(sdk_request::<DeleteModelResponse>(
         "DELETE",
         &format!("/models/{}", crate::client::encode_path_segment(&model)),

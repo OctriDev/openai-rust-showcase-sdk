@@ -248,6 +248,13 @@ pub fn list_project_user_role_assignments_pages(
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct AssignProjectUserRoleParams {
+    pub project_id: String,
+    pub user_id: String,
+    pub role_id: String,
+}
+
 /// Assigns a project role to a user within a project.
 ///
 /// # Arguments
@@ -257,11 +264,14 @@ pub fn list_project_user_role_assignments_pages(
 /// * `role_id` - Identifier of the role to assign.
 pub fn assign_project_user_role(
     config: &ClientConfig,
-    project_id: String,
-    user_id: String,
-    role_id: String,
+    params: AssignProjectUserRoleParams,
     options: Option<&RequestOptions>,
 ) -> Result<UserRoleAssignment, SdkError> {
+    let AssignProjectUserRoleParams {
+        project_id,
+        user_id,
+        role_id,
+    } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "role_id".to_string(),
@@ -299,6 +309,13 @@ pub fn assign_project_user_role(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveProjectUserRoleParams {
+    pub project_id: String,
+    pub user_id: String,
+    pub role_id: String,
+}
+
 /// Retrieves a project role assigned to a user. Use `project_id`, `user_id`, and `role_id` to identify the role assignment and its project context.
 ///
 /// Retrieves a project role assigned to a user.
@@ -310,11 +327,14 @@ pub fn assign_project_user_role(
 /// * `role_id` - The ID of the project role to retrieve for the user.
 pub fn retrieve_project_user_role(
     config: &ClientConfig,
-    project_id: String,
-    user_id: String,
-    role_id: String,
+    params: RetrieveProjectUserRoleParams,
     options: Option<&RequestOptions>,
 ) -> Result<AssignedRoleDetails, SdkError> {
+    let RetrieveProjectUserRoleParams {
+        project_id,
+        user_id,
+        role_id,
+    } = params;
     Ok(sdk_request::<AssignedRoleDetails>(
         "GET",
         &format!(
@@ -340,6 +360,13 @@ pub fn retrieve_project_user_role(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct UnassignProjectUserRoleParams {
+    pub project_id: String,
+    pub user_id: String,
+    pub role_id: String,
+}
+
 /// Unassigns a project role from a user within a project.
 ///
 /// # Arguments
@@ -350,11 +377,14 @@ pub fn retrieve_project_user_role(
 /// * `role_id` - The ID of the project role to remove from the user.
 pub fn unassign_project_user_role(
     config: &ClientConfig,
-    project_id: String,
-    user_id: String,
-    role_id: String,
+    params: UnassignProjectUserRoleParams,
     options: Option<&RequestOptions>,
 ) -> Result<DeletedRoleAssignmentResource, SdkError> {
+    let UnassignProjectUserRoleParams {
+        project_id,
+        user_id,
+        role_id,
+    } = params;
     Ok(sdk_request::<DeletedRoleAssignmentResource>(
         "DELETE",
         &format!(

@@ -25,20 +25,10 @@ impl AssistantsNamespace {
     /// This operation is deprecated and may be removed in a future release.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        order: Option<crate::methods::assistants::ListAssistantsEnum>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::assistants::ListAssistantsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListAssistantsResponse, crate::errors::SdkError> {
-        crate::methods::assistants::list_assistants(
-            &self.config,
-            limit,
-            order,
-            after,
-            before,
-            options,
-        )
+        crate::methods::assistants::list_assistants(&self.config, params, options)
     }
     /// Lists assistant configurations available to the authenticated user. Use `after` or `before` to navigate the list, and `limit` and `order` to control page size and sorting. This operation is closing down and will be removed on a date not specified here.
     ///
@@ -49,19 +39,13 @@ impl AssistantsNamespace {
     /// This operation is deprecated and may be removed in a future release.
     pub fn list_paginated(
         &self,
-        limit: Option<i64>,
-        order: Option<crate::methods::assistants::ListAssistantsEnum>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::assistants::ListAssistantsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&AssistantObject) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::assistants::list_assistants_paginated(
             &self.config,
-            limit,
-            order,
-            after,
-            before,
+            params,
             options,
             yield_fn,
         )
@@ -89,10 +73,10 @@ impl AssistantsNamespace {
     /// This operation is deprecated and may be removed in a future release.
     pub fn get(
         &self,
-        assistant_id: String,
+        params: crate::methods::assistants::GetAssistantParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<AssistantObject, crate::errors::SdkError> {
-        crate::methods::assistants::get_assistant(&self.config, assistant_id, options)
+        crate::methods::assistants::get_assistant(&self.config, params, options)
     }
     /// Updates an assistant's model, instructions, tools, or other configuration. Supply only the fields you want to change; fields not included in the request are not specified for update. This operation is closing down and will be removed on a date not specified here.
     ///
@@ -117,28 +101,20 @@ impl AssistantsNamespace {
     /// This operation is deprecated and may be removed in a future release.
     pub fn delete(
         &self,
-        assistant_id: String,
+        params: crate::methods::assistants::DeleteAssistantParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeleteAssistantResponse, crate::errors::SdkError> {
-        crate::methods::assistants::delete_assistant(&self.config, assistant_id, options)
+        crate::methods::assistants::delete_assistant(&self.config, params, options)
     }
     /// Creates a thread that can contain messages and resources for assistant tools. Provide `messages` to seed the thread, or `tool_resources` to make files or vector stores available to tools. You can also attach structured `metadata` to the thread.
     ///
     /// Create a thread.
     pub fn create_thread(
         &self,
-        messages: Option<Vec<CreateMessageRequest>>,
-        tool_resources: Option<Option<CreateThreadRequestToolResources>>,
-        metadata: Option<Option<Metadata>>,
+        params: crate::methods::assistants::CreateThreadParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ThreadObject, crate::errors::SdkError> {
-        crate::methods::assistants::create_thread(
-            &self.config,
-            messages,
-            tool_resources,
-            metadata,
-            options,
-        )
+        crate::methods::assistants::create_thread(&self.config, params, options)
     }
     /// Creates a thread and starts an assistant run in one request. Supply `assistant_id` and optionally configure the thread, model, tools, sampling, and token limits; `stream` returns run events as server-sent events. The run can remain queued or in progress, so check its status to track completion.
     ///
@@ -168,38 +144,30 @@ impl AssistantsNamespace {
     /// Retrieves a thread.
     pub fn get_thread(
         &self,
-        thread_id: String,
+        params: crate::methods::assistants::GetThreadParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ThreadObject, crate::errors::SdkError> {
-        crate::methods::assistants::get_thread(&self.config, thread_id, options)
+        crate::methods::assistants::get_thread(&self.config, params, options)
     }
     /// Updates the configurable details of a thread. Supply `metadata` to attach structured key-value pairs, or `tool_resources` to provide resources for the assistant's tools. The thread identifier selects which thread to update.
     ///
     /// Modifies a thread.
     pub fn modify_thread(
         &self,
-        thread_id: String,
-        tool_resources: Option<Option<ModifyThreadRequestToolResources>>,
-        metadata: Option<Option<Metadata>>,
+        params: crate::methods::assistants::ModifyThreadParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ThreadObject, crate::errors::SdkError> {
-        crate::methods::assistants::modify_thread(
-            &self.config,
-            thread_id,
-            tool_resources,
-            metadata,
-            options,
-        )
+        crate::methods::assistants::modify_thread(&self.config, params, options)
     }
     /// Deletes a thread. Use the thread's identifier to select the thread to remove; the response confirms the deletion.
     ///
     /// Delete a thread.
     pub fn delete_thread(
         &self,
-        thread_id: String,
+        params: crate::methods::assistants::DeleteThreadParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeleteThreadResponse, crate::errors::SdkError> {
-        crate::methods::assistants::delete_thread(&self.config, thread_id, options)
+        crate::methods::assistants::delete_thread(&self.config, params, options)
     }
     /// Lists messages belonging to a thread. Use `run_id` to filter by the run that generated the messages and `order` to control their creation-time order. Use `after` or `before` cursors to navigate the results.
     ///
@@ -237,40 +205,30 @@ impl AssistantsNamespace {
     /// Retrieve a message.
     pub fn get_message(
         &self,
-        thread_id: String,
-        message_id: String,
+        params: crate::methods::assistants::GetMessageParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<MessageObject, crate::errors::SdkError> {
-        crate::methods::assistants::get_message(&self.config, thread_id, message_id, options)
+        crate::methods::assistants::get_message(&self.config, params, options)
     }
     /// Updates the metadata attached to a message in a thread. Provide the thread and message identifiers to select the message, then supply metadata key-value pairs to change. Use this operation when you need to update message metadata without changing its content.
     ///
     /// Modifies a message.
     pub fn modify_message(
         &self,
-        thread_id: String,
-        message_id: String,
-        metadata: Option<Option<Metadata>>,
+        params: crate::methods::assistants::ModifyMessageParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<MessageObject, crate::errors::SdkError> {
-        crate::methods::assistants::modify_message(
-            &self.config,
-            thread_id,
-            message_id,
-            metadata,
-            options,
-        )
+        crate::methods::assistants::modify_message(&self.config, params, options)
     }
     /// Deletes a message from a thread. Provide both identifiers to select the thread and the message to remove; the response confirms the deletion.
     ///
     /// Deletes a message.
     pub fn delete_message(
         &self,
-        thread_id: String,
-        message_id: String,
+        params: crate::methods::assistants::DeleteMessageParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeleteMessageResponse, crate::errors::SdkError> {
-        crate::methods::assistants::delete_message(&self.config, thread_id, message_id, options)
+        crate::methods::assistants::delete_message(&self.config, params, options)
     }
     /// Lists runs belonging to a thread. Use `order` to sort runs by creation time and `after` or `before` to navigate through the results. The returned run statuses show whether each run is queued, active, completed, or in another state.
     ///
@@ -321,34 +279,30 @@ impl AssistantsNamespace {
     /// Retrieves a run.
     pub fn get_run(
         &self,
-        thread_id: String,
-        run_id: String,
+        params: crate::methods::assistants::GetRunParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RunObject, crate::errors::SdkError> {
-        crate::methods::assistants::get_run(&self.config, thread_id, run_id, options)
+        crate::methods::assistants::get_run(&self.config, params, options)
     }
     /// Updates the metadata attached to a run. Send the key-value pairs you want associated with the run; the metadata object supports up to 16 pairs, with string values and keys of up to 64 characters.
     ///
     /// Modifies a run.
     pub fn modify_run(
         &self,
-        thread_id: String,
-        run_id: String,
-        metadata: Option<Option<Metadata>>,
+        params: crate::methods::assistants::ModifyRunParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RunObject, crate::errors::SdkError> {
-        crate::methods::assistants::modify_run(&self.config, thread_id, run_id, metadata, options)
+        crate::methods::assistants::modify_run(&self.config, params, options)
     }
     /// Cancels a run that is in progress on a thread. Use this operation when you need to stop the run before it completes; the returned run object reports its current status.
     ///
     /// Cancels a run that is `in_progress`.
     pub fn cancel_run(
         &self,
-        thread_id: String,
-        run_id: String,
+        params: crate::methods::assistants::CancelRunParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RunObject, crate::errors::SdkError> {
-        crate::methods::assistants::cancel_run(&self.config, thread_id, run_id, options)
+        crate::methods::assistants::cancel_run(&self.config, params, options)
     }
     /// Lists the steps belonging to a run on a thread. Use cursor parameters to page through the steps, and set `order` to control their order by creation time.
     ///
@@ -381,38 +335,22 @@ impl AssistantsNamespace {
     /// Retrieves a run step.
     pub fn get_run_step(
         &self,
-        thread_id: String,
-        run_id: String,
-        step_id: String,
-        include: Option<Vec<crate::methods::assistants::GetRunStepItemEnum>>,
+        params: crate::methods::assistants::GetRunStepParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RunStepObject, crate::errors::SdkError> {
-        crate::methods::assistants::get_run_step(
-            &self.config,
-            thread_id,
-            run_id,
-            step_id,
-            include,
-            options,
-        )
+        crate::methods::assistants::get_run_step(&self.config, params, options)
     }
     /// Submits tool outputs for a run that is waiting for tool results. Provide the outputs for all completed tool calls in one request so the run can continue. Set `stream` to receive run events as server-sent events.
     ///
     /// When a run has the `status: "requires_action"` and `required_action.type` is `submit_tool_outputs`, this endpoint can be used to submit the outputs from the tool calls once they're all completed. All outputs must be submitted in a single request.
     pub fn submit_tool_outputs_to_run(
         &self,
-        thread_id: String,
-        run_id: String,
-        tool_outputs: Vec<SubmitToolOutputsRunRequestToolOutputsItem>,
-        stream: Option<Option<bool>>,
+        params: crate::methods::assistants::SubmitAssistantsToolOutputsToRunParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RunObject, crate::errors::SdkError> {
         crate::methods::assistants::submit_assistants_tool_outputs_to_run(
             &self.config,
-            thread_id,
-            run_id,
-            tool_outputs,
-            stream,
+            params,
             options,
         )
     }
@@ -421,10 +359,7 @@ impl AssistantsNamespace {
     /// When a run has the `status: "requires_action"` and `required_action.type` is `submit_tool_outputs`, this endpoint can be used to submit the outputs from the tool calls once they're all completed. All outputs must be submitted in a single request.
     pub fn submit_tool_outputs_to_run_stream(
         &self,
-        thread_id: String,
-        run_id: String,
-        tool_outputs: Vec<SubmitToolOutputsRunRequestToolOutputsItem>,
-        stream: Option<bool>,
+        params: crate::methods::assistants::SubmitAssistantsToolOutputsToRunStreamParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<
         impl Iterator<Item = Result<AssistantStreamEvent, crate::errors::SdkError>>,
@@ -432,10 +367,7 @@ impl AssistantsNamespace {
     > {
         crate::methods::assistants::submit_assistants_tool_outputs_to_run_stream(
             &self.config,
-            thread_id,
-            run_id,
-            tool_outputs,
-            stream,
+            params,
             options,
         )
     }
@@ -514,44 +446,33 @@ impl AudioNamespace {
     /// Upload a voice consent recording.
     pub fn create_voice_consent(
         &self,
-        name: String,
-        recording: crate::client::UploadFile,
-        language: String,
+        params: crate::methods::audio::CreateVoiceConsentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VoiceConsentResource, crate::errors::SdkError> {
-        crate::methods::audio::create_voice_consent(
-            &self.config,
-            name,
-            recording,
-            language,
-            options,
-        )
+        crate::methods::audio::create_voice_consent(&self.config, params, options)
     }
     /// Lists voice consent recordings used to authorize creation of custom voices. Use the `after` cursor to continue from a previous page and `limit` to control the number of records returned. The response includes pagination cursors and indicates whether more records are available.
     ///
     /// Returns a list of voice consent recordings.
     pub fn list_voice_consents(
         &self,
-        after: Option<String>,
-        limit: Option<i64>,
+        params: crate::methods::audio::ListVoiceConsentsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VoiceConsentListResource, crate::errors::SdkError> {
-        crate::methods::audio::list_voice_consents(&self.config, after, limit, options)
+        crate::methods::audio::list_voice_consents(&self.config, params, options)
     }
     /// Lists voice consent recordings used to authorize creation of custom voices. Use the `after` cursor to continue from a previous page and `limit` to control the number of records returned. The response includes pagination cursors and indicates whether more records are available.
     ///
     /// Returns a list of voice consent recordings.
     pub fn list_voice_consents_paginated(
         &self,
-        after: Option<String>,
-        limit: Option<i64>,
+        params: crate::methods::audio::ListVoiceConsentsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&VoiceConsentResource) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::audio::list_voice_consents_paginated(
             &self.config,
-            after,
-            limit,
+            params,
             options,
             yield_fn,
         )
@@ -561,41 +482,40 @@ impl AudioNamespace {
     /// Retrieves a voice consent recording.
     pub fn get_voice_consent(
         &self,
-        consent_id: String,
+        params: crate::methods::audio::GetVoiceConsentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VoiceConsentResource, crate::errors::SdkError> {
-        crate::methods::audio::get_voice_consent(&self.config, consent_id, options)
+        crate::methods::audio::get_voice_consent(&self.config, params, options)
     }
     /// Updates the metadata for a voice consent recording. Supply the required `name` field to change its label; this operation does not update the recording itself.
     ///
     /// Updates a voice consent recording (metadata only).
     pub fn update_voice_consent(
         &self,
-        consent_id: String,
-        name: String,
+        params: crate::methods::audio::UpdateVoiceConsentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VoiceConsentResource, crate::errors::SdkError> {
-        crate::methods::audio::update_voice_consent(&self.config, consent_id, name, options)
+        crate::methods::audio::update_voice_consent(&self.config, params, options)
     }
     /// Deletes a voice consent recording. Use `consent_id` to identify the recording to remove.
     ///
     /// Deletes a voice consent recording.
     pub fn delete_voice_consent(
         &self,
-        consent_id: String,
+        params: crate::methods::audio::DeleteVoiceConsentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VoiceConsentDeletedResource, crate::errors::SdkError> {
-        crate::methods::audio::delete_voice_consent(&self.config, consent_id, options)
+        crate::methods::audio::delete_voice_consent(&self.config, params, options)
     }
     /// Creates a custom voice for audio output from an audio sample and a previously uploaded consent recording. Send `name`, `audio_sample`, and `consent` as multipart form data; `type` defaults to `audio_sample` when omitted. Custom voices are limited to eligible customers.
     ///
     /// Create a custom voice you can use for audio output (for example, in Text-to-Speech and the Realtime API). This requires an audio sample and a previously uploaded consent recording. Send `name`, `audio_sample`, and the `consent` recording ID as multipart form data. The optional `type` defaults to `audio_sample`. Returns the saved voice's metadata. See the [custom voices guide](https://developers.openai.com/api/docs/guides/text-to-speech#custom-voices) for requirements and best practices. Custom voices are limited to eligible customers.
     pub fn create_voice(
         &self,
-        body: CreateVoiceRequest,
+        params: crate::methods::audio::CreateVoiceParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VoiceResource, crate::errors::SdkError> {
-        crate::methods::audio::create_voice(&self.config, body, options)
+        crate::methods::audio::create_voice(&self.config, params, options)
     }
 }
 
@@ -626,41 +546,39 @@ impl BatchNamespace {
     /// List your organization's batches.
     pub fn list(
         &self,
-        after: Option<String>,
-        limit: Option<i64>,
+        params: crate::methods::batch::ListBatchParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListBatchesResponse, crate::errors::SdkError> {
-        crate::methods::batch::list_batch(&self.config, after, limit, options)
+        crate::methods::batch::list_batch(&self.config, params, options)
     }
     /// Lists batches created by your organization. Use `after` to continue from a batch ID and `limit` to set the number of results, from 1 to 100.
     ///
     /// List your organization's batches.
     pub fn list_paginated(
         &self,
-        after: Option<String>,
-        limit: Option<i64>,
+        params: crate::methods::batch::ListBatchParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&Batch) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
-        crate::methods::batch::list_batch_paginated(&self.config, after, limit, options, yield_fn)
+        crate::methods::batch::list_batch_paginated(&self.config, params, options, yield_fn)
     }
     /// Retrieves a batch by its identifier. Use `batch_id` to inspect the batch configuration, status, and available output or error file references.
     ///
     /// Retrieves a batch.
     pub fn retrieve(
         &self,
-        batch_id: String,
+        params: crate::methods::batch::RetrieveBatchParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Batch, crate::errors::SdkError> {
-        crate::methods::batch::retrieve_batch(&self.config, batch_id, options)
+        crate::methods::batch::retrieve_batch(&self.config, params, options)
     }
     /// Cancels an in-progress batch. The batch will be in status `cancelling` for up to 10 minutes, before changing to `cancelled`, where it will have partial results (if any) available in the output file.
     pub fn cancel(
         &self,
-        batch_id: String,
+        params: crate::methods::batch::CancelBatchParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Batch, crate::errors::SdkError> {
-        crate::methods::batch::cancel_batch(&self.config, batch_id, options)
+        crate::methods::batch::cancel_batch(&self.config, params, options)
     }
 }
 
@@ -703,85 +621,68 @@ impl ChatNamespace {
     /// \*\*Starting a new project?\*\* We recommend trying [Responses](https://developers.openai.com/api/reference/resources/responses) to take advantage of the latest OpenAI platform features. Compare [Chat Completions with Responses](https://developers.openai.com/api/docs/guides/migrate-to-responses?api-mode=responses). --- Creates a model response for the given chat conversation. Learn more in the [text generation](https://developers.openai.com/api/docs/guides/text), [vision](https://developers.openai.com/api/docs/guides/images-vision), and [audio](https://developers.openai.com/api/docs/guides/audio) guides. Parameter support can differ depending on the model used to generate the response, particularly for newer reasoning models. Parameters that are only supported for reasoning models are noted below. For the current state of unsupported parameters in reasoning models, [refer to the reasoning guide](https://developers.openai.com/api/docs/guides/reasoning). Returns a chat completion object, or a streamed sequence of chat completion chunk objects if the request is streamed.
     pub fn create_completion(
         &self,
-        body: CreateChatCompletionRequest,
+        params: crate::methods::chat::CreateChatCompletionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<CreateChatCompletionResponse, crate::errors::SdkError> {
-        crate::methods::chat::create_chat_completion(&self.config, body, options)
+        crate::methods::chat::create_chat_completion(&self.config, params, options)
     }
     /// Creates a model response for a chat conversation. Supply `model` and at least one item in `messages`; set `stream` to receive server-sent events instead of a single response object. The response contains completion choices and usage information when available.
     ///
     /// \*\*Starting a new project?\*\* We recommend trying [Responses](https://developers.openai.com/api/reference/resources/responses) to take advantage of the latest OpenAI platform features. Compare [Chat Completions with Responses](https://developers.openai.com/api/docs/guides/migrate-to-responses?api-mode=responses). --- Creates a model response for the given chat conversation. Learn more in the [text generation](https://developers.openai.com/api/docs/guides/text), [vision](https://developers.openai.com/api/docs/guides/images-vision), and [audio](https://developers.openai.com/api/docs/guides/audio) guides. Parameter support can differ depending on the model used to generate the response, particularly for newer reasoning models. Parameters that are only supported for reasoning models are noted below. For the current state of unsupported parameters in reasoning models, [refer to the reasoning guide](https://developers.openai.com/api/docs/guides/reasoning). Returns a chat completion object, or a streamed sequence of chat completion chunk objects if the request is streamed.
     pub fn create_completion_stream(
         &self,
-        body: CreateChatCompletionRequest,
+        params: crate::methods::chat::CreateChatCompletionStreamParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<
         impl Iterator<Item = Result<CreateChatCompletionStreamResponse, crate::errors::SdkError>>,
         crate::errors::SdkError,
     > {
-        crate::methods::chat::create_chat_completion_stream(&self.config, body, options)
+        crate::methods::chat::create_chat_completion_stream(&self.config, params, options)
     }
     /// Get a stored chat completion. Only Chat Completions that have been created with the `store` parameter set to `true` will be returned.
     pub fn get_completion(
         &self,
-        completion_id: String,
+        params: crate::methods::chat::GetChatCompletionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<CreateChatCompletionResponse, crate::errors::SdkError> {
-        crate::methods::chat::get_chat_completion(&self.config, completion_id, options)
+        crate::methods::chat::get_chat_completion(&self.config, params, options)
     }
     /// Updates the metadata on a stored chat completion. The completion must have been created with `store` set to `true`, and metadata is the only supported modification. Use this operation to attach or replace structured key-value metadata on the completion.
     ///
     /// Modify a stored chat completion. Only Chat Completions that have been created with the `store` parameter set to `true` can be modified. Currently, the only supported modification is to update the `metadata` field.
     pub fn update_completion(
         &self,
-        completion_id: String,
-        metadata: Option<Metadata>,
+        params: crate::methods::chat::UpdateChatCompletionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<CreateChatCompletionResponse, crate::errors::SdkError> {
-        crate::methods::chat::update_chat_completion(&self.config, completion_id, metadata, options)
+        crate::methods::chat::update_chat_completion(&self.config, params, options)
     }
     /// Delete a stored chat completion. Only Chat Completions that have been created with the `store` parameter set to `true` can be deleted.
     pub fn delete_completion(
         &self,
-        completion_id: String,
+        params: crate::methods::chat::DeleteChatCompletionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ChatCompletionDeleted, crate::errors::SdkError> {
-        crate::methods::chat::delete_chat_completion(&self.config, completion_id, options)
+        crate::methods::chat::delete_chat_completion(&self.config, params, options)
     }
     /// Get the messages in a stored chat completion. Only Chat Completions that have been created with the `store` parameter set to `true` will be returned.
     pub fn get_completion_messages(
         &self,
-        completion_id: String,
-        after: Option<String>,
-        limit: Option<i64>,
-        order: Option<crate::methods::chat::GetChatCompletionMessagesEnum>,
+        params: crate::methods::chat::GetChatCompletionMessagesParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ChatCompletionMessageList, crate::errors::SdkError> {
-        crate::methods::chat::get_chat_completion_messages(
-            &self.config,
-            completion_id,
-            after,
-            limit,
-            order,
-            options,
-        )
+        crate::methods::chat::get_chat_completion_messages(&self.config, params, options)
     }
     /// Get the messages in a stored chat completion. Only Chat Completions that have been created with the `store` parameter set to `true` will be returned.
     pub fn get_completion_messages_paginated(
         &self,
-        completion_id: String,
-        after: Option<String>,
-        limit: Option<i64>,
-        order: Option<crate::methods::chat::GetChatCompletionMessagesEnum>,
+        params: crate::methods::chat::GetChatCompletionMessagesParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&ChatCompletionMessageListDataItem) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::chat::get_chat_completion_messages_paginated(
             &self.config,
-            completion_id,
-            after,
-            limit,
-            order,
+            params,
             options,
             yield_fn,
         )
@@ -842,39 +743,23 @@ impl ContainersNamespace {
     /// List Containers
     pub fn list(
         &self,
-        limit: Option<i64>,
-        order: Option<crate::methods::containers::ListContainersEnum>,
-        after: Option<String>,
-        name: Option<String>,
+        params: crate::methods::containers::ListContainersParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ContainerListResource, crate::errors::SdkError> {
-        crate::methods::containers::list_containers(
-            &self.config,
-            limit,
-            order,
-            after,
-            name,
-            options,
-        )
+        crate::methods::containers::list_containers(&self.config, params, options)
     }
     /// Lists containers available to the authenticated user. Filter the results by `name` and use `after` to continue from a container ID returned in a previous page. Results are ordered by creation time, descending by default.
     ///
     /// List Containers
     pub fn list_paginated(
         &self,
-        limit: Option<i64>,
-        order: Option<crate::methods::containers::ListContainersEnum>,
-        after: Option<String>,
-        name: Option<String>,
+        params: crate::methods::containers::ListContainersParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&ContainerResource) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::containers::list_containers_paginated(
             &self.config,
-            limit,
-            order,
-            after,
-            name,
+            params,
             options,
             yield_fn,
         )
@@ -894,79 +779,53 @@ impl ContainersNamespace {
     /// Retrieve Container
     pub fn retrieve(
         &self,
-        container_id: String,
+        params: crate::methods::containers::RetrieveContainerParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ContainerResource, crate::errors::SdkError> {
-        crate::methods::containers::retrieve_container(&self.config, container_id, options)
+        crate::methods::containers::retrieve_container(&self.config, params, options)
     }
     /// Deletes a container by its unique identifier. Use this operation when the container is no longer needed; the response confirms whether the container was deleted.
     ///
     /// Delete Container
     pub fn delete(
         &self,
-        container_id: String,
+        params: crate::methods::containers::DeleteContainerParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<crate::methods::containers::DeleteContainerResponse, crate::errors::SdkError> {
-        crate::methods::containers::delete_container(&self.config, container_id, options)
+        crate::methods::containers::delete_container(&self.config, params, options)
     }
     /// Creates a file in a container from raw multipart file content or a file ID supplied in a JSON request. Choose the request format based on whether you are uploading file content or referencing a file, and use `container_id` to identify the destination container.
     ///
     /// Create a Container File You can send either a multipart/form-data request with the raw file content, or a JSON request with a file ID.
     pub fn create_file(
         &self,
-        container_id: String,
-        file_id: Option<String>,
-        file: Option<crate::client::Base64Bytes>,
-        content_type: Option<String>,
+        params: crate::methods::containers::CreateContainerFileParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ContainerFileResource, crate::errors::SdkError> {
-        crate::methods::containers::create_container_file(
-            &self.config,
-            container_id,
-            file_id,
-            file,
-            content_type,
-            options,
-        )
+        crate::methods::containers::create_container_file(&self.config, params, options)
     }
     /// Lists files associated with a container. Use `after` to continue from a file ID returned in a previous page, and `limit` and `order` to control the result page. The container must exist and must not have expired.
     ///
     /// List Container files
     pub fn list_files(
         &self,
-        container_id: String,
-        limit: Option<i64>,
-        order: Option<crate::methods::containers::ListContainerFilesEnum>,
-        after: Option<String>,
+        params: crate::methods::containers::ListContainerFilesParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ContainerFileListResource, crate::errors::SdkError> {
-        crate::methods::containers::list_container_files(
-            &self.config,
-            container_id,
-            limit,
-            order,
-            after,
-            options,
-        )
+        crate::methods::containers::list_container_files(&self.config, params, options)
     }
     /// Lists files associated with a container. Use `after` to continue from a file ID returned in a previous page, and `limit` and `order` to control the result page. The container must exist and must not have expired.
     ///
     /// List Container files
     pub fn list_files_paginated(
         &self,
-        container_id: String,
-        limit: Option<i64>,
-        order: Option<crate::methods::containers::ListContainerFilesEnum>,
-        after: Option<String>,
+        params: crate::methods::containers::ListContainerFilesParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&ContainerFileResource) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::containers::list_container_files_paginated(
             &self.config,
-            container_id,
-            limit,
-            order,
-            after,
+            params,
             options,
             yield_fn,
         )
@@ -976,49 +835,31 @@ impl ContainersNamespace {
     /// Retrieve Container File
     pub fn retrieve_file(
         &self,
-        container_id: String,
-        file_id: String,
+        params: crate::methods::containers::RetrieveContainerFileParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ContainerFileResource, crate::errors::SdkError> {
-        crate::methods::containers::retrieve_container_file(
-            &self.config,
-            container_id,
-            file_id,
-            options,
-        )
+        crate::methods::containers::retrieve_container_file(&self.config, params, options)
     }
     /// Deletes a file from a container. Use `container_id` and `file_id` to identify the file to remove.
     ///
     /// Delete Container File
     pub fn delete_file(
         &self,
-        container_id: String,
-        file_id: String,
+        params: crate::methods::containers::DeleteContainerFileParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<crate::methods::containers::DeleteContainerFileResponse, crate::errors::SdkError>
     {
-        crate::methods::containers::delete_container_file(
-            &self.config,
-            container_id,
-            file_id,
-            options,
-        )
+        crate::methods::containers::delete_container_file(&self.config, params, options)
     }
     /// Retrieves the raw content of a file in a container. Use `container_id` and `file_id` to identify the file whose content you want to download.
     ///
     /// Retrieve Container File Content
     pub fn retrieve_file_content(
         &self,
-        container_id: String,
-        file_id: String,
+        params: crate::methods::containers::RetrieveContainerFileContentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Vec<u8>, crate::errors::SdkError> {
-        crate::methods::containers::retrieve_container_file_content(
-            &self.config,
-            container_id,
-            file_id,
-            options,
-        )
+        crate::methods::containers::retrieve_container_file_content(&self.config, params, options)
     }
 }
 
@@ -1039,18 +880,10 @@ impl ConversationsNamespace {
     /// Create items in a conversation with the given ID.
     pub fn create_items(
         &self,
-        conversation_id: String,
-        items: Vec<InputItem>,
-        include: Option<Vec<IncludeEnum>>,
+        params: crate::methods::conversations::CreateConversationItemsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ConversationItemList, crate::errors::SdkError> {
-        crate::methods::conversations::create_conversation_items(
-            &self.config,
-            conversation_id,
-            items,
-            include,
-            options,
-        )
+        crate::methods::conversations::create_conversation_items(&self.config, params, options)
     }
     /// Lists the items in a conversation. Use `after` to continue from an item ID, `limit` to control the number of results, and `order` to choose the direction of the results.
     ///
@@ -1083,79 +916,58 @@ impl ConversationsNamespace {
     /// Get a single item from a conversation with the given IDs.
     pub fn get_item(
         &self,
-        conversation_id: String,
-        item_id: String,
-        include: Option<Vec<IncludeEnum>>,
+        params: crate::methods::conversations::GetConversationItemParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ConversationItem, crate::errors::SdkError> {
-        crate::methods::conversations::get_conversation_item(
-            &self.config,
-            conversation_id,
-            item_id,
-            include,
-            options,
-        )
+        crate::methods::conversations::get_conversation_item(&self.config, params, options)
     }
     /// Deletes an item from a conversation. Use `conversation_id` and `item_id` to identify the item to remove.
     ///
     /// Delete an item from a conversation with the given IDs.
     pub fn delete_item(
         &self,
-        conversation_id: String,
-        item_id: String,
+        params: crate::methods::conversations::DeleteConversationItemParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ConversationResource, crate::errors::SdkError> {
-        crate::methods::conversations::delete_conversation_item(
-            &self.config,
-            conversation_id,
-            item_id,
-            options,
-        )
+        crate::methods::conversations::delete_conversation_item(&self.config, params, options)
     }
     /// Creates a conversation that can include metadata and initial context items. Use `items` to seed the conversation with up to 20 items; metadata can store additional key-value information.
     ///
     /// Create a conversation.
     pub fn create(
         &self,
-        metadata: Option<Option<Metadata>>,
-        items: Option<Option<Vec<InputItem>>>,
+        params: crate::methods::conversations::CreateConversationParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ConversationResource, crate::errors::SdkError> {
-        crate::methods::conversations::create_conversation(&self.config, metadata, items, options)
+        crate::methods::conversations::create_conversation(&self.config, params, options)
     }
     /// Retrieves a conversation by its identifier. Use `conversation_id` to get the conversation's metadata and creation time.
     ///
     /// Get a conversation
     pub fn get(
         &self,
-        conversation_id: String,
+        params: crate::methods::conversations::GetConversationParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ConversationResource, crate::errors::SdkError> {
-        crate::methods::conversations::get_conversation(&self.config, conversation_id, options)
+        crate::methods::conversations::get_conversation(&self.config, params, options)
     }
     /// Delete a conversation. Items in the conversation will not be deleted.
     pub fn delete(
         &self,
-        conversation_id: String,
+        params: crate::methods::conversations::DeleteConversationParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeletedConversationResource, crate::errors::SdkError> {
-        crate::methods::conversations::delete_conversation(&self.config, conversation_id, options)
+        crate::methods::conversations::delete_conversation(&self.config, params, options)
     }
     /// Updates the metadata associated with a conversation. Supply the complete `metadata` value to replace the conversation's existing metadata, or use `null` to clear it.
     ///
     /// Update a conversation
     pub fn update(
         &self,
-        conversation_id: String,
-        metadata: Option<Metadata>,
+        params: crate::methods::conversations::UpdateConversationParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ConversationResource, crate::errors::SdkError> {
-        crate::methods::conversations::update_conversation(
-            &self.config,
-            conversation_id,
-            metadata,
-            options,
-        )
+        crate::methods::conversations::update_conversation(&self.config, params, options)
     }
 }
 
@@ -1200,87 +1012,61 @@ impl EvalsNamespace {
     /// List evaluations for a project.
     pub fn list(
         &self,
-        after: Option<String>,
-        limit: Option<i64>,
-        order: Option<crate::methods::evals::ListEvalsEnum>,
-        order_by: Option<crate::methods::evals::ListEvalsEnum257b1331>,
+        params: crate::methods::evals::ListEvalsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<EvalList, crate::errors::SdkError> {
-        crate::methods::evals::list_evals(&self.config, after, limit, order, order_by, options)
+        crate::methods::evals::list_evals(&self.config, params, options)
     }
     /// Lists evaluations for a project. Use `after` to continue from a previous result and set `order` and `order_by` to control how evaluations are sorted.
     ///
     /// List evaluations for a project.
     pub fn list_paginated(
         &self,
-        after: Option<String>,
-        limit: Option<i64>,
-        order: Option<crate::methods::evals::ListEvalsEnum>,
-        order_by: Option<crate::methods::evals::ListEvalsEnum257b1331>,
+        params: crate::methods::evals::ListEvalsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&Eval) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
-        crate::methods::evals::list_evals_paginated(
-            &self.config,
-            after,
-            limit,
-            order,
-            order_by,
-            options,
-            yield_fn,
-        )
+        crate::methods::evals::list_evals_paginated(&self.config, params, options, yield_fn)
     }
     /// Creates an evaluation with a data source configuration and testing criteria for assessing model performance. Supply `data_source_config` to define the evaluation data and `testing_criteria` to specify the graders; `name` and `metadata` are optional. Run the evaluation against models and model configurations by creating an evaluation run.
     ///
     /// Create the structure of an evaluation that can be used to test a model's performance. An evaluation is a set of testing criteria and the config for a data source, which dictates the schema of the data used in the evaluation. After creating an evaluation, you can run it on different models and model parameters. We support several types of graders and datasources. For more information, see the [Evals guide](https://developers.openai.com/api/docs/guides/evals).
     pub fn create(
         &self,
-        data_source_config: CreateEvalRequestDataSourceConfig,
-        testing_criteria: Vec<CreateEvalRequestTestingCriteriaItem>,
-        name: Option<String>,
-        metadata: Option<Option<Metadata>>,
+        params: crate::methods::evals::CreateEvalParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Eval, crate::errors::SdkError> {
-        crate::methods::evals::create_eval(
-            &self.config,
-            data_source_config,
-            testing_criteria,
-            name,
-            metadata,
-            options,
-        )
+        crate::methods::evals::create_eval(&self.config, params, options)
     }
     /// Retrieves an evaluation by its identifier. Use this endpoint to inspect the evaluation's name, data source configuration, and testing criteria before creating a run or updating the evaluation.
     ///
     /// Get an evaluation by ID.
     pub fn get(
         &self,
-        eval_id: String,
+        params: crate::methods::evals::GetEvalParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Eval, crate::errors::SdkError> {
-        crate::methods::evals::get_eval(&self.config, eval_id, options)
+        crate::methods::evals::get_eval(&self.config, params, options)
     }
     /// Updates an evaluation's name or metadata. Supply either or both fields to change the corresponding evaluation properties; the request does not replace the data source configuration or testing criteria.
     ///
     /// Update certain properties of an evaluation.
     pub fn update(
         &self,
-        eval_id: String,
-        name: Option<String>,
-        metadata: Option<Option<Metadata>>,
+        params: crate::methods::evals::UpdateEvalParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Eval, crate::errors::SdkError> {
-        crate::methods::evals::update_eval(&self.config, eval_id, name, metadata, options)
+        crate::methods::evals::update_eval(&self.config, params, options)
     }
     /// Deletes an evaluation. Use this operation to remove an evaluation that you no longer need; deletion is unavailable while the evaluation has unfinished runs.
     ///
     /// Delete an evaluation.
     pub fn delete(
         &self,
-        eval_id: String,
+        params: crate::methods::evals::DeleteEvalParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<crate::methods::evals::DeleteEvalResponse, crate::errors::SdkError> {
-        crate::methods::evals::delete_eval(&self.config, eval_id, options)
+        crate::methods::evals::delete_eval(&self.config, params, options)
     }
     /// Lists runs for a specified evaluation, with optional cursor pagination, ordering, and status filtering. Use `after` to continue from a run in a previous response, and use `status` to limit results to runs in a particular state.
     ///
@@ -1308,53 +1094,40 @@ impl EvalsNamespace {
     /// Kicks off a new run for a given evaluation, specifying the data source, and what model configuration to use to test. The datasource will be validated against the schema specified in the config of the evaluation.
     pub fn create_run(
         &self,
-        eval_id: String,
-        data_source: CreateEvalRunRequestDataSource,
-        name: Option<String>,
-        metadata: Option<Option<Metadata>>,
+        params: crate::methods::evals::CreateEvalRunParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<EvalRun, crate::errors::SdkError> {
-        crate::methods::evals::create_eval_run(
-            &self.config,
-            eval_id,
-            data_source,
-            name,
-            metadata,
-            options,
-        )
+        crate::methods::evals::create_eval_run(&self.config, params, options)
     }
     /// Retrieves a specific run for an evaluation. Use this endpoint to inspect the run's status, results, report URL, and usage details after creating or canceling a run.
     ///
     /// Get an evaluation run by ID.
     pub fn get_run(
         &self,
-        eval_id: String,
-        run_id: String,
+        params: crate::methods::evals::GetEvalRunParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<EvalRun, crate::errors::SdkError> {
-        crate::methods::evals::get_eval_run(&self.config, eval_id, run_id, options)
+        crate::methods::evals::get_eval_run(&self.config, params, options)
     }
     /// Deletes a run from an evaluation. Use this endpoint to remove a finished run; a run cannot be deleted while it is still in progress.
     ///
     /// Delete an eval run.
     pub fn delete_run(
         &self,
-        eval_id: String,
-        run_id: String,
+        params: crate::methods::evals::DeleteEvalRunParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<crate::methods::evals::DeleteEvalRunResponse, crate::errors::SdkError> {
-        crate::methods::evals::delete_eval_run(&self.config, eval_id, run_id, options)
+        crate::methods::evals::delete_eval_run(&self.config, params, options)
     }
     /// Cancels an ongoing evaluation run. Use this endpoint to stop a run that is still in progress; the response contains the canceled run object.
     ///
     /// Cancel an ongoing evaluation run.
     pub fn cancel_run(
         &self,
-        eval_id: String,
-        run_id: String,
+        params: crate::methods::evals::CancelEvalRunParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<EvalRun, crate::errors::SdkError> {
-        crate::methods::evals::cancel_eval_run(&self.config, eval_id, run_id, options)
+        crate::methods::evals::cancel_eval_run(&self.config, params, options)
     }
     /// Lists output items for a specific evaluation run, with optional cursor pagination, status filtering, and timestamp ordering. Use `after` to continue from a previous response and `status` to view only passing or failing output items.
     ///
@@ -1387,18 +1160,10 @@ impl EvalsNamespace {
     /// Get an evaluation run output item by ID.
     pub fn get_run_output_item(
         &self,
-        eval_id: String,
-        run_id: String,
-        output_item_id: String,
+        params: crate::methods::evals::GetEvalRunOutputItemParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<EvalRunOutputItem, crate::errors::SdkError> {
-        crate::methods::evals::get_eval_run_output_item(
-            &self.config,
-            eval_id,
-            run_id,
-            output_item_id,
-            options,
-        )
+        crate::methods::evals::get_eval_run_output_item(&self.config, params, options)
     }
 }
 
@@ -1419,77 +1184,61 @@ impl FilesNamespace {
     /// Returns a list of files.
     pub fn list(
         &self,
-        purpose: Option<String>,
-        limit: Option<i64>,
-        order: Option<crate::methods::files::ListFilesEnum>,
-        after: Option<String>,
+        params: crate::methods::files::ListFilesParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListFilesResponse, crate::errors::SdkError> {
-        crate::methods::files::list_files(&self.config, purpose, limit, order, after, options)
+        crate::methods::files::list_files(&self.config, params, options)
     }
     /// Lists uploaded files, with optional filtering, sorting, and cursor-based pagination. Use `purpose` to filter the results, and use `after` with the last file ID from a page to retrieve the next page.
     ///
     /// Returns a list of files.
     pub fn list_paginated(
         &self,
-        purpose: Option<String>,
-        limit: Option<i64>,
-        order: Option<crate::methods::files::ListFilesEnum>,
-        after: Option<String>,
+        params: crate::methods::files::ListFilesParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&OpenAIFile) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
-        crate::methods::files::list_files_paginated(
-            &self.config,
-            purpose,
-            limit,
-            order,
-            after,
-            options,
-            yield_fn,
-        )
+        crate::methods::files::list_files_paginated(&self.config, params, options, yield_fn)
     }
     /// Uploads a file for use across supported API endpoints. Send the file and its `purpose` as multipart form data, and use `expires_after` when you want to set an expiration policy. File uploads are limited to 512 MB per file and 2.5 TB of storage per project.
     ///
     /// Upload a file that can be used across various endpoints. Individual files can be up to 512 MB, and each project can store up to 2.5 TB of files in total. There is no organization-wide storage limit. Uploads to this endpoint are rate-limited to 1,000 requests per minute per authenticated user. \- The Assistants API supports files up to 2 million tokens and of specific file types. See the [Assistants Tools guide](https://developers.openai.com/api/docs/guides/tools) for details. \- The Fine-tuning API only supports `.jsonl` files. The input also has certain required formats for fine-tuning [chat](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#formatting-your-data) or [completions](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#formatting-your-data) models. \- The Batch API only supports `.jsonl` files up to 200 MB in size. The input also has a specific required [format](https://developers.openai.com/api/docs/guides/batch#1-prepare-your-batch-file). \- For Retrieval or `file_search` ingestion, upload files here first. If you need to attach multiple uploaded files to the same vector store, use [`/vector_stores/{vector_store_id}/file_batches`](https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/create) instead of attaching them one by one. Vector store attachment has separate limits from file upload, including 2,000 attached files per minute per organization. Please [contact us](https://help.openai.com/) if you need to increase these storage limits.
     pub fn create(
         &self,
-        file: crate::client::UploadFile,
-        purpose: CreateFileRequestPurposeEnum,
-        expires_after: Option<FileExpirationAfter>,
+        params: crate::methods::files::CreateFileParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<OpenAIFile, crate::errors::SdkError> {
-        crate::methods::files::create_file(&self.config, file, purpose, expires_after, options)
+        crate::methods::files::create_file(&self.config, params, options)
     }
     /// Deletes a file and removes it from all vector stores. Use `file_id` to identify the file to remove.
     ///
     /// Delete a file and remove it from all vector stores.
     pub fn delete(
         &self,
-        file_id: String,
+        params: crate::methods::files::DeleteFileParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeleteFileResponse, crate::errors::SdkError> {
-        crate::methods::files::delete_file(&self.config, file_id, options)
+        crate::methods::files::delete_file(&self.config, params, options)
     }
     /// Retrieves metadata for a specific uploaded file. Use `file_id` to identify the file whose purpose, size, status, and timestamps you need.
     ///
     /// Returns information about a specific file.
     pub fn retrieve(
         &self,
-        file_id: String,
+        params: crate::methods::files::RetrieveFileParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<OpenAIFile, crate::errors::SdkError> {
-        crate::methods::files::retrieve_file(&self.config, file_id, options)
+        crate::methods::files::retrieve_file(&self.config, params, options)
     }
     /// Retrieves the contents of a specific uploaded file. Use `file_id` to identify the file, and note that some file purposes or account permissions do not allow downloads.
     ///
     /// Returns a response containing the contents of the specified file.
     pub fn download(
         &self,
-        file_id: String,
+        params: crate::methods::files::DownloadFileParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Vec<u8>, crate::errors::SdkError> {
-        crate::methods::files::download_file(&self.config, file_id, options)
+        crate::methods::files::download_file(&self.config, params, options)
     }
 }
 
@@ -1510,22 +1259,20 @@ impl FineTuningNamespace {
     /// Run a grader.
     pub fn run_grader(
         &self,
-        grader: RunGraderRequestGrader,
-        model_sample: String,
-        item: Option<serde_json::Value>,
+        params: crate::methods::fine_tuning::RunGraderParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RunGraderResponse, crate::errors::SdkError> {
-        crate::methods::fine_tuning::run_grader(&self.config, grader, model_sample, item, options)
+        crate::methods::fine_tuning::run_grader(&self.config, params, options)
     }
     /// Validates a grader definition without running it against a model sample. Supply a `grader` that matches one of the supported grader types to receive the validated definition.
     ///
     /// Validate a grader.
     pub fn validate_grader(
         &self,
-        grader: ValidateGraderRequestGrader,
+        params: crate::methods::fine_tuning::ValidateGraderParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ValidateGraderResponse, crate::errors::SdkError> {
-        crate::methods::fine_tuning::validate_grader(&self.config, grader, options)
+        crate::methods::fine_tuning::validate_grader(&self.config, params, options)
     }
     /// Lists permissions for a fine-tuned model checkpoint. Use `project_id` to filter permissions by project and `after` to continue from a permission ID; this endpoint requires an admin API key.
     ///
@@ -1562,14 +1309,12 @@ impl FineTuningNamespace {
     /// \*\*NOTE:\*\* Calling this endpoint requires an [admin API key](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/admin_api_keys). This enables organization owners to share fine-tuned models with other projects in their organization.
     pub fn create_checkpoint_permission(
         &self,
-        fine_tuned_model_checkpoint: String,
-        project_ids: Vec<String>,
+        params: crate::methods::fine_tuning::CreateFineTuningCheckpointPermissionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListFineTuningCheckpointPermissionResponse, crate::errors::SdkError> {
         crate::methods::fine_tuning::create_fine_tuning_checkpoint_permission(
             &self.config,
-            fine_tuned_model_checkpoint,
-            project_ids,
+            params,
             options,
         )
     }
@@ -1578,14 +1323,12 @@ impl FineTuningNamespace {
     /// \*\*NOTE:\*\* This endpoint requires an [admin API key](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/admin_api_keys). Organization owners can use this endpoint to delete a permission for a fine-tuned model checkpoint.
     pub fn delete_checkpoint_permission(
         &self,
-        fine_tuned_model_checkpoint: String,
-        permission_id: String,
+        params: crate::methods::fine_tuning::DeleteFineTuningCheckpointPermissionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeleteFineTuningCheckpointPermissionResponse, crate::errors::SdkError> {
         crate::methods::fine_tuning::delete_fine_tuning_checkpoint_permission(
             &self.config,
-            fine_tuned_model_checkpoint,
-            permission_id,
+            params,
             options,
         )
     }
@@ -1604,81 +1347,53 @@ impl FineTuningNamespace {
     /// List your organization's fine-tuning jobs
     pub fn list_jobs(
         &self,
-        after: Option<String>,
-        limit: Option<i64>,
-        metadata: Option<Option<std::collections::HashMap<String, String>>>,
+        params: crate::methods::fine_tuning::ListFineTuningJobsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListPaginatedFineTuningJobsResponse, crate::errors::SdkError> {
-        crate::methods::fine_tuning::list_fine_tuning_jobs(
-            &self.config,
-            after,
-            limit,
-            metadata,
-            options,
-        )
+        crate::methods::fine_tuning::list_fine_tuning_jobs(&self.config, params, options)
     }
     /// Retrieves details for a fine-tuning job. Use `fine_tuning_job_id` to identify the job whose status, model, and training details you need. The response includes result file IDs when they are available.
     ///
     /// Get info about a fine-tuning job. [Learn more about fine-tuning](https://developers.openai.com/api/docs/guides/model-optimization)
     pub fn retrieve_job(
         &self,
-        fine_tuning_job_id: String,
+        params: crate::methods::fine_tuning::RetrieveFineTuningJobParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<FineTuningJob, crate::errors::SdkError> {
-        crate::methods::fine_tuning::retrieve_fine_tuning_job(
-            &self.config,
-            fine_tuning_job_id,
-            options,
-        )
+        crate::methods::fine_tuning::retrieve_fine_tuning_job(&self.config, params, options)
     }
     /// Cancels a fine-tuning job immediately. Use `fine_tuning_job_id` to identify the job you want to stop. The response returns the job object with its current status.
     ///
     /// Immediately cancel a fine-tune job.
     pub fn cancel_job(
         &self,
-        fine_tuning_job_id: String,
+        params: crate::methods::fine_tuning::CancelFineTuningJobParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<FineTuningJob, crate::errors::SdkError> {
-        crate::methods::fine_tuning::cancel_fine_tuning_job(
-            &self.config,
-            fine_tuning_job_id,
-            options,
-        )
+        crate::methods::fine_tuning::cancel_fine_tuning_job(&self.config, params, options)
     }
     /// Lists checkpoints produced by a fine-tuning job. Use `fine_tuning_job_id` to select the job, and use `after` to continue from a checkpoint on a previous page. Set `limit` to control the number of checkpoints retrieved.
     ///
     /// List checkpoints for a fine-tuning job.
     pub fn list_job_checkpoints(
         &self,
-        fine_tuning_job_id: String,
-        after: Option<String>,
-        limit: Option<i64>,
+        params: crate::methods::fine_tuning::ListFineTuningJobCheckpointsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListFineTuningJobCheckpointsResponse, crate::errors::SdkError> {
-        crate::methods::fine_tuning::list_fine_tuning_job_checkpoints(
-            &self.config,
-            fine_tuning_job_id,
-            after,
-            limit,
-            options,
-        )
+        crate::methods::fine_tuning::list_fine_tuning_job_checkpoints(&self.config, params, options)
     }
     /// Lists checkpoints produced by a fine-tuning job. Use `fine_tuning_job_id` to select the job, and use `after` to continue from a checkpoint on a previous page. Set `limit` to control the number of checkpoints retrieved.
     ///
     /// List checkpoints for a fine-tuning job.
     pub fn list_job_checkpoints_paginated(
         &self,
-        fine_tuning_job_id: String,
-        after: Option<String>,
-        limit: Option<i64>,
+        params: crate::methods::fine_tuning::ListFineTuningJobCheckpointsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&FineTuningJobCheckpoint) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::fine_tuning::list_fine_tuning_job_checkpoints_paginated(
             &self.config,
-            fine_tuning_job_id,
-            after,
-            limit,
+            params,
             options,
             yield_fn,
         )
@@ -1688,46 +1403,30 @@ impl FineTuningNamespace {
     /// Get status updates for a fine-tuning job.
     pub fn list_events(
         &self,
-        fine_tuning_job_id: String,
-        after: Option<String>,
-        limit: Option<i64>,
+        params: crate::methods::fine_tuning::ListFineTuningEventsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListFineTuningJobEventsResponse, crate::errors::SdkError> {
-        crate::methods::fine_tuning::list_fine_tuning_events(
-            &self.config,
-            fine_tuning_job_id,
-            after,
-            limit,
-            options,
-        )
+        crate::methods::fine_tuning::list_fine_tuning_events(&self.config, params, options)
     }
     /// Pauses a fine-tuning job that supports pausing. Use `fine_tuning_job_id` to identify the job you want to pause. The response returns the job object and its current status.
     ///
     /// Pause a fine-tune job.
     pub fn pause_job(
         &self,
-        fine_tuning_job_id: String,
+        params: crate::methods::fine_tuning::PauseFineTuningJobParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<FineTuningJob, crate::errors::SdkError> {
-        crate::methods::fine_tuning::pause_fine_tuning_job(
-            &self.config,
-            fine_tuning_job_id,
-            options,
-        )
+        crate::methods::fine_tuning::pause_fine_tuning_job(&self.config, params, options)
     }
     /// Resumes a paused fine-tuning job that supports resuming. Use `fine_tuning_job_id` to identify the job you want to resume. The response returns the job object and its current status.
     ///
     /// Resume a fine-tune job.
     pub fn resume_job(
         &self,
-        fine_tuning_job_id: String,
+        params: crate::methods::fine_tuning::ResumeFineTuningJobParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<FineTuningJob, crate::errors::SdkError> {
-        crate::methods::fine_tuning::resume_fine_tuning_job(
-            &self.config,
-            fine_tuning_job_id,
-            options,
-        )
+        crate::methods::fine_tuning::resume_fine_tuning_job(&self.config, params, options)
     }
 }
 
@@ -1748,25 +1447,23 @@ impl ImagesNamespace {
     /// Creates an edited or extended image given one or more source images and a prompt. This endpoint supports GPT Image models.
     pub fn create_edit(
         &self,
-        body: crate::methods::images::CreateImageEditBody,
-        content_type: Option<String>,
+        params: crate::methods::images::CreateImageEditParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ImagesResponse, crate::errors::SdkError> {
-        crate::methods::images::create_image_edit(&self.config, body, content_type, options)
+        crate::methods::images::create_image_edit(&self.config, params, options)
     }
     /// Creates an edited image from one or more source images and a text prompt. Send multipart form data with uploaded image files, or JSON with image references; use `mask` to limit edits to designated areas. You can choose the output format, size, and quality, and optionally stream partial image results.
     ///
     /// Creates an edited or extended image given one or more source images and a prompt. This endpoint supports GPT Image models.
     pub fn create_edit_stream(
         &self,
-        body: crate::methods::images::CreateImageEditStreamBody,
-        content_type: Option<String>,
+        params: crate::methods::images::CreateImageEditStreamParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<
         impl Iterator<Item = Result<ImageEditStreamEvent, crate::errors::SdkError>>,
         crate::errors::SdkError,
     > {
-        crate::methods::images::create_image_edit_stream(&self.config, body, content_type, options)
+        crate::methods::images::create_image_edit_stream(&self.config, params, options)
     }
     /// Creates one or more images from a text prompt using the specified image model. Provide `model` and `prompt`; `n` defaults to 1, and you can enable streaming with `stream`. Use `size`, `quality`, and `output_format` to control the generated images.
     ///
@@ -1822,74 +1519,62 @@ impl LiveNamespace {
     /// Create a Live WebRTC session or place an outbound SIP call. Start with the [Live prompting guide](https://developers.openai.com/api/docs/guides/live-prompting) for session configuration and [Telephony and SIP](https://developers.openai.com/api/docs/guides/voice-sip?api=live#place-an-outbound-call) for trunk setup and call monitoring. Set transport.type to `webrtc` and supply an SDP offer, or set it to `sip` and supply an E.164 destination and trunk credentials. Outbound SIP calling must be enabled for your organization. Ringing is limited to 3 minutes and connected calls to 2 hours; these limits are not configurable in the request. Returns `201 Created` after session initialization. WebRTC responses include an SDP answer. SIP responses do not wait for the callee to answer. Attach a sideband connection using session.id to monitor SIP call progress. Each SIP request creates a new call. If a request times out or the connection fails, retry with caution: the original request may have succeeded, and a retry can place another call.
     pub fn create(
         &self,
-        session: LiveMediaSessionCreateParams,
-        transport: LiveSessionCreateRequestTransportRequest,
+        params: crate::methods::live::CreateLiveParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<LiveSessionCreateResponse, crate::errors::SdkError> {
-        crate::methods::live::create_live(&self.config, session, transport, options)
+        crate::methods::live::create_live(&self.config, params, options)
     }
     /// Accept an incoming SIP call. Supply session with type live, the model, and startup configuration. Before accepting calls, follow the [Live prompting guide](https://developers.openai.com/api/docs/guides/live-prompting) to write frontend conversation instructions and a separate backend prompt. SIP media format is negotiated; omit audio.format.
     pub fn accept_session(
         &self,
-        session_id: String,
-        session: LiveCallAcceptSession,
+        params: crate::methods::live::AcceptLiveSessionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<serde_json::Value, crate::errors::SdkError> {
-        crate::methods::live::accept_live_session(&self.config, session_id, session, options)
+        crate::methods::live::accept_live_session(&self.config, params, options)
     }
     /// Fork a stored Live session onto a new WebRTC connection.
     pub fn fork_session(
         &self,
-        session_id: String,
-        transport: LiveWebRTCTransport,
-        session: Option<LiveMediaSessionForkParams>,
+        params: crate::methods::live::ForkLiveSessionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<LiveCreateResponse, crate::errors::SdkError> {
-        crate::methods::live::fork_live_session(
-            &self.config,
-            session_id,
-            transport,
-            session,
-            options,
-        )
+        crate::methods::live::fork_live_session(&self.config, params, options)
     }
     /// Ends a SIP call associated with a Live session by submitting a hangup request. Use the opaque `session_id` returned when the session was created or supplied in an incoming-call webhook, preserving its prefix and value unchanged. A 200 response confirms that the hangup request was accepted.
     ///
     /// End a SIP call identified by session_id.
     pub fn hangup_session(
         &self,
-        session_id: String,
+        params: crate::methods::live::HangupLiveSessionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<serde_json::Value, crate::errors::SdkError> {
-        crate::methods::live::hangup_live_session(&self.config, session_id, options)
+        crate::methods::live::hangup_live_session(&self.config, params, options)
     }
     /// Transfer a SIP call to another destination. Supply a nonblank target_uri for the SIP Refer-To header.
     pub fn refer_session(
         &self,
-        session_id: String,
-        target_uri: TargetUri,
+        params: crate::methods::live::ReferLiveSessionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<serde_json::Value, crate::errors::SdkError> {
-        crate::methods::live::refer_live_session(&self.config, session_id, target_uri, options)
+        crate::methods::live::refer_live_session(&self.config, params, options)
     }
     /// Reject an incoming SIP call. Send a required SIP rejection status_code between 300 and 699.
     pub fn reject_session(
         &self,
-        session_id: String,
-        status_code: i64,
+        params: crate::methods::live::RejectLiveSessionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<serde_json::Value, crate::errors::SdkError> {
-        crate::methods::live::reject_live_session(&self.config, session_id, status_code, options)
+        crate::methods::live::reject_live_session(&self.config, params, options)
     }
     /// Downloads the stored audio recording for a Live session. Use the `session_id` returned when the session started with storage enabled. The recording is a stereo WAV file, with input audio in the left channel and output audio in the right channel.
     ///
     /// Get Live session content
     pub fn download_recording(
         &self,
-        session_id: String,
+        params: crate::methods::live::DownloadLiveRecordingParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Vec<u8>, crate::errors::SdkError> {
-        crate::methods::live::download_live_recording(&self.config, session_id, options)
+        crate::methods::live::download_live_recording(&self.config, params, options)
     }
 }
 
@@ -1919,20 +1604,20 @@ impl ModelsNamespace {
     /// Retrieves a model instance, providing basic information about the model such as the owner and permissioning.
     pub fn retrieve(
         &self,
-        model: String,
+        params: crate::methods::models::RetrieveModelParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Model, crate::errors::SdkError> {
-        crate::methods::models::retrieve_model(&self.config, model, options)
+        crate::methods::models::retrieve_model(&self.config, params, options)
     }
     /// Deletes a fine-tuned model. The authenticated user must have the Owner role in the organization and a credential that permits model deletion. Use `model` to identify the fine-tuned model to remove.
     ///
     /// Delete a fine-tuned model. You must have the Owner role in your organization to delete a model.
     pub fn delete(
         &self,
-        model: String,
+        params: crate::methods::models::DeleteModelParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeleteModelResponse, crate::errors::SdkError> {
-        crate::methods::models::delete_model(&self.config, model, options)
+        crate::methods::models::delete_model(&self.config, params, options)
     }
 }
 
@@ -1953,11 +1638,10 @@ impl ModerationsNamespace {
     /// Classifies if text and/or image inputs are potentially harmful. Learn more in the [moderation guide](https://developers.openai.com/api/docs/guides/moderation).
     pub fn create(
         &self,
-        input: CreateModerationRequestInput,
-        model: Option<String>,
+        params: crate::methods::moderations::CreateModerationParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<CreateModerationResponse, crate::errors::SdkError> {
-        crate::methods::moderations::create_moderation(&self.config, input, model, options)
+        crate::methods::moderations::create_moderation(&self.config, params, options)
     }
 }
 
@@ -1978,35 +1662,23 @@ impl AdminApiKeysNamespace {
     /// List organization API keys
     pub fn list(
         &self,
-        after: Option<Option<String>>,
-        order: Option<crate::methods::admin_api_keys::ListAdminApiKeysEnum>,
-        limit: Option<i64>,
+        params: crate::methods::admin_api_keys::ListAdminApiKeysParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ApiKeyList, crate::errors::SdkError> {
-        crate::methods::admin_api_keys::list_admin_api_keys(
-            &self.config,
-            after,
-            order,
-            limit,
-            options,
-        )
+        crate::methods::admin_api_keys::list_admin_api_keys(&self.config, params, options)
     }
     /// Lists organization API keys, including keys associated with projects. Use `after` to continue from a key ID and `order` to control creation-time sorting. The response includes pagination metadata to help you determine whether more keys are available.
     ///
     /// List organization API keys
     pub fn list_paginated(
         &self,
-        after: Option<Option<String>>,
-        order: Option<crate::methods::admin_api_keys::ListAdminApiKeysEnum>,
-        limit: Option<i64>,
+        params: crate::methods::admin_api_keys::ListAdminApiKeysParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&AdminApiKey) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::admin_api_keys::list_admin_api_keys_paginated(
             &self.config,
-            after,
-            order,
-            limit,
+            params,
             options,
             yield_fn,
         )
@@ -2016,37 +1688,31 @@ impl AdminApiKeysNamespace {
     /// Create an organization admin API key
     pub fn create(
         &self,
-        name: String,
-        expires_in_seconds: Option<i64>,
+        params: crate::methods::admin_api_keys::CreateAdminApiKeysParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<AdminApiKeyCreateResponse, crate::errors::SdkError> {
-        crate::methods::admin_api_keys::create_admin_api_keys(
-            &self.config,
-            name,
-            expires_in_seconds,
-            options,
-        )
+        crate::methods::admin_api_keys::create_admin_api_keys(&self.config, params, options)
     }
     /// Retrieves details for an organization API key. Use `key_id` to identify the key whose metadata you need. The response includes the redacted key value, creation and expiration timestamps, last-use time, and owner details.
     ///
     /// Retrieve a single organization API key
     pub fn retrieve(
         &self,
-        key_id: String,
+        params: crate::methods::admin_api_keys::RetrieveAdminApiKeysParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<AdminApiKey, crate::errors::SdkError> {
-        crate::methods::admin_api_keys::retrieve_admin_api_keys(&self.config, key_id, options)
+        crate::methods::admin_api_keys::retrieve_admin_api_keys(&self.config, params, options)
     }
     /// Deletes an organization admin API key. Use `key_id` to identify the key to remove. The response confirms deletion with the key identifier and a `deleted` flag.
     ///
     /// Delete an organization admin API key
     pub fn delete(
         &self,
-        key_id: String,
+        params: crate::methods::admin_api_keys::DeleteAdminApiKeysParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<crate::methods::admin_api_keys::DeleteAdminApiKeysResponse, crate::errors::SdkError>
     {
-        crate::methods::admin_api_keys::delete_admin_api_keys(&self.config, key_id, options)
+        crate::methods::admin_api_keys::delete_admin_api_keys(&self.config, params, options)
     }
 }
 
@@ -2103,16 +1769,12 @@ impl CertificatesNamespace {
     /// List uploaded certificates for this organization.
     pub fn list_for_organization(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        order: Option<crate::methods::certificates::ListCertificatesForOrganizationEnum>,
+        params: crate::methods::certificates::ListCertificatesForOrganizationParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListCertificatesResponse, crate::errors::SdkError> {
         crate::methods::certificates::list_certificates_for_organization(
             &self.config,
-            limit,
-            after,
-            order,
+            params,
             options,
         )
     }
@@ -2121,17 +1783,13 @@ impl CertificatesNamespace {
     /// List uploaded certificates for this organization.
     pub fn list_for_organization_paginated(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        order: Option<crate::methods::certificates::ListCertificatesForOrganizationEnum>,
+        params: crate::methods::certificates::ListCertificatesForOrganizationParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&OrganizationCertificate) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::certificates::list_certificates_for_organization_paginated(
             &self.config,
-            limit,
-            after,
-            order,
+            params,
             options,
             yield_fn,
         )
@@ -2139,23 +1797,22 @@ impl CertificatesNamespace {
     /// Upload a certificate to the organization. This does \*\*not\*\* automatically activate the certificate. Organizations can upload up to 50 certificates.
     pub fn upload(
         &self,
-        certificate: String,
-        name: Option<String>,
+        params: crate::methods::certificates::UploadCertificateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Certificate, crate::errors::SdkError> {
-        crate::methods::certificates::upload_certificate(&self.config, certificate, name, options)
+        crate::methods::certificates::upload_certificate(&self.config, params, options)
     }
     /// Activates certificates at the organization level. Provide the certificate IDs in `certificate_ids`; the operation activates them atomically and idempotently. You can activate up to 10 certificates in a single request.
     ///
     /// Activate certificates at the organization level. You can atomically and idempotently activate up to 10 certificates at a time.
     pub fn activate_for_organization(
         &self,
-        certificate_ids: Vec<String>,
+        params: crate::methods::certificates::ActivateCertificatesForOrganizationParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<OrganizationCertificateActivationResponse, crate::errors::SdkError> {
         crate::methods::certificates::activate_certificates_for_organization(
             &self.config,
-            certificate_ids,
+            params,
             options,
         )
     }
@@ -2164,89 +1821,61 @@ impl CertificatesNamespace {
     /// Deactivate certificates at the organization level. You can atomically and idempotently deactivate up to 10 certificates at a time.
     pub fn deactivate_for_organization(
         &self,
-        certificate_ids: Vec<String>,
+        params: crate::methods::certificates::DeactivateCertificatesForOrganizationParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<OrganizationCertificateDeactivationResponse, crate::errors::SdkError> {
         crate::methods::certificates::deactivate_certificates_for_organization(
             &self.config,
-            certificate_ids,
+            params,
             options,
         )
     }
     /// Get a certificate that has been uploaded to the organization. You can get a certificate regardless of whether it is active or not.
     pub fn get(
         &self,
-        certificate_id: String,
-        include: Option<Vec<crate::methods::certificates::GetCertificateItemEnum>>,
+        params: crate::methods::certificates::GetCertificateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Certificate, crate::errors::SdkError> {
-        crate::methods::certificates::get_certificate(
-            &self.config,
-            certificate_id,
-            include,
-            options,
-        )
+        crate::methods::certificates::get_certificate(&self.config, params, options)
     }
     /// Modify a certificate. Note that only the name can be modified.
     pub fn modify(
         &self,
-        certificate_id: String,
-        name: Option<String>,
+        params: crate::methods::certificates::ModifyCertificateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Certificate, crate::errors::SdkError> {
-        crate::methods::certificates::modify_certificate(
-            &self.config,
-            certificate_id,
-            name,
-            options,
-        )
+        crate::methods::certificates::modify_certificate(&self.config, params, options)
     }
     /// Delete a certificate from the organization. The certificate must be inactive for the organization and all projects.
     pub fn delete(
         &self,
-        certificate_id: String,
+        params: crate::methods::certificates::DeleteCertificateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeleteCertificateResponse, crate::errors::SdkError> {
-        crate::methods::certificates::delete_certificate(&self.config, certificate_id, options)
+        crate::methods::certificates::delete_certificate(&self.config, params, options)
     }
     /// Lists certificates configured for a project. Use `after` to continue from a certificate ID in a previous response, and set `limit` and `order` to control the page size and sort direction.
     ///
     /// List certificates for this project.
     pub fn list_for_project(
         &self,
-        project_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        order: Option<crate::methods::certificates::ListCertificatesForProjectEnum>,
+        params: crate::methods::certificates::ListCertificatesForProjectParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListProjectCertificatesResponse, crate::errors::SdkError> {
-        crate::methods::certificates::list_certificates_for_project(
-            &self.config,
-            project_id,
-            limit,
-            after,
-            order,
-            options,
-        )
+        crate::methods::certificates::list_certificates_for_project(&self.config, params, options)
     }
     /// Lists certificates configured for a project. Use `after` to continue from a certificate ID in a previous response, and set `limit` and `order` to control the page size and sort direction.
     ///
     /// List certificates for this project.
     pub fn list_for_project_paginated(
         &self,
-        project_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        order: Option<crate::methods::certificates::ListCertificatesForProjectEnum>,
+        params: crate::methods::certificates::ListCertificatesForProjectParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&OrganizationProjectCertificate) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::certificates::list_certificates_for_project_paginated(
             &self.config,
-            project_id,
-            limit,
-            after,
-            order,
+            params,
             options,
             yield_fn,
         )
@@ -2256,14 +1885,12 @@ impl CertificatesNamespace {
     /// Activate certificates at the project level. You can atomically and idempotently activate up to 10 certificates at a time.
     pub fn activate_for_project(
         &self,
-        project_id: String,
-        certificate_ids: Vec<String>,
+        params: crate::methods::certificates::ActivateCertificatesForProjectParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<OrganizationProjectCertificateActivationResponse, crate::errors::SdkError> {
         crate::methods::certificates::activate_certificates_for_project(
             &self.config,
-            project_id,
-            certificate_ids,
+            params,
             options,
         )
     }
@@ -2272,14 +1899,12 @@ impl CertificatesNamespace {
     /// Deactivate certificates at the project level. You can atomically and idempotently deactivate up to 10 certificates at a time.
     pub fn deactivate_for_project(
         &self,
-        project_id: String,
-        certificate_ids: Vec<String>,
+        params: crate::methods::certificates::DeactivateCertificatesForProjectParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<OrganizationProjectCertificateDeactivationResponse, crate::errors::SdkError> {
         crate::methods::certificates::deactivate_certificates_for_project(
             &self.config,
-            project_id,
-            certificate_ids,
+            params,
             options,
         )
     }
@@ -2567,12 +2192,12 @@ impl DataRetentionNamespace {
     /// Updates organization data retention controls.
     pub fn update_organization(
         &self,
-        retention_type: UpdateOrganizationDataRetentionBodyRetentionTypeEnum,
+        params: crate::methods::data_retention::UpdateOrganizationDataRetentionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<OrganizationDataRetention, crate::errors::SdkError> {
         crate::methods::data_retention::update_organization_data_retention(
             &self.config,
-            retention_type,
+            params,
             options,
         )
     }
@@ -2581,12 +2206,12 @@ impl DataRetentionNamespace {
     /// Retrieves project data retention controls.
     pub fn retrieve(
         &self,
-        project_id: String,
+        params: crate::methods::data_retention::RetrieveProjectDataRetentionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectDataRetention, crate::errors::SdkError> {
         crate::methods::data_retention::retrieve_project_data_retention(
             &self.config,
-            project_id,
+            params,
             options,
         )
     }
@@ -2595,16 +2220,10 @@ impl DataRetentionNamespace {
     /// Updates project data retention controls.
     pub fn update(
         &self,
-        project_id: String,
-        retention_type: UpdateProjectDataRetentionBodyRetentionTypeEnum,
+        params: crate::methods::data_retention::UpdateProjectDataRetentionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectDataRetention, crate::errors::SdkError> {
-        crate::methods::data_retention::update_project_data_retention(
-            &self.config,
-            project_id,
-            retention_type,
-            options,
-        )
+        crate::methods::data_retention::update_project_data_retention(&self.config, params, options)
     }
 }
 
@@ -2625,73 +2244,61 @@ impl GroupsNamespace {
     /// Lists all groups in the organization.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        order: Option<crate::methods::groups::ListGroupsEnum>,
+        params: crate::methods::groups::ListGroupsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GroupListResource, crate::errors::SdkError> {
-        crate::methods::groups::list_groups(&self.config, limit, after, order, options)
+        crate::methods::groups::list_groups(&self.config, params, options)
     }
     /// Lists groups in the organization, with controls for page size, cursor position, and sort order. Use `after` with a group ID from the previous page to continue through the results.
     ///
     /// Lists all groups in the organization.
     pub fn list_paginated(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        order: Option<crate::methods::groups::ListGroupsEnum>,
+        params: crate::methods::groups::ListGroupsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&GroupResponse) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
-        crate::methods::groups::list_groups_paginated(
-            &self.config,
-            limit,
-            after,
-            order,
-            options,
-            yield_fn,
-        )
+        crate::methods::groups::list_groups_paginated(&self.config, params, options, yield_fn)
     }
     /// Creates a new group in the organization. Provide a human-readable `name` between 1 and 255 characters; the response includes the group's generated ID and management details.
     ///
     /// Creates a new group in the organization.
     pub fn create(
         &self,
-        name: String,
+        params: crate::methods::groups::CreateGroupParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GroupResponse, crate::errors::SdkError> {
-        crate::methods::groups::create_group(&self.config, name, options)
+        crate::methods::groups::create_group(&self.config, params, options)
     }
     /// Retrieves a group from the organization by its ID. Use `group_id` to identify the group whose name, creation time, management status, and type you need.
     ///
     /// Retrieves a group.
     pub fn retrieve(
         &self,
-        group_id: String,
+        params: crate::methods::groups::RetrieveGroupParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GroupResponse, crate::errors::SdkError> {
-        crate::methods::groups::retrieve_group(&self.config, group_id, options)
+        crate::methods::groups::retrieve_group(&self.config, params, options)
     }
     /// Updates a group's display name in the organization. Supply `name` as a string between 1 and 255 characters. The response includes the group's identifier, updated name, creation timestamp, and SCIM management status.
     ///
     /// Updates a group's information.
     pub fn update(
         &self,
-        group_id: String,
-        name: String,
+        params: crate::methods::groups::UpdateGroupParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GroupResourceWithSuccess, crate::errors::SdkError> {
-        crate::methods::groups::update_group(&self.config, group_id, name, options)
+        crate::methods::groups::update_group(&self.config, params, options)
     }
     /// Deletes a group from the organization. Use the group's identifier to select which group to remove. The response confirms the deleted group by its identifier and deletion status.
     ///
     /// Deletes a group from the organization.
     pub fn delete(
         &self,
-        group_id: String,
+        params: crate::methods::groups::DeleteGroupParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GroupDeletedResource, crate::errors::SdkError> {
-        crate::methods::groups::delete_group(&self.config, group_id, options)
+        crate::methods::groups::delete_group(&self.config, params, options)
     }
 }
 
@@ -2710,41 +2317,25 @@ impl GroupOrganizationRoleAssignmentsNamespace {
     /// Lists the organization roles assigned to a group within the organization.
     pub fn list_group_role_assignments(
         &self,
-        group_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        order: Option<
-            crate::methods::group_organization_role_assignments::ListGroupRoleAssignmentsEnum,
-        >,
+        params: crate::methods::group_organization_role_assignments::ListGroupRoleAssignmentsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RoleListResource, crate::errors::SdkError> {
         crate::methods::group_organization_role_assignments::list_group_role_assignments(
             &self.config,
-            group_id,
-            limit,
-            after,
-            order,
+            params,
             options,
         )
     }
     /// Lists the organization roles assigned to a group within the organization.
     pub fn list_group_role_assignments_paginated(
         &self,
-        group_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        order: Option<
-            crate::methods::group_organization_role_assignments::ListGroupRoleAssignmentsEnum,
-        >,
+        params: crate::methods::group_organization_role_assignments::ListGroupRoleAssignmentsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&AssignedRoleDetails) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::group_organization_role_assignments::list_group_role_assignments_paginated(
             &self.config,
-            group_id,
-            limit,
-            after,
-            order,
+            params,
             options,
             yield_fn,
         )
@@ -2752,42 +2343,36 @@ impl GroupOrganizationRoleAssignmentsNamespace {
     /// Assigns an organization role to a group within the organization.
     pub fn assign_group_role(
         &self,
-        group_id: String,
-        role_id: String,
+        params: crate::methods::group_organization_role_assignments::AssignGroupRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GroupRoleAssignment, crate::errors::SdkError> {
         crate::methods::group_organization_role_assignments::assign_group_role(
             &self.config,
-            group_id,
-            role_id,
+            params,
             options,
         )
     }
     /// Retrieves an organization role assigned to a group.
     pub fn retrieve_group_role(
         &self,
-        group_id: String,
-        role_id: String,
+        params: crate::methods::group_organization_role_assignments::RetrieveGroupRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<AssignedRoleDetails, crate::errors::SdkError> {
         crate::methods::group_organization_role_assignments::retrieve_group_role(
             &self.config,
-            group_id,
-            role_id,
+            params,
             options,
         )
     }
     /// Unassigns an organization role from a group within the organization.
     pub fn unassign_group_role(
         &self,
-        group_id: String,
-        role_id: String,
+        params: crate::methods::group_organization_role_assignments::UnassignGroupRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeletedRoleAssignmentResource, crate::errors::SdkError> {
         crate::methods::group_organization_role_assignments::unassign_group_role(
             &self.config,
-            group_id,
-            role_id,
+            params,
             options,
         )
     }
@@ -2810,39 +2395,23 @@ impl GroupUsersNamespace {
     /// Lists the users assigned to a group.
     pub fn list(
         &self,
-        group_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        order: Option<crate::methods::group_users::ListGroupUsersEnum>,
+        params: crate::methods::group_users::ListGroupUsersParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<UserListResource, crate::errors::SdkError> {
-        crate::methods::group_users::list_group_users(
-            &self.config,
-            group_id,
-            limit,
-            after,
-            order,
-            options,
-        )
+        crate::methods::group_users::list_group_users(&self.config, params, options)
     }
     /// Lists the users assigned to a group. Use `after` to continue from the last user's identifier in a previous response, and use `limit` and `order` to control the page size and sort order. The response indicates whether more users are available and provides the cursor for the next page.
     ///
     /// Lists the users assigned to a group.
     pub fn list_paginated(
         &self,
-        group_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        order: Option<crate::methods::group_users::ListGroupUsersEnum>,
+        params: crate::methods::group_users::ListGroupUsersParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&GroupUser) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::group_users::list_group_users_paginated(
             &self.config,
-            group_id,
-            limit,
-            after,
-            order,
+            params,
             options,
             yield_fn,
         )
@@ -2852,33 +2421,30 @@ impl GroupUsersNamespace {
     /// Adds a user to a group.
     pub fn add(
         &self,
-        group_id: String,
-        user_id: String,
+        params: crate::methods::group_users::AddGroupUserParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GroupUserAssignment, crate::errors::SdkError> {
-        crate::methods::group_users::add_group_user(&self.config, group_id, user_id, options)
+        crate::methods::group_users::add_group_user(&self.config, params, options)
     }
     /// Retrieves a user's membership details for a group. Provide both `group_id` and `user_id` to identify the membership to inspect. The response includes the user's name, email, profile picture, account type, and service-account status.
     ///
     /// Retrieves a user in a group.
     pub fn retrieve(
         &self,
-        group_id: String,
-        user_id: String,
+        params: crate::methods::group_users::RetrieveGroupUserParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GroupMemberUser, crate::errors::SdkError> {
-        crate::methods::group_users::retrieve_group_user(&self.config, group_id, user_id, options)
+        crate::methods::group_users::retrieve_group_user(&self.config, params, options)
     }
     /// Removes a user's membership from a group. Supply `group_id` and `user_id` to identify the group membership to remove. The response confirms whether the membership was deleted.
     ///
     /// Removes a user from a group.
     pub fn remove(
         &self,
-        group_id: String,
-        user_id: String,
+        params: crate::methods::group_users::RemoveGroupUserParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GroupUserDeletedResource, crate::errors::SdkError> {
-        crate::methods::group_users::remove_group_user(&self.config, group_id, user_id, options)
+        crate::methods::group_users::remove_group_user(&self.config, params, options)
     }
 }
 
@@ -2899,57 +2465,47 @@ impl InvitesNamespace {
     /// Returns a list of invites in the organization.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
+        params: crate::methods::invites::ListInvitesParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<InviteListResponse, crate::errors::SdkError> {
-        crate::methods::invites::list_invites(&self.config, limit, after, options)
+        crate::methods::invites::list_invites(&self.config, params, options)
     }
     /// Lists organization invites and their status, role, and project access details. Use `limit` to control the number of results and `after` to continue from an invite ID. The response includes `has_more` and cursor IDs to help you paginate.
     ///
     /// Returns a list of invites in the organization.
     pub fn list_paginated(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
+        params: crate::methods::invites::ListInvitesParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&Invite) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
-        crate::methods::invites::list_invites_paginated(
-            &self.config,
-            limit,
-            after,
-            options,
-            yield_fn,
-        )
+        crate::methods::invites::list_invites_paginated(&self.config, params, options, yield_fn)
     }
     /// Create an invite for a user to the organization. The invite must be accepted by the user before they have access to the organization.
     pub fn create(
         &self,
-        email: String,
-        role: InviteRequestRoleEnum,
-        projects: Option<Vec<InviteRequestProjectsItem>>,
+        params: crate::methods::invites::CreateInvitesParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Invite, crate::errors::SdkError> {
-        crate::methods::invites::create_invites(&self.config, email, role, projects, options)
+        crate::methods::invites::create_invites(&self.config, params, options)
     }
     /// Retrieves an organization invite by its identifier. Use `invite_id` to select the invite whose email address, role, status, and project access you need to inspect.
     ///
     /// Retrieves an invite.
     pub fn retrieve(
         &self,
-        invite_id: String,
+        params: crate::methods::invites::RetrieveInviteParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Invite, crate::errors::SdkError> {
-        crate::methods::invites::retrieve_invite(&self.config, invite_id, options)
+        crate::methods::invites::retrieve_invite(&self.config, params, options)
     }
     /// Delete an invite. If the invite has already been accepted, it cannot be deleted.
     pub fn delete(
         &self,
-        invite_id: String,
+        params: crate::methods::invites::DeleteInviteParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<InviteDeleteResponse, crate::errors::SdkError> {
-        crate::methods::invites::delete_invite(&self.config, invite_id, options)
+        crate::methods::invites::delete_invite(&self.config, params, options)
     }
 }
 
@@ -2970,125 +2526,72 @@ impl ProjectsNamespace {
     /// Returns a list of projects.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        include_archived: Option<bool>,
+        params: crate::methods::projects::ListProjectsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectListResponse, crate::errors::SdkError> {
-        crate::methods::projects::list_projects(
-            &self.config,
-            limit,
-            after,
-            include_archived,
-            options,
-        )
+        crate::methods::projects::list_projects(&self.config, params, options)
     }
     /// Lists projects in the organization. Use `include_archived` to include archived projects and `limit` and `after` to control and continue through the results. The response includes a `has_more` flag and cursor IDs for pagination.
     ///
     /// Returns a list of projects.
     pub fn list_paginated(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        include_archived: Option<bool>,
+        params: crate::methods::projects::ListProjectsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&Project) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
-        crate::methods::projects::list_projects_paginated(
-            &self.config,
-            limit,
-            after,
-            include_archived,
-            options,
-            yield_fn,
-        )
+        crate::methods::projects::list_projects_paginated(&self.config, params, options, yield_fn)
     }
     /// Create a new project in the organization. Projects can be created and archived, but cannot be deleted.
     pub fn create(
         &self,
-        name: String,
-        geography: Option<Option<String>>,
-        residency: Option<Option<PublicProjectResidency>>,
-        external_key_id: Option<Option<String>>,
+        params: crate::methods::projects::CreateProjectParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Project, crate::errors::SdkError> {
-        crate::methods::projects::create_project(
-            &self.config,
-            name,
-            geography,
-            residency,
-            external_key_id,
-            options,
-        )
+        crate::methods::projects::create_project(&self.config, params, options)
     }
     /// Retrieves a project in the organization by its identifier. Use `project_id` to select the project whose name, status, and residency configuration you need to inspect.
     ///
     /// Retrieves a project.
     pub fn retrieve(
         &self,
-        project_id: String,
+        params: crate::methods::projects::RetrieveProjectParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Project, crate::errors::SdkError> {
-        crate::methods::projects::retrieve_project(&self.config, project_id, options)
+        crate::methods::projects::retrieve_project(&self.config, params, options)
     }
     /// Updates a project in the organization. Supply any of `name`, `external_key_id`, or `geography` to change the corresponding project value; omitted fields are not specified for update. The `geography` field is retained for backward compatibility, while data residency is configured with `residency` when creating a project.
     ///
     /// Modifies a project in the organization.
     pub fn modify(
         &self,
-        project_id: String,
-        name: Option<Option<String>>,
-        external_key_id: Option<Option<String>>,
-        geography: Option<Option<String>>,
+        params: crate::methods::projects::ModifyProjectParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Project, crate::errors::SdkError> {
-        crate::methods::projects::modify_project(
-            &self.config,
-            project_id,
-            name,
-            external_key_id,
-            geography,
-            options,
-        )
+        crate::methods::projects::modify_project(&self.config, params, options)
     }
     /// Lists API keys in an organization project. Use `owner_project_access` to filter keys by their owner's effective project access, and `limit` and `after` to control and continue through the results. The response includes redacted key values, owner details, and a `has_more` flag for pagination.
     ///
     /// Returns a list of API keys in the project.
     pub fn list_api_keys(
         &self,
-        project_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        owner_project_access: Option<crate::methods::projects::ListProjectApiKeysEnum>,
+        params: crate::methods::projects::ListProjectApiKeysParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectApiKeyListResponse, crate::errors::SdkError> {
-        crate::methods::projects::list_project_api_keys(
-            &self.config,
-            project_id,
-            limit,
-            after,
-            owner_project_access,
-            options,
-        )
+        crate::methods::projects::list_project_api_keys(&self.config, params, options)
     }
     /// Lists API keys in an organization project. Use `owner_project_access` to filter keys by their owner's effective project access, and `limit` and `after` to control and continue through the results. The response includes redacted key values, owner details, and a `has_more` flag for pagination.
     ///
     /// Returns a list of API keys in the project.
     pub fn list_api_keys_paginated(
         &self,
-        project_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        owner_project_access: Option<crate::methods::projects::ListProjectApiKeysEnum>,
+        params: crate::methods::projects::ListProjectApiKeysParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&ProjectApiKey) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::projects::list_project_api_keys_paginated(
             &self.config,
-            project_id,
-            limit,
-            after,
-            owner_project_access,
+            params,
             options,
             yield_fn,
         )
@@ -3098,141 +2601,87 @@ impl ProjectsNamespace {
     /// Retrieves an API key in the project.
     pub fn retrieve_api_key(
         &self,
-        project_id: String,
-        api_key_id: String,
+        params: crate::methods::projects::RetrieveProjectApiKeyParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectApiKey, crate::errors::SdkError> {
-        crate::methods::projects::retrieve_project_api_key(
-            &self.config,
-            project_id,
-            api_key_id,
-            options,
-        )
+        crate::methods::projects::retrieve_project_api_key(&self.config, params, options)
     }
     /// Deletes an API key from the project. Returns confirmation of the key deletion, or an error if the key belonged to a service account.
     pub fn delete_api_key(
         &self,
-        project_id: String,
-        api_key_id: String,
+        params: crate::methods::projects::DeleteProjectApiKeyParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectApiKeyDeleteResponse, crate::errors::SdkError> {
-        crate::methods::projects::delete_project_api_key(
-            &self.config,
-            project_id,
-            api_key_id,
-            options,
-        )
+        crate::methods::projects::delete_project_api_key(&self.config, params, options)
     }
     /// Updates the scopes and/or expiration of an existing API key in the project, including a service-account-owned key. Requires permission to write project API keys. Provide at least one of `scopes` or `expires_in_seconds`. Omitted fields stay unchanged; neither field accepts `null`. Both changes are saved together. `scopes` replaces the key's scope restrictions using the same scope identifiers as the dashboard. An empty array means All permissions, subject to the owner's effective access; it does not mean no access. Use `["api.all.read"]` for read-only access or specific scopes such as `["api.files.read"]` for restricted access. This does not change user or service-account roles or grant admin permissions. Scope changes follow the same authentication-cache propagation as dashboard edits. Provide `expires_in_seconds` to set the expiration relative to this request. The value must satisfy the organization's and project's expiry policies. Expired keys cannot be updated. Retrying resets the expiration relative to the new request. The response contains only the redacted key, not its secret.
     pub fn update_api_key(
         &self,
-        project_id: String,
-        api_key_id: String,
-        expires_in_seconds: Option<i64>,
-        scopes: Option<Vec<String>>,
+        params: crate::methods::projects::UpdateProjectApiKeyParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectApiKey, crate::errors::SdkError> {
-        crate::methods::projects::update_project_api_key(
-            &self.config,
-            project_id,
-            api_key_id,
-            expires_in_seconds,
-            scopes,
-            options,
-        )
+        crate::methods::projects::update_project_api_key(&self.config, params, options)
     }
     /// Archives a project in the organization. Archived projects cannot be used or updated.
     pub fn archive(
         &self,
-        project_id: String,
+        params: crate::methods::projects::ArchiveProjectParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Project, crate::errors::SdkError> {
-        crate::methods::projects::archive_project(&self.config, project_id, options)
+        crate::methods::projects::archive_project(&self.config, params, options)
     }
     /// Retrieves the model permission policy for a project. Use `project_id` to identify the project whose model access policy you want to inspect. The response includes the policy mode and the model IDs it applies to.
     ///
     /// Returns model permissions for a project.
     pub fn retrieve_model_permissions(
         &self,
-        project_id: String,
+        params: crate::methods::projects::RetrieveProjectModelPermissionsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectModelPermissions, crate::errors::SdkError> {
-        crate::methods::projects::retrieve_project_model_permissions(
-            &self.config,
-            project_id,
-            options,
-        )
+        crate::methods::projects::retrieve_project_model_permissions(&self.config, params, options)
     }
     /// Updates a project's model permission policy. Provide `mode` and `model_ids` to specify whether the listed models are allowed or denied. The response returns the updated policy.
     ///
     /// Updates model permissions for a project.
     pub fn update_model_permissions(
         &self,
-        project_id: String,
-        mode: ProjectModelPermissionsUpdateRequestModeEnum,
-        model_ids: Vec<String>,
+        params: crate::methods::projects::UpdateProjectModelPermissionsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectModelPermissions, crate::errors::SdkError> {
-        crate::methods::projects::update_project_model_permissions(
-            &self.config,
-            project_id,
-            mode,
-            model_ids,
-            options,
-        )
+        crate::methods::projects::update_project_model_permissions(&self.config, params, options)
     }
     /// Deletes the model permission policy for a project. Use `project_id` to identify the project whose policy you want to remove. The response confirms whether the permissions were deleted.
     ///
     /// Deletes model permissions for a project.
     pub fn delete_model_permissions(
         &self,
-        project_id: String,
+        params: crate::methods::projects::DeleteProjectModelPermissionsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectModelPermissionsDeleteResponse, crate::errors::SdkError> {
-        crate::methods::projects::delete_project_model_permissions(
-            &self.config,
-            project_id,
-            options,
-        )
+        crate::methods::projects::delete_project_model_permissions(&self.config, params, options)
     }
     /// Lists the rate limits configured for a project, with each result describing limits for a model. Use `limit` to set the number of results and `after` or `before` to navigate the list using cursors.
     ///
     /// Returns the rate limits per model for a project.
     pub fn list_rate_limits(
         &self,
-        project_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::projects::ListProjectRateLimitsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectRateLimitListResponse, crate::errors::SdkError> {
-        crate::methods::projects::list_project_rate_limits(
-            &self.config,
-            project_id,
-            limit,
-            after,
-            before,
-            options,
-        )
+        crate::methods::projects::list_project_rate_limits(&self.config, params, options)
     }
     /// Lists the rate limits configured for a project, with each result describing limits for a model. Use `limit` to set the number of results and `after` or `before` to navigate the list using cursors.
     ///
     /// Returns the rate limits per model for a project.
     pub fn list_rate_limits_paginated(
         &self,
-        project_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::projects::ListProjectRateLimitsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&ProjectRateLimit) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::projects::list_project_rate_limits_paginated(
             &self.config,
-            project_id,
-            limit,
-            after,
-            before,
+            params,
             options,
             yield_fn,
         )
@@ -3250,33 +2699,21 @@ impl ProjectsNamespace {
     /// Returns a list of service accounts in the project.
     pub fn list_service_accounts(
         &self,
-        project_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
+        params: crate::methods::projects::ListProjectServiceAccountsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectServiceAccountListResponse, crate::errors::SdkError> {
-        crate::methods::projects::list_project_service_accounts(
-            &self.config,
-            project_id,
-            limit,
-            after,
-            options,
-        )
+        crate::methods::projects::list_project_service_accounts(&self.config, params, options)
     }
     /// Returns a list of service accounts in the project.
     pub fn list_service_accounts_paginated(
         &self,
-        project_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
+        params: crate::methods::projects::ListProjectServiceAccountsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&ProjectServiceAccount) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::projects::list_project_service_accounts_paginated(
             &self.config,
-            project_id,
-            limit,
-            after,
+            params,
             options,
             yield_fn,
         )
@@ -3286,105 +2723,61 @@ impl ProjectsNamespace {
     /// Creates a new service account in the project. By default, this also returns an unredacted API key for the service account.
     pub fn create_service_account(
         &self,
-        project_id: String,
-        name: String,
-        create_service_account_only: Option<Option<bool>>,
-        expires_in_seconds: Option<Option<i64>>,
+        params: crate::methods::projects::CreateProjectServiceAccountParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectServiceAccountCreateResponse, crate::errors::SdkError> {
-        crate::methods::projects::create_project_service_account(
-            &self.config,
-            project_id,
-            name,
-            create_service_account_only,
-            expires_in_seconds,
-            options,
-        )
+        crate::methods::projects::create_project_service_account(&self.config, params, options)
     }
     /// Retrieves a service account in a project. Use the project and service account identifiers to inspect the account's name, role, and creation timestamp.
     ///
     /// Retrieves a service account in the project.
     pub fn retrieve_service_account(
         &self,
-        project_id: String,
-        service_account_id: String,
+        params: crate::methods::projects::RetrieveProjectServiceAccountParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectServiceAccount, crate::errors::SdkError> {
-        crate::methods::projects::retrieve_project_service_account(
-            &self.config,
-            project_id,
-            service_account_id,
-            options,
-        )
+        crate::methods::projects::retrieve_project_service_account(&self.config, params, options)
     }
     /// Updates a service account in a project. Supply `name` or `role` to change the corresponding account property; the role must be `member` or `owner`.
     ///
     /// Updates a service account in the project.
     pub fn update_service_account(
         &self,
-        project_id: String,
-        service_account_id: String,
-        name: Option<String>,
-        role: Option<UpdateProjectServiceAccountBodyRoleEnum>,
+        params: crate::methods::projects::UpdateProjectServiceAccountParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectServiceAccount, crate::errors::SdkError> {
-        crate::methods::projects::update_project_service_account(
-            &self.config,
-            project_id,
-            service_account_id,
-            name,
-            role,
-            options,
-        )
+        crate::methods::projects::update_project_service_account(&self.config, params, options)
     }
     /// Deletes a service account from the project. Returns confirmation of service account deletion, or an error if the project is archived (archived projects have no service accounts).
     pub fn delete_service_account(
         &self,
-        project_id: String,
-        service_account_id: String,
+        params: crate::methods::projects::DeleteProjectServiceAccountParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectServiceAccountDeleteResponse, crate::errors::SdkError> {
-        crate::methods::projects::delete_project_service_account(
-            &self.config,
-            project_id,
-            service_account_id,
-            options,
-        )
+        crate::methods::projects::delete_project_service_account(&self.config, params, options)
     }
     /// Lists users in a project using cursor-based pagination. Set `limit` to control the number of results and pass an `after` cursor from a previous response to continue through the list.
     ///
     /// Returns a list of users in the project.
     pub fn list_users(
         &self,
-        project_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
+        params: crate::methods::projects::ListProjectUsersParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectUserListResponse, crate::errors::SdkError> {
-        crate::methods::projects::list_project_users(
-            &self.config,
-            project_id,
-            limit,
-            after,
-            options,
-        )
+        crate::methods::projects::list_project_users(&self.config, params, options)
     }
     /// Lists users in a project using cursor-based pagination. Set `limit` to control the number of results and pass an `after` cursor from a previous response to continue through the list.
     ///
     /// Returns a list of users in the project.
     pub fn list_users_paginated(
         &self,
-        project_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
+        params: crate::methods::projects::ListProjectUsersParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&ProjectUser) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::projects::list_project_users_paginated(
             &self.config,
-            project_id,
-            limit,
-            after,
+            params,
             options,
             yield_fn,
         )
@@ -3392,58 +2785,38 @@ impl ProjectsNamespace {
     /// Adds a user to the project. Users must already be members of the organization to be added to a project.
     pub fn create_user(
         &self,
-        project_id: String,
-        role: String,
-        user_id: Option<Option<String>>,
-        email: Option<Option<String>>,
+        params: crate::methods::projects::CreateProjectUserParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectUser, crate::errors::SdkError> {
-        crate::methods::projects::create_project_user(
-            &self.config,
-            project_id,
-            role,
-            user_id,
-            email,
-            options,
-        )
+        crate::methods::projects::create_project_user(&self.config, params, options)
     }
     /// Retrieves a user's membership details for a project. Use `project_id` and `user_id` to identify the project and user, and review the returned role and membership timestamp.
     ///
     /// Retrieves a user in the project.
     pub fn retrieve_user(
         &self,
-        project_id: String,
-        user_id: String,
+        params: crate::methods::projects::RetrieveProjectUserParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectUser, crate::errors::SdkError> {
-        crate::methods::projects::retrieve_project_user(&self.config, project_id, user_id, options)
+        crate::methods::projects::retrieve_project_user(&self.config, params, options)
     }
     /// Updates a user's role in a project. Use `project_id` and `user_id` to identify the project membership, and set `role` to `owner` or `member` when changing the role.
     ///
     /// Modifies a user's role in the project.
     pub fn modify_user(
         &self,
-        project_id: String,
-        user_id: String,
-        role: Option<Option<String>>,
+        params: crate::methods::projects::ModifyProjectUserParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectUser, crate::errors::SdkError> {
-        crate::methods::projects::modify_project_user(
-            &self.config,
-            project_id,
-            user_id,
-            role,
-            options,
-        )
+        crate::methods::projects::modify_project_user(&self.config, params, options)
     }
     /// Deletes a user from the project. Returns confirmation of project user deletion, or an error if the project is archived (archived projects have no users).
     pub fn delete_user(
         &self,
-        project_id: String,
-        user_id: String,
+        params: crate::methods::projects::DeleteProjectUserParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectUserDeleteResponse, crate::errors::SdkError> {
-        crate::methods::projects::delete_project_user(&self.config, project_id, user_id, options)
+        crate::methods::projects::delete_project_user(&self.config, params, options)
     }
     /// Creates an API key for a service account in a project. Use `name` and `scopes` to set the key's label and scopes, and `expires_in_seconds` to configure its lifetime. The response includes the unredacted key value and its identifier.
     ///
@@ -3478,39 +2851,23 @@ impl ProjectGroupsNamespace {
     /// Lists the groups that have access to a project.
     pub fn list(
         &self,
-        project_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        order: Option<crate::methods::project_groups::ListProjectGroupsEnum>,
+        params: crate::methods::project_groups::ListProjectGroupsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectGroupListResource, crate::errors::SdkError> {
-        crate::methods::project_groups::list_project_groups(
-            &self.config,
-            project_id,
-            limit,
-            after,
-            order,
-            options,
-        )
+        crate::methods::project_groups::list_project_groups(&self.config, params, options)
     }
     /// Lists the groups that have access to a project. Use `after` to continue from the last group in a previous response, and set `limit` and `order` to control the page size and sort order.
     ///
     /// Lists the groups that have access to a project.
     pub fn list_paginated(
         &self,
-        project_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        order: Option<crate::methods::project_groups::ListProjectGroupsEnum>,
+        params: crate::methods::project_groups::ListProjectGroupsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&ProjectGroup) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::project_groups::list_project_groups_paginated(
             &self.config,
-            project_id,
-            limit,
-            after,
-            order,
+            params,
             options,
             yield_fn,
         )
@@ -3520,52 +2877,30 @@ impl ProjectGroupsNamespace {
     /// Grants a group access to a project.
     pub fn add(
         &self,
-        project_id: String,
-        group_id: String,
-        role: String,
+        params: crate::methods::project_groups::AddProjectGroupParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectGroup, crate::errors::SdkError> {
-        crate::methods::project_groups::add_project_group(
-            &self.config,
-            project_id,
-            group_id,
-            role,
-            options,
-        )
+        crate::methods::project_groups::add_project_group(&self.config, params, options)
     }
     /// Retrieves a group's membership details for a project. Use `project_id` and `group_id` to identify the project and group, and `group_type` to select a group type; it defaults to `group` when omitted.
     ///
     /// Retrieves a project's group.
     pub fn retrieve(
         &self,
-        project_id: String,
-        group_id: String,
-        group_type: Option<crate::methods::project_groups::RetrieveProjectGroupEnum>,
+        params: crate::methods::project_groups::RetrieveProjectGroupParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectGroup, crate::errors::SdkError> {
-        crate::methods::project_groups::retrieve_project_group(
-            &self.config,
-            project_id,
-            group_id,
-            group_type,
-            options,
-        )
+        crate::methods::project_groups::retrieve_project_group(&self.config, params, options)
     }
     /// Removes a group's access to a project. Use `project_id` and `group_id` to identify the project membership to revoke. The response confirms whether the membership was removed.
     ///
     /// Revokes a group's access to a project.
     pub fn remove(
         &self,
-        project_id: String,
-        group_id: String,
+        params: crate::methods::project_groups::RemoveProjectGroupParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectGroupDeletedResource, crate::errors::SdkError> {
-        crate::methods::project_groups::remove_project_group(
-            &self.config,
-            project_id,
-            group_id,
-            options,
-        )
+        crate::methods::project_groups::remove_project_group(&self.config, params, options)
     }
 }
 
@@ -3586,12 +2921,12 @@ impl HostedToolsNamespace {
     /// Returns hosted tool permissions for a project.
     pub fn retrieve_permissions(
         &self,
-        project_id: String,
+        params: crate::methods::hosted_tools::RetrieveProjectHostedToolPermissionsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectHostedToolPermissions, crate::errors::SdkError> {
         crate::methods::hosted_tools::retrieve_project_hosted_tool_permissions(
             &self.config,
-            project_id,
+            params,
             options,
         )
     }
@@ -3664,16 +2999,10 @@ impl SpendAlertsNamespace {
     /// Retrieves a project spend alert.
     pub fn retrieve(
         &self,
-        project_id: String,
-        alert_id: String,
+        params: crate::methods::spend_alerts::RetrieveProjectSpendAlertParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectSpendAlert, crate::errors::SdkError> {
-        crate::methods::spend_alerts::retrieve_project_spend_alert(
-            &self.config,
-            project_id,
-            alert_id,
-            options,
-        )
+        crate::methods::spend_alerts::retrieve_project_spend_alert(&self.config, params, options)
     }
     /// Updates a spend alert configured for a project. Provide the alert's threshold, currency, evaluation interval, and notification channel in the request body.
     ///
@@ -3690,55 +3019,33 @@ impl SpendAlertsNamespace {
     /// Deletes a project spend alert.
     pub fn delete(
         &self,
-        project_id: String,
-        alert_id: String,
+        params: crate::methods::spend_alerts::DeleteProjectSpendAlertParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectSpendAlertDeletedResource, crate::errors::SdkError> {
-        crate::methods::spend_alerts::delete_project_spend_alert(
-            &self.config,
-            project_id,
-            alert_id,
-            options,
-        )
+        crate::methods::spend_alerts::delete_project_spend_alert(&self.config, params, options)
     }
     /// Lists spend alerts configured for the organization. Use `limit` and `order` to control the result page, and use `after` or `before` to navigate from a spend alert in a previous response. The response includes cursor IDs and a `has_more` flag for pagination.
     ///
     /// Lists organization spend alerts.
     pub fn list_organization(
         &self,
-        limit: Option<i64>,
-        order: Option<crate::methods::spend_alerts::ListOrganizationSpendAlertsEnum>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::spend_alerts::ListOrganizationSpendAlertsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<OrganizationSpendAlertListResource, crate::errors::SdkError> {
-        crate::methods::spend_alerts::list_organization_spend_alerts(
-            &self.config,
-            limit,
-            order,
-            after,
-            before,
-            options,
-        )
+        crate::methods::spend_alerts::list_organization_spend_alerts(&self.config, params, options)
     }
     /// Lists spend alerts configured for the organization. Use `limit` and `order` to control the result page, and use `after` or `before` to navigate from a spend alert in a previous response. The response includes cursor IDs and a `has_more` flag for pagination.
     ///
     /// Lists organization spend alerts.
     pub fn list_organization_paginated(
         &self,
-        limit: Option<i64>,
-        order: Option<crate::methods::spend_alerts::ListOrganizationSpendAlertsEnum>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::spend_alerts::ListOrganizationSpendAlertsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&OrganizationSpendAlert) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::spend_alerts::list_organization_spend_alerts_paginated(
             &self.config,
-            limit,
-            order,
-            after,
-            before,
+            params,
             options,
             yield_fn,
         )
@@ -3748,32 +3055,22 @@ impl SpendAlertsNamespace {
     /// Creates an organization spend alert.
     pub fn create_organization(
         &self,
-        threshold_amount: i64,
-        currency: CreateSpendAlertBodyCurrencyEnum,
-        interval: CreateSpendAlertBodyIntervalEnum,
-        notification_channel: SpendAlertNotificationChannel,
+        params: crate::methods::spend_alerts::CreateOrganizationSpendAlertParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<OrganizationSpendAlert, crate::errors::SdkError> {
-        crate::methods::spend_alerts::create_organization_spend_alert(
-            &self.config,
-            threshold_amount,
-            currency,
-            interval,
-            notification_channel,
-            options,
-        )
+        crate::methods::spend_alerts::create_organization_spend_alert(&self.config, params, options)
     }
     /// Retrieves a spend alert configured at the organization level. Use `alert_id` to identify the alert whose threshold and notification settings you want to view.
     ///
     /// Retrieves an organization spend alert.
     pub fn retrieve_organization(
         &self,
-        alert_id: String,
+        params: crate::methods::spend_alerts::RetrieveOrganizationSpendAlertParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<OrganizationSpendAlert, crate::errors::SdkError> {
         crate::methods::spend_alerts::retrieve_organization_spend_alert(
             &self.config,
-            alert_id,
+            params,
             options,
         )
     }
@@ -3792,14 +3089,10 @@ impl SpendAlertsNamespace {
     /// Deletes an organization spend alert.
     pub fn delete_organization(
         &self,
-        alert_id: String,
+        params: crate::methods::spend_alerts::DeleteOrganizationSpendAlertParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<OrganizationSpendAlertDeletedResource, crate::errors::SdkError> {
-        crate::methods::spend_alerts::delete_organization_spend_alert(
-            &self.config,
-            alert_id,
-            options,
-        )
+        crate::methods::spend_alerts::delete_organization_spend_alert(&self.config, params, options)
     }
 }
 
@@ -3820,129 +3113,84 @@ impl RolesNamespace {
     /// Lists the roles configured for the organization.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        order: Option<crate::methods::roles::ListRolesEnum>,
+        params: crate::methods::roles::ListRolesParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<PublicRoleListResource, crate::errors::SdkError> {
-        crate::methods::roles::list_roles(&self.config, limit, after, order, options)
+        crate::methods::roles::list_roles(&self.config, params, options)
     }
     /// Lists roles configured for the organization. Use `limit` to control the number of roles returned and `order` to choose the sort direction. Continue through the results with the `after` cursor from the previous response's `next` field.
     ///
     /// Lists the roles configured for the organization.
     pub fn list_paginated(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        order: Option<crate::methods::roles::ListRolesEnum>,
+        params: crate::methods::roles::ListRolesParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&Role) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
-        crate::methods::roles::list_roles_paginated(
-            &self.config,
-            limit,
-            after,
-            order,
-            options,
-            yield_fn,
-        )
+        crate::methods::roles::list_roles_paginated(&self.config, params, options, yield_fn)
     }
     /// Creates a custom role for the organization. Provide `role_name` and `permissions`; you can also include an optional `description`. The response includes the new role's identifier, permissions, and resource type.
     ///
     /// Creates a custom role for the organization.
     pub fn create(
         &self,
-        role_name: String,
-        permissions: Vec<String>,
-        description: Option<Option<String>>,
+        params: crate::methods::roles::CreateRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Role, crate::errors::SdkError> {
-        crate::methods::roles::create_role(
-            &self.config,
-            role_name,
-            permissions,
-            description,
-            options,
-        )
+        crate::methods::roles::create_role(&self.config, params, options)
     }
     /// Retrieves a role configured for the organization. Use `role_id` to identify the role and review its name, permissions, and resource type.
     ///
     /// Retrieves an organization role.
     pub fn retrieve(
         &self,
-        role_id: String,
+        params: crate::methods::roles::RetrieveRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Role, crate::errors::SdkError> {
-        crate::methods::roles::retrieve_role(&self.config, role_id, options)
+        crate::methods::roles::retrieve_role(&self.config, params, options)
     }
     /// Updates an existing organization role. Use `role_id` to identify the role and provide any of `permissions`, `description`, or `role_name` to change those values. The response contains the updated role details.
     ///
     /// Updates an existing organization role.
     pub fn update(
         &self,
-        role_id: String,
-        permissions: Option<Option<Vec<String>>>,
-        description: Option<Option<String>>,
-        role_name: Option<Option<String>>,
+        params: crate::methods::roles::UpdateRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Role, crate::errors::SdkError> {
-        crate::methods::roles::update_role(
-            &self.config,
-            role_id,
-            permissions,
-            description,
-            role_name,
-            options,
-        )
+        crate::methods::roles::update_role(&self.config, params, options)
     }
     /// Deletes a custom role from the organization. Use `role_id` to identify the role to remove. The response confirms whether the role was deleted and includes its identifier.
     ///
     /// Deletes a custom role from the organization.
     pub fn delete(
         &self,
-        role_id: String,
+        params: crate::methods::roles::DeleteRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RoleDeletedResource, crate::errors::SdkError> {
-        crate::methods::roles::delete_role(&self.config, role_id, options)
+        crate::methods::roles::delete_role(&self.config, params, options)
     }
     /// Lists the roles configured for a project in a paginated response. Use `limit` to set the page size, `after` to continue from a cursor, and `order` to choose the sort direction.
     ///
     /// Lists the roles configured for a project.
     pub fn list_project_roles(
         &self,
-        project_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        order: Option<crate::methods::roles::ListRolesProjectRolesEnum>,
+        params: crate::methods::roles::ListRolesProjectRolesParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<PublicRoleListResource, crate::errors::SdkError> {
-        crate::methods::roles::list_roles_project_roles(
-            &self.config,
-            project_id,
-            limit,
-            after,
-            order,
-            options,
-        )
+        crate::methods::roles::list_roles_project_roles(&self.config, params, options)
     }
     /// Lists the roles configured for a project in a paginated response. Use `limit` to set the page size, `after` to continue from a cursor, and `order` to choose the sort direction.
     ///
     /// Lists the roles configured for a project.
     pub fn list_project_roles_paginated(
         &self,
-        project_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        order: Option<crate::methods::roles::ListRolesProjectRolesEnum>,
+        params: crate::methods::roles::ListRolesProjectRolesParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&Role) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::roles::list_roles_project_roles_paginated(
             &self.config,
-            project_id,
-            limit,
-            after,
-            order,
+            params,
             options,
             yield_fn,
         )
@@ -3952,36 +3200,20 @@ impl RolesNamespace {
     /// Creates a custom role for a project.
     pub fn create_project_role(
         &self,
-        project_id: String,
-        role_name: String,
-        permissions: Vec<String>,
-        description: Option<Option<String>>,
+        params: crate::methods::roles::CreateRolesProjectRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Role, crate::errors::SdkError> {
-        crate::methods::roles::create_roles_project_role(
-            &self.config,
-            project_id,
-            role_name,
-            permissions,
-            description,
-            options,
-        )
+        crate::methods::roles::create_roles_project_role(&self.config, params, options)
     }
     /// Retrieves a project role by its identifier. Use `project_id` and `role_id` to identify the project and role whose details you need.
     ///
     /// Retrieves a project role.
     pub fn retrieve_project_role(
         &self,
-        project_id: String,
-        role_id: String,
+        params: crate::methods::roles::RetrieveRolesProjectRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Role, crate::errors::SdkError> {
-        crate::methods::roles::retrieve_roles_project_role(
-            &self.config,
-            project_id,
-            role_id,
-            options,
-        )
+        crate::methods::roles::retrieve_roles_project_role(&self.config, params, options)
     }
     /// Updates an existing project role's name, permissions, or description. Provide the fields you want to change; each body field can be omitted or set to null when it does not need an update.
     ///
@@ -3998,11 +3230,10 @@ impl RolesNamespace {
     /// Deletes a custom role from a project.
     pub fn delete_project_role(
         &self,
-        project_id: String,
-        role_id: String,
+        params: crate::methods::roles::DeleteRolesProjectRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RoleDeletedResource, crate::errors::SdkError> {
-        crate::methods::roles::delete_roles_project_role(&self.config, project_id, role_id, options)
+        crate::methods::roles::delete_roles_project_role(&self.config, params, options)
     }
 }
 
@@ -4023,42 +3254,31 @@ impl UsersNamespace {
     /// Lists all of the users in the organization.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        emails: Option<Vec<String>>,
+        params: crate::methods::users::ListUsersParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<UserListResponse, crate::errors::SdkError> {
-        crate::methods::users::list_users(&self.config, limit, after, emails, options)
+        crate::methods::users::list_users(&self.config, params, options)
     }
     /// Lists users in the organization. Use `emails` to filter the list by email address and `limit` and `after` to control the page of results. The response includes pagination fields to help you retrieve additional users.
     ///
     /// Lists all of the users in the organization.
     pub fn list_paginated(
         &self,
-        limit: Option<i64>,
-        after: Option<String>,
-        emails: Option<Vec<String>>,
+        params: crate::methods::users::ListUsersParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&User) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
-        crate::methods::users::list_users_paginated(
-            &self.config,
-            limit,
-            after,
-            emails,
-            options,
-            yield_fn,
-        )
+        crate::methods::users::list_users_paginated(&self.config, params, options, yield_fn)
     }
     /// Retrieves a user from the organization by their identifier. Use this operation to view the user's organization role, account details, and associated user metadata.
     ///
     /// Retrieves a user by their identifier.
     pub fn retrieve(
         &self,
-        user_id: String,
+        params: crate::methods::users::RetrieveUserParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<User, crate::errors::SdkError> {
-        crate::methods::users::retrieve_user(&self.config, user_id, options)
+        crate::methods::users::retrieve_user(&self.config, params, options)
     }
     /// Updates a user's role or metadata in the organization. Supply the body fields you want to change, such as `role`, `role_id`, `technical_level`, or `developer_persona`. The response contains the updated organization user.
     ///
@@ -4075,10 +3295,10 @@ impl UsersNamespace {
     /// Deletes a user from the organization.
     pub fn delete(
         &self,
-        user_id: String,
+        params: crate::methods::users::DeleteUserParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<UserDeleteResponse, crate::errors::SdkError> {
-        crate::methods::users::delete_user(&self.config, user_id, options)
+        crate::methods::users::delete_user(&self.config, params, options)
     }
 }
 
@@ -4097,41 +3317,25 @@ impl UserOrganizationRoleAssignmentsNamespace {
     /// Lists the organization roles assigned to a user within the organization.
     pub fn list_user_role_assignments(
         &self,
-        user_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        order: Option<
-            crate::methods::user_organization_role_assignments::ListUserRoleAssignmentsEnum,
-        >,
+        params: crate::methods::user_organization_role_assignments::ListUserRoleAssignmentsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RoleListResource, crate::errors::SdkError> {
         crate::methods::user_organization_role_assignments::list_user_role_assignments(
             &self.config,
-            user_id,
-            limit,
-            after,
-            order,
+            params,
             options,
         )
     }
     /// Lists the organization roles assigned to a user within the organization.
     pub fn list_user_role_assignments_paginated(
         &self,
-        user_id: String,
-        limit: Option<i64>,
-        after: Option<String>,
-        order: Option<
-            crate::methods::user_organization_role_assignments::ListUserRoleAssignmentsEnum,
-        >,
+        params: crate::methods::user_organization_role_assignments::ListUserRoleAssignmentsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&AssignedRoleDetails) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::user_organization_role_assignments::list_user_role_assignments_paginated(
             &self.config,
-            user_id,
-            limit,
-            after,
-            order,
+            params,
             options,
             yield_fn,
         )
@@ -4139,42 +3343,36 @@ impl UserOrganizationRoleAssignmentsNamespace {
     /// Assigns an organization role to a user within the organization.
     pub fn assign_user_role(
         &self,
-        user_id: String,
-        role_id: String,
+        params: crate::methods::user_organization_role_assignments::AssignUserRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<UserRoleAssignment, crate::errors::SdkError> {
         crate::methods::user_organization_role_assignments::assign_user_role(
             &self.config,
-            user_id,
-            role_id,
+            params,
             options,
         )
     }
     /// Retrieves an organization role assigned to a user.
     pub fn retrieve_user_role(
         &self,
-        user_id: String,
-        role_id: String,
+        params: crate::methods::user_organization_role_assignments::RetrieveUserRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<AssignedRoleDetails, crate::errors::SdkError> {
         crate::methods::user_organization_role_assignments::retrieve_user_role(
             &self.config,
-            user_id,
-            role_id,
+            params,
             options,
         )
     }
     /// Unassigns an organization role from a user within the organization.
     pub fn unassign_user_role(
         &self,
-        user_id: String,
-        role_id: String,
+        params: crate::methods::user_organization_role_assignments::UnassignUserRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeletedRoleAssignmentResource, crate::errors::SdkError> {
         crate::methods::user_organization_role_assignments::unassign_user_role(
             &self.config,
-            user_id,
-            role_id,
+            params,
             options,
         )
     }
@@ -4216,16 +3414,12 @@ impl ProjectGroupRoleAssignmentsNamespace {
     /// Assigns a project role to a group within a project.
     pub fn assign_project_group_role(
         &self,
-        project_id: String,
-        group_id: String,
-        role_id: String,
+        params: crate::methods::project_group_role_assignments::AssignProjectGroupRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<GroupRoleAssignment, crate::errors::SdkError> {
         crate::methods::project_group_role_assignments::assign_project_group_role(
             &self.config,
-            project_id,
-            group_id,
-            role_id,
+            params,
             options,
         )
     }
@@ -4234,32 +3428,24 @@ impl ProjectGroupRoleAssignmentsNamespace {
     /// Retrieves a project role assigned to a group.
     pub fn retrieve_project_group_role(
         &self,
-        project_id: String,
-        group_id: String,
-        role_id: String,
+        params: crate::methods::project_group_role_assignments::RetrieveProjectGroupRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<AssignedRoleDetails, crate::errors::SdkError> {
         crate::methods::project_group_role_assignments::retrieve_project_group_role(
             &self.config,
-            project_id,
-            group_id,
-            role_id,
+            params,
             options,
         )
     }
     /// Unassigns a project role from a group within a project.
     pub fn unassign_project_group_role(
         &self,
-        project_id: String,
-        group_id: String,
-        role_id: String,
+        params: crate::methods::project_group_role_assignments::UnassignProjectGroupRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeletedRoleAssignmentResource, crate::errors::SdkError> {
         crate::methods::project_group_role_assignments::unassign_project_group_role(
             &self.config,
-            project_id,
-            group_id,
-            role_id,
+            params,
             options,
         )
     }
@@ -4306,16 +3492,12 @@ impl ProjectUserRoleAssignmentsNamespace {
     /// Assigns a project role to a user within a project.
     pub fn assign_project_user_role(
         &self,
-        project_id: String,
-        user_id: String,
-        role_id: String,
+        params: crate::methods::project_user_role_assignments::AssignProjectUserRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<UserRoleAssignment, crate::errors::SdkError> {
         crate::methods::project_user_role_assignments::assign_project_user_role(
             &self.config,
-            project_id,
-            user_id,
-            role_id,
+            params,
             options,
         )
     }
@@ -4324,32 +3506,24 @@ impl ProjectUserRoleAssignmentsNamespace {
     /// Retrieves a project role assigned to a user.
     pub fn retrieve_project_user_role(
         &self,
-        project_id: String,
-        user_id: String,
-        role_id: String,
+        params: crate::methods::project_user_role_assignments::RetrieveProjectUserRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<AssignedRoleDetails, crate::errors::SdkError> {
         crate::methods::project_user_role_assignments::retrieve_project_user_role(
             &self.config,
-            project_id,
-            user_id,
-            role_id,
+            params,
             options,
         )
     }
     /// Unassigns a project role from a user within a project.
     pub fn unassign_project_user_role(
         &self,
-        project_id: String,
-        user_id: String,
-        role_id: String,
+        params: crate::methods::project_user_role_assignments::UnassignProjectUserRoleParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeletedRoleAssignmentResource, crate::errors::SdkError> {
         crate::methods::project_user_role_assignments::unassign_project_user_role(
             &self.config,
-            project_id,
-            user_id,
-            role_id,
+            params,
             options,
         )
     }
@@ -4370,10 +3544,10 @@ impl RealtimeNamespace {
     /// Create a new Realtime API call over WebRTC and receive the SDP answer needed to complete the peer connection.
     pub fn create_call(
         &self,
-        body: crate::methods::realtime::CreateRealtimeCallBody,
+        params: crate::methods::realtime::CreateRealtimeCallParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<String, crate::errors::SdkError> {
-        crate::methods::realtime::create_realtime_call(&self.config, body, options)
+        crate::methods::realtime::create_realtime_call(&self.config, params, options)
     }
     /// Accepts an incoming SIP call and configures the Realtime session that handles it. Set `type` to `realtime` and configure session behavior through fields such as `model`, `audio`, and `tools`; `output_modalities` supports text or audio, but not both. The caller is bridged to the model after the session configuration is applied.
     ///
@@ -4388,42 +3562,34 @@ impl RealtimeNamespace {
     /// End an active Realtime API call, whether it was initiated over SIP or WebRTC.
     pub fn hangup_call(
         &self,
-        call_id: String,
+        params: crate::methods::realtime::HangupRealtimeCallParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<serde_json::Value, crate::errors::SdkError> {
-        crate::methods::realtime::hangup_realtime_call(&self.config, call_id, options)
+        crate::methods::realtime::hangup_realtime_call(&self.config, params, options)
     }
     /// Transfer an active SIP call to a new destination using the SIP REFER verb.
     pub fn refer_call(
         &self,
-        call_id: String,
-        target_uri: String,
+        params: crate::methods::realtime::ReferRealtimeCallParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<serde_json::Value, crate::errors::SdkError> {
-        crate::methods::realtime::refer_realtime_call(&self.config, call_id, target_uri, options)
+        crate::methods::realtime::refer_realtime_call(&self.config, params, options)
     }
     /// Decline an incoming SIP call by returning a SIP status code to the caller.
     pub fn reject_call(
         &self,
-        call_id: String,
-        status_code: Option<i64>,
+        params: crate::methods::realtime::RejectRealtimeCallParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<serde_json::Value, crate::errors::SdkError> {
-        crate::methods::realtime::reject_realtime_call(&self.config, call_id, status_code, options)
+        crate::methods::realtime::reject_realtime_call(&self.config, params, options)
     }
     /// Create a Realtime client secret with an associated session configuration. Client secrets are short-lived tokens that can be passed to a client app, such as a web frontend or mobile client, which grants access to the Realtime API without leaking your main API key. You can configure a custom TTL for each client secret. You can also attach session configuration options to the client secret, which will be applied to any sessions created using that client secret, but these can also be overridden by the client connection. [Learn more about authentication with client secrets over WebRTC](https://developers.openai.com/api/docs/guides/realtime-webrtc). Returns the created client secret and the effective session object. The client secret is a string that looks like `ek_1234`.
     pub fn create_client_secret(
         &self,
-        expires_after: Option<RealtimeCreateClientSecretRequestExpiresAfter>,
-        session: Option<RealtimeCreateClientSecretRequestSession>,
+        params: crate::methods::realtime::CreateRealtimeClientSecretParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RealtimeCreateClientSecretResponse, crate::errors::SdkError> {
-        crate::methods::realtime::create_realtime_client_secret(
-            &self.config,
-            expires_after,
-            session,
-            options,
-        )
+        crate::methods::realtime::create_realtime_client_secret(&self.config, params, options)
     }
     /// Creates a Realtime session and an ephemeral API key for authenticating client-side connections. Configure the session with fields such as `modalities`, `instructions`, and `tools`; the key expires after one minute. Use the returned `client_secret.value` in client environments instead of a standard API token.
     ///
@@ -4450,14 +3616,12 @@ impl RealtimeNamespace {
     /// Create a Realtime translation client secret with an associated translation session configuration. Client secrets are short-lived tokens that can be passed to a client app, such as a web frontend or mobile client, which grants access to the Realtime Translation API without leaking your main API key. You can configure a custom TTL for each client secret. Returns the created client secret and the effective translation session object. The client secret is a string that looks like `ek_1234`.
     pub fn create_translation_client_secret(
         &self,
-        session: RealtimeTranslationSessionCreateRequest,
-        expires_after: Option<RealtimeTranslationClientSecretCreateRequestExpiresAfter>,
+        params: crate::methods::realtime::CreateRealtimeTranslationClientSecretParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<RealtimeTranslationClientSecretCreateResponse, crate::errors::SdkError> {
         crate::methods::realtime::create_realtime_translation_client_secret(
             &self.config,
-            session,
-            expires_after,
+            params,
             options,
         )
     }
@@ -4480,23 +3644,23 @@ impl ResponsesNamespace {
     /// Creates a model response. Provide [text](https://developers.openai.com/api/docs/guides/text) or [image](https://developers.openai.com/api/docs/guides/images-vision) inputs to generate [text](https://developers.openai.com/api/docs/guides/text) or [JSON](https://developers.openai.com/api/docs/guides/structured-outputs) outputs. Have the model call your own [custom code](https://developers.openai.com/api/docs/guides/function-calling) or use built-in [tools](https://developers.openai.com/api/docs/guides/tools) like [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or [file search](https://developers.openai.com/api/docs/guides/tools-file-search) to use your own data as input for the model's response.
     pub fn create(
         &self,
-        body: CreateResponse,
+        params: crate::methods::responses::CreateResponseParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Response, crate::errors::SdkError> {
-        crate::methods::responses::create_response(&self.config, body, options)
+        crate::methods::responses::create_response(&self.config, params, options)
     }
     /// Creates a model response from text, image, or file input and can produce text or JSON output. Provide `input` and `model`, and configure `tools` and `tool_choice` when you want the model to use custom code or built-in tools. Set `background` to run the response asynchronously or `stream` to receive generated events as they are produced.
     ///
     /// Creates a model response. Provide [text](https://developers.openai.com/api/docs/guides/text) or [image](https://developers.openai.com/api/docs/guides/images-vision) inputs to generate [text](https://developers.openai.com/api/docs/guides/text) or [JSON](https://developers.openai.com/api/docs/guides/structured-outputs) outputs. Have the model call your own [custom code](https://developers.openai.com/api/docs/guides/function-calling) or use built-in [tools](https://developers.openai.com/api/docs/guides/tools) like [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or [file search](https://developers.openai.com/api/docs/guides/tools-file-search) to use your own data as input for the model's response.
     pub fn create_stream(
         &self,
-        body: CreateResponse,
+        params: crate::methods::responses::CreateResponseStreamParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<
         impl Iterator<Item = Result<ResponseStreamEvent, crate::errors::SdkError>>,
         crate::errors::SdkError,
     > {
-        crate::methods::responses::create_response_stream(&self.config, body, options)
+        crate::methods::responses::create_response_stream(&self.config, params, options)
     }
     /// Retrieves a model response by its identifier. Use `include` to request additional response data, or set `stream` to receive server-sent events. When streaming, use `starting_after` to resume from an event sequence number.
     ///
@@ -4526,20 +3690,20 @@ impl ResponsesNamespace {
     /// Deletes a model response with the given ID.
     pub fn delete(
         &self,
-        response_id: String,
+        params: crate::methods::responses::DeleteResponseParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<crate::methods::responses::DeleteResponseResponse, crate::errors::SdkError> {
-        crate::methods::responses::delete_response(&self.config, response_id, options)
+        crate::methods::responses::delete_response(&self.config, params, options)
     }
     /// Cancels a model response that is running in the background. Use this operation when you need to stop background generation before it completes. Only responses created with `background` set to `true` can be cancelled.
     ///
     /// Cancels a model response with the given ID. Only responses created with the `background` parameter set to `true` can be cancelled. [Learn more](https://developers.openai.com/api/docs/guides/background).
     pub fn cancel(
         &self,
-        response_id: String,
+        params: crate::methods::responses::CancelResponseParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Response, crate::errors::SdkError> {
-        crate::methods::responses::cancel_response(&self.config, response_id, options)
+        crate::methods::responses::cancel_response(&self.config, params, options)
     }
     /// Lists the input items used to generate a model response. Use `limit` to set the page size and `order` to choose the item order. Use `after` with an item identifier to continue through the results; check `has_more` to determine whether additional items are available.
     ///
@@ -4592,30 +3756,23 @@ impl ResponsesNamespace {
     /// Creates a model response. Provide [text](https://developers.openai.com/api/docs/guides/text) or [image](https://developers.openai.com/api/docs/guides/images-vision) inputs to generate [text](https://developers.openai.com/api/docs/guides/text) or [JSON](https://developers.openai.com/api/docs/guides/structured-outputs) outputs. Have the model call your own [custom code](https://developers.openai.com/api/docs/guides/function-calling) or use built-in [tools](https://developers.openai.com/api/docs/guides/tools) like [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or [file search](https://developers.openai.com/api/docs/guides/tools-file-search) to use your own data as input for the model's response.
     pub fn beta_create(
         &self,
-        body: BetaCreateResponse,
-        openai_beta: Option<Vec<crate::methods::responses::BetaCreateResponseItemEnum>>,
+        params: crate::methods::responses::BetaCreateResponseParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<BetaResponse, crate::errors::SdkError> {
-        crate::methods::responses::beta_create_response(&self.config, body, openai_beta, options)
+        crate::methods::responses::beta_create_response(&self.config, params, options)
     }
     /// Creates a model response from text, image, or file input, with optional tools and output configuration. Use `input`, `model`, and `tools` to control what the model processes and how it generates the response. Set `background` to true if you need to cancel the response later.
     ///
     /// Creates a model response. Provide [text](https://developers.openai.com/api/docs/guides/text) or [image](https://developers.openai.com/api/docs/guides/images-vision) inputs to generate [text](https://developers.openai.com/api/docs/guides/text) or [JSON](https://developers.openai.com/api/docs/guides/structured-outputs) outputs. Have the model call your own [custom code](https://developers.openai.com/api/docs/guides/function-calling) or use built-in [tools](https://developers.openai.com/api/docs/guides/tools) like [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or [file search](https://developers.openai.com/api/docs/guides/tools-file-search) to use your own data as input for the model's response.
     pub fn beta_create_stream(
         &self,
-        body: BetaCreateResponse,
-        openai_beta: Option<Vec<crate::methods::responses::BetaCreateResponseItemEnum>>,
+        params: crate::methods::responses::BetaCreateResponseStreamParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<
         impl Iterator<Item = Result<BetaResponseStreamEvent, crate::errors::SdkError>>,
         crate::errors::SdkError,
     > {
-        crate::methods::responses::beta_create_response_stream(
-            &self.config,
-            body,
-            openai_beta,
-            options,
-        )
+        crate::methods::responses::beta_create_response_stream(&self.config, params, options)
     }
     /// Retrieves a model response by its identifier. Use `include` to request additional response data, or set `stream` to receive response events as server-sent events. Use `starting_after` to begin streaming after a particular event sequence number.
     ///
@@ -4645,33 +3802,21 @@ impl ResponsesNamespace {
     /// Deletes a model response with the given ID.
     pub fn beta_delete(
         &self,
-        response_id: String,
-        openai_beta: Option<Vec<crate::methods::responses::BetaDeleteResponseItemEnum>>,
+        params: crate::methods::responses::BetaDeleteResponseParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<crate::methods::responses::BetaDeleteResponseResponse, crate::errors::SdkError>
     {
-        crate::methods::responses::beta_delete_response(
-            &self.config,
-            response_id,
-            openai_beta,
-            options,
-        )
+        crate::methods::responses::beta_delete_response(&self.config, params, options)
     }
     /// Cancels a background model response by its identifier. Use this operation only for responses created with `background` set to true; responses created without background processing cannot be cancelled. The response includes the model response object and its current status.
     ///
     /// Cancels a model response with the given ID. Only responses created with the `background` parameter set to `true` can be cancelled. [Learn more](https://developers.openai.com/api/docs/guides/background).
     pub fn beta_cancel(
         &self,
-        response_id: String,
-        openai_beta: Option<Vec<crate::methods::responses::BetaCancelResponseItemEnum>>,
+        params: crate::methods::responses::BetaCancelResponseParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<BetaResponse, crate::errors::SdkError> {
-        crate::methods::responses::beta_cancel_response(
-            &self.config,
-            response_id,
-            openai_beta,
-            options,
-        )
+        crate::methods::responses::beta_cancel_response(&self.config, params, options)
     }
     /// Compacts a conversation and returns a compacted response object. Provide the required `model` and conversation content through `input` or `previous_response_id` to produce a compacted representation. Use the result to manage the context window in a long-running conversation.
     ///
@@ -4748,33 +3893,30 @@ impl UploadsNamespace {
     /// Cancels the Upload. No Parts may be added after an Upload is cancelled. Returns the Upload object with status `cancelled`.
     pub fn cancel(
         &self,
-        upload_id: String,
+        params: crate::methods::uploads::CancelUploadParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Upload, crate::errors::SdkError> {
-        crate::methods::uploads::cancel_upload(&self.config, upload_id, options)
+        crate::methods::uploads::cancel_upload(&self.config, params, options)
     }
     /// Completes an upload by assembling its parts into a file that can be used on the platform. Supply the ordered part IDs and optionally an MD5 checksum; the total uploaded bytes must match the byte count specified when creating the upload. No more parts can be added after completion.
     ///
     /// Completes the [Upload](https://developers.openai.com/api/reference/resources/uploads). Within the returned Upload object, there is a nested [File](https://developers.openai.com/api/reference/resources/files) object that is ready to use in the rest of the platform. You can specify the order of the Parts by passing in an ordered list of the Part IDs. The number of bytes uploaded upon completion must match the number of bytes initially specified when creating the Upload object. No Parts may be added after an Upload is completed. Returns the Upload object with status `completed`, including an additional `file` property containing the created usable File object.
     pub fn complete(
         &self,
-        upload_id: String,
-        part_ids: Vec<String>,
-        md5: Option<String>,
+        params: crate::methods::uploads::CompleteUploadParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Upload, crate::errors::SdkError> {
-        crate::methods::uploads::complete_upload(&self.config, upload_id, part_ids, md5, options)
+        crate::methods::uploads::complete_upload(&self.config, params, options)
     }
     /// Adds a chunk of file bytes as a part of an existing upload. Send the chunk in the `data` field; each part can be at most 64 MB, and the upload can contain up to 8 GB in total. You can add parts in parallel and specify their order when you complete the upload.
     ///
     /// Adds a [Part](https://developers.openai.com/api/reference/resources/uploads/subresources/parts) to an [Upload](https://developers.openai.com/api/reference/resources/uploads) object. A Part represents a chunk of bytes from the file you are trying to upload. Each Part can be at most 64 MB, and you can add Parts until you hit the Upload maximum of 8 GB. It is possible to add multiple Parts in parallel. You can decide the intended order of the Parts when you [complete the Upload](https://developers.openai.com/api/reference/resources/uploads/methods/complete).
     pub fn add_part(
         &self,
-        upload_id: String,
-        data: crate::client::UploadFile,
+        params: crate::methods::uploads::AddUploadPartParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<UploadPart, crate::errors::SdkError> {
-        crate::methods::uploads::add_upload_part(&self.config, upload_id, data, options)
+        crate::methods::uploads::add_upload_part(&self.config, params, options)
     }
 }
 
@@ -4795,39 +3937,23 @@ impl VectorStoresNamespace {
     /// Returns a list of vector stores.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        order: Option<crate::methods::vector_stores::ListVectorStoresEnum>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::vector_stores::ListVectorStoresParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ListVectorStoresResponse, crate::errors::SdkError> {
-        crate::methods::vector_stores::list_vector_stores(
-            &self.config,
-            limit,
-            order,
-            after,
-            before,
-            options,
-        )
+        crate::methods::vector_stores::list_vector_stores(&self.config, params, options)
     }
     /// Lists vector stores, which are collections of processed files that you can use with the `file_search` tool. Use the cursor parameters to move forward or backward through the results, and set `order` to control sorting by creation time.
     ///
     /// Returns a list of vector stores.
     pub fn list_paginated(
         &self,
-        limit: Option<i64>,
-        order: Option<crate::methods::vector_stores::ListVectorStoresEnum>,
-        after: Option<String>,
-        before: Option<String>,
+        params: crate::methods::vector_stores::ListVectorStoresParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&VectorStoreObject) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::vector_stores::list_vector_stores_paginated(
             &self.config,
-            limit,
-            order,
-            after,
-            before,
+            params,
             options,
             yield_fn,
         )
@@ -4847,40 +3973,30 @@ impl VectorStoresNamespace {
     /// Retrieves a vector store.
     pub fn get(
         &self,
-        vector_store_id: String,
+        params: crate::methods::vector_stores::GetVectorStoreParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VectorStoreObject, crate::errors::SdkError> {
-        crate::methods::vector_stores::get_vector_store(&self.config, vector_store_id, options)
+        crate::methods::vector_stores::get_vector_store(&self.config, params, options)
     }
     /// Updates a vector store's name, expiration policy, or metadata. Provide only the properties you want to change; omitted properties are not part of the update.
     ///
     /// Modifies a vector store.
     pub fn modify(
         &self,
-        vector_store_id: String,
-        name: Option<Option<String>>,
-        expires_after: Option<UpdateVectorStoreRequestExpiresAfter>,
-        metadata: Option<Option<Metadata>>,
+        params: crate::methods::vector_stores::ModifyVectorStoreParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VectorStoreObject, crate::errors::SdkError> {
-        crate::methods::vector_stores::modify_vector_store(
-            &self.config,
-            vector_store_id,
-            name,
-            expires_after,
-            metadata,
-            options,
-        )
+        crate::methods::vector_stores::modify_vector_store(&self.config, params, options)
     }
     /// Deletes a vector store. Use this operation when you no longer need the store or its associated collection of processed files.
     ///
     /// Delete a vector store.
     pub fn delete(
         &self,
-        vector_store_id: String,
+        params: crate::methods::vector_stores::DeleteVectorStoreParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeleteVectorStoreResponse, crate::errors::SdkError> {
-        crate::methods::vector_stores::delete_vector_store(&self.config, vector_store_id, options)
+        crate::methods::vector_stores::delete_vector_store(&self.config, params, options)
     }
     /// Creates a batch to attach files to a vector store for processing. Provide `file_ids` or `files`, and optionally set a shared chunking strategy or shared attributes when using `file_ids`. Use per-file settings in `files` when different files need different attributes or chunking strategies.
     ///
@@ -4897,32 +4013,20 @@ impl VectorStoresNamespace {
     /// Retrieves a vector store file batch.
     pub fn get_file_batch(
         &self,
-        vector_store_id: String,
-        batch_id: String,
+        params: crate::methods::vector_stores::GetVectorStoreFileBatchParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VectorStoreFileBatchObject, crate::errors::SdkError> {
-        crate::methods::vector_stores::get_vector_store_file_batch(
-            &self.config,
-            vector_store_id,
-            batch_id,
-            options,
-        )
+        crate::methods::vector_stores::get_vector_store_file_batch(&self.config, params, options)
     }
     /// Attempts to stop processing files in a vector store file batch as soon as possible. Check the returned batch status to see whether processing has been cancelled.
     ///
     /// Cancel a vector store file batch. This attempts to cancel the processing of files in this batch as soon as possible.
     pub fn cancel_file_batch(
         &self,
-        vector_store_id: String,
-        batch_id: String,
+        params: crate::methods::vector_stores::CancelVectorStoreFileBatchParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VectorStoreFileBatchObject, crate::errors::SdkError> {
-        crate::methods::vector_stores::cancel_vector_store_file_batch(
-            &self.config,
-            vector_store_id,
-            batch_id,
-            options,
-        )
+        crate::methods::vector_stores::cancel_vector_store_file_batch(&self.config, params, options)
     }
     /// Lists the files in a vector store file batch. Use `filter` to limit results by processing status and the cursor parameters to navigate through the batch's files.
     ///
@@ -4985,68 +4089,42 @@ impl VectorStoresNamespace {
     /// Create a vector store file by attaching a [File](https://developers.openai.com/api/reference/resources/files) to a [vector store](https://developers.openai.com/api/reference/resources/vector_stores).
     pub fn create_file(
         &self,
-        vector_store_id: String,
-        file_id: String,
-        chunking_strategy: Option<ChunkingStrategyRequestParam>,
-        attributes: Option<Option<VectorStoreFileAttributes>>,
+        params: crate::methods::vector_stores::CreateVectorStoreFileParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VectorStoreFileObject, crate::errors::SdkError> {
-        crate::methods::vector_stores::create_vector_store_file(
-            &self.config,
-            vector_store_id,
-            file_id,
-            chunking_strategy,
-            attributes,
-            options,
-        )
+        crate::methods::vector_stores::create_vector_store_file(&self.config, params, options)
     }
     /// Retrieves a file attachment and its processing details from a vector store. Use `vector_store_id` and `file_id` to identify the attachment whose status and configuration you need.
     ///
     /// Retrieves a vector store file.
     pub fn get_file(
         &self,
-        vector_store_id: String,
-        file_id: String,
+        params: crate::methods::vector_stores::GetVectorStoreFileParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VectorStoreFileObject, crate::errors::SdkError> {
-        crate::methods::vector_stores::get_vector_store_file(
-            &self.config,
-            vector_store_id,
-            file_id,
-            options,
-        )
+        crate::methods::vector_stores::get_vector_store_file(&self.config, params, options)
     }
     /// Deletes a file attachment from a vector store without deleting the underlying file. Use the file deletion operation separately if you also need to delete the file itself.
     ///
     /// Delete a vector store file. This will remove the file from the vector store but the file itself will not be deleted. To delete the file, use the [delete file](https://developers.openai.com/api/reference/resources/files/methods/delete) endpoint.
     pub fn delete_file(
         &self,
-        vector_store_id: String,
-        file_id: String,
+        params: crate::methods::vector_stores::DeleteVectorStoreFileParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeleteVectorStoreFileResponse, crate::errors::SdkError> {
-        crate::methods::vector_stores::delete_vector_store_file(
-            &self.config,
-            vector_store_id,
-            file_id,
-            options,
-        )
+        crate::methods::vector_stores::delete_vector_store_file(&self.config, params, options)
     }
     /// Updates the attributes attached to a file in a vector store. Supply `attributes` to replace the file's attribute set, or use `null` to clear it.
     ///
     /// Update attributes on a vector store file.
     pub fn update_file_attributes(
         &self,
-        vector_store_id: String,
-        file_id: String,
-        attributes: Option<VectorStoreFileAttributes>,
+        params: crate::methods::vector_stores::UpdateVectorStoreFileAttributesParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VectorStoreFileObject, crate::errors::SdkError> {
         crate::methods::vector_stores::update_vector_store_file_attributes(
             &self.config,
-            vector_store_id,
-            file_id,
-            attributes,
+            params,
             options,
         )
     }
@@ -5055,14 +4133,12 @@ impl VectorStoresNamespace {
     /// Retrieve the parsed contents of a vector store file.
     pub fn retrieve_file_content(
         &self,
-        vector_store_id: String,
-        file_id: String,
+        params: crate::methods::vector_stores::RetrieveVectorStoreFileContentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VectorStoreFileContentResponse, crate::errors::SdkError> {
         crate::methods::vector_stores::retrieve_vector_store_file_content(
             &self.config,
-            vector_store_id,
-            file_id,
+            params,
             options,
         )
     }
@@ -5095,18 +4171,18 @@ impl SafetyNamespace {
     /// Get a safety case by ID.
     pub fn retrieve_case(
         &self,
-        id: String,
+        params: crate::methods::safety::RetrieveSafetyCaseParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SafetyCaseResource, crate::errors::SdkError> {
-        crate::methods::safety::retrieve_safety_case(&self.config, id, options)
+        crate::methods::safety::retrieve_safety_case(&self.config, params, options)
     }
     /// Get a safety alert belonging to the authenticated API project.
     pub fn retrieve_alert(
         &self,
-        id: String,
+        params: crate::methods::safety::RetrieveSafetyAlertParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SafetyAlertResource, crate::errors::SdkError> {
-        crate::methods::safety::retrieve_safety_alert(&self.config, id, options)
+        crate::methods::safety::retrieve_safety_alert(&self.config, params, options)
     }
 }
 
@@ -5127,39 +4203,23 @@ impl ExternalStorageNamespace {
     /// List the organization's customer-managed external storage configurations.
     pub fn list(
         &self,
-        project_id: Option<Option<String>>,
-        after: Option<Option<String>>,
-        order: Option<ExternalStorageOrder>,
-        limit: Option<i64>,
+        params: crate::methods::external_storage::ListExternalStorageParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ExternalStorageListResource, crate::errors::SdkError> {
-        crate::methods::external_storage::list_external_storage(
-            &self.config,
-            project_id,
-            after,
-            order,
-            limit,
-            options,
-        )
+        crate::methods::external_storage::list_external_storage(&self.config, params, options)
     }
     /// Lists the organization's customer-managed external storage configurations. Use `project_id` to scope the results to a project, and `after` and `limit` to navigate the list. Set `order` to control the sort direction.
     ///
     /// List the organization's customer-managed external storage configurations.
     pub fn list_paginated(
         &self,
-        project_id: Option<Option<String>>,
-        after: Option<Option<String>>,
-        order: Option<ExternalStorageOrder>,
-        limit: Option<i64>,
+        params: crate::methods::external_storage::ListExternalStorageParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&ExternalStorageResponse) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::external_storage::list_external_storage_paginated(
             &self.config,
-            project_id,
-            after,
-            order,
-            limit,
+            params,
             options,
             yield_fn,
         )
@@ -5169,58 +4229,40 @@ impl ExternalStorageNamespace {
     /// Register one customer-managed external storage configuration.
     pub fn create(
         &self,
-        project_id: String,
-        provider: CreateExternalStorageBodyProvider,
+        params: crate::methods::external_storage::CreateExternalStorageParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ExternalStorageResponse, crate::errors::SdkError> {
-        crate::methods::external_storage::create_external_storage(
-            &self.config,
-            project_id,
-            provider,
-            options,
-        )
+        crate::methods::external_storage::create_external_storage(&self.config, params, options)
     }
     /// Retrieves one customer-managed external storage configuration. Use `external_storage_id` to identify the configuration you want to inspect.
     ///
     /// Get one customer-managed external storage configuration.
     pub fn retrieve(
         &self,
-        external_storage_id: String,
+        params: crate::methods::external_storage::RetrieveExternalStorageParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ExternalStorageResponse, crate::errors::SdkError> {
-        crate::methods::external_storage::retrieve_external_storage(
-            &self.config,
-            external_storage_id,
-            options,
-        )
+        crate::methods::external_storage::retrieve_external_storage(&self.config, params, options)
     }
     /// Deletes a customer-managed external storage configuration. Use `external_storage_id` to identify the configuration to disconnect. Deleting a project's last configuration restores organization-default retention if customer-managed retention was active; cloud storage is unchanged.
     ///
     /// Disconnect a customer-managed external storage configuration. Removing the project's last configuration restores organization-default retention if customer-managed retention was active. Repeating a deletion also completes any interrupted retention update. Cloud storage is unchanged.
     pub fn delete(
         &self,
-        external_storage_id: String,
+        params: crate::methods::external_storage::DeleteExternalStorageParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ExternalStorageDeletedResource, crate::errors::SdkError> {
-        crate::methods::external_storage::delete_external_storage(
-            &self.config,
-            external_storage_id,
-            options,
-        )
+        crate::methods::external_storage::delete_external_storage(&self.config, params, options)
     }
     /// Validates a customer-managed external storage configuration. Use `external_storage_id` to select the configuration whose provider setup you want to validate. The response returns the configuration and its status.
     ///
     /// Validate one customer-managed external storage configuration.
     pub fn validate(
         &self,
-        external_storage_id: String,
+        params: crate::methods::external_storage::ValidateExternalStorageParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ExternalStorageResponse, crate::errors::SdkError> {
-        crate::methods::external_storage::validate_external_storage(
-            &self.config,
-            external_storage_id,
-            options,
-        )
+        crate::methods::external_storage::validate_external_storage(&self.config, params, options)
     }
 }
 
@@ -5248,16 +4290,12 @@ impl SpendLimitsNamespace {
     /// Create or replace the organization's hard spend limit.
     pub fn update_organization(
         &self,
-        threshold_amount: i64,
-        currency: UpdateOrganizationSpendLimitBodyCurrencyEnum,
-        interval: UpdateOrganizationSpendLimitBodyIntervalEnum,
+        params: crate::methods::spend_limits::UpdateSpendLimitsOrganizationParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<OrganizationSpendLimitResource, crate::errors::SdkError> {
         crate::methods::spend_limits::update_spend_limits_organization(
             &self.config,
-            threshold_amount,
-            currency,
-            interval,
+            params,
             options,
         )
     }
@@ -5275,44 +4313,30 @@ impl SpendLimitsNamespace {
     /// Get a project's hard spend limit.
     pub fn retrieve_project(
         &self,
-        project_id: String,
+        params: crate::methods::spend_limits::RetrieveSpendLimitsProjectParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectSpendLimitResource, crate::errors::SdkError> {
-        crate::methods::spend_limits::retrieve_spend_limits_project(
-            &self.config,
-            project_id,
-            options,
-        )
+        crate::methods::spend_limits::retrieve_spend_limits_project(&self.config, params, options)
     }
     /// Deletes a project's hard spend limit. Use `project_id` to identify the project whose configured spending threshold you want to remove. The response confirms whether the limit was deleted.
     ///
     /// Delete a project's hard spend limit.
     pub fn delete_project(
         &self,
-        project_id: String,
+        params: crate::methods::spend_limits::DeleteSpendLimitsProjectParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectSpendLimitDeletedResource, crate::errors::SdkError> {
-        crate::methods::spend_limits::delete_spend_limits_project(&self.config, project_id, options)
+        crate::methods::spend_limits::delete_spend_limits_project(&self.config, params, options)
     }
     /// Creates or replaces a project's hard spend limit. Supply `threshold_amount`, `currency`, and `interval` to set the spending threshold and the period used to evaluate it. The response includes the resulting limit and its enforcement state.
     ///
     /// Create or replace a project's hard spend limit.
-    pub fn update_project(
+    pub fn update(
         &self,
-        project_id: String,
-        threshold_amount: i64,
-        currency: UpdateProjectSpendLimitBodyCurrencyEnum,
-        interval: UpdateProjectSpendLimitBodyIntervalEnum,
+        params: crate::methods::spend_limits::UpdateProjectSpendLimitParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProjectSpendLimitResource, crate::errors::SdkError> {
-        crate::methods::spend_limits::update_spend_limits_project(
-            &self.config,
-            project_id,
-            threshold_amount,
-            currency,
-            interval,
-            options,
-        )
+        crate::methods::spend_limits::update_project_spend_limit(&self.config, params, options)
     }
 }
 
@@ -5331,12 +4355,12 @@ impl ContentProvenanceChecksNamespace {
     /// Check whether an image or audio file contains known OpenAI provenance signals. [Learn more about content provenance](https://developers.openai.com/api/docs/guides/content-provenance). If `not_detected`, it means the tool did not find supported signals in the uploaded file. The content could still have been generated by OpenAI if the metadata was stripped or has evidence of tampering, the watermark was degraded, it comes from a legacy generation model, or it was created before provenance signals were available. Content could also still be AI-generated by another company's model, which the tool currently does not detect.
     pub fn create(
         &self,
-        file: crate::client::UploadFile,
+        params: crate::methods::content_provenance_checks::CreateContentProvenanceChecksParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ProvenanceResource, crate::errors::SdkError> {
         crate::methods::content_provenance_checks::create_content_provenance_checks(
             &self.config,
-            file,
+            params,
             options,
         )
     }
@@ -5361,11 +4385,10 @@ impl VideosNamespace {
     /// This operation is deprecated and may be removed in a future release.
     pub fn create(
         &self,
-        body: Option<crate::methods::videos::CreateVideoBody>,
-        content_type: Option<String>,
+        params: crate::methods::videos::CreateVideoParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VideoResource, crate::errors::SdkError> {
-        crate::methods::videos::create_video(&self.config, body, content_type, options)
+        crate::methods::videos::create_video(&self.config, params, options)
     }
     /// List recently generated videos for the current project.
     ///
@@ -5374,12 +4397,10 @@ impl VideosNamespace {
     /// This operation is deprecated and may be removed in a future release.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        order: Option<OrderEnum>,
-        after: Option<String>,
+        params: crate::methods::videos::ListVideosParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VideoListResource, crate::errors::SdkError> {
-        crate::methods::videos::list_videos(&self.config, limit, order, after, options)
+        crate::methods::videos::list_videos(&self.config, params, options)
     }
     /// List recently generated videos for the current project.
     ///
@@ -5388,20 +4409,11 @@ impl VideosNamespace {
     /// This operation is deprecated and may be removed in a future release.
     pub fn list_paginated(
         &self,
-        limit: Option<i64>,
-        order: Option<OrderEnum>,
-        after: Option<String>,
+        params: crate::methods::videos::ListVideosParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&VideoResource) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
-        crate::methods::videos::list_videos_paginated(
-            &self.config,
-            limit,
-            order,
-            after,
-            options,
-            yield_fn,
-        )
+        crate::methods::videos::list_videos_paginated(&self.config, params, options, yield_fn)
     }
     /// Creates a character from an uploaded video. Send the video in `video` and provide a `name` of 1 to 80 characters. This operation is closing down and will be removed on a date not specified in the API definition.
     ///
@@ -5412,11 +4424,10 @@ impl VideosNamespace {
     /// This operation is deprecated and may be removed in a future release.
     pub fn create_character(
         &self,
-        video: crate::client::UploadFile,
-        name: String,
+        params: crate::methods::videos::CreateVideoCharacterParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VideoCharacterResource, crate::errors::SdkError> {
-        crate::methods::videos::create_video_character(&self.config, video, name, options)
+        crate::methods::videos::create_video_character(&self.config, params, options)
     }
     /// Retrieves metadata for a video character. Use `character_id` to identify the character whose details you need. This operation is closing down and will be removed on a date not specified in the API definition.
     ///
@@ -5427,10 +4438,10 @@ impl VideosNamespace {
     /// This operation is deprecated and may be removed in a future release.
     pub fn get_character(
         &self,
-        character_id: String,
+        params: crate::methods::videos::GetVideoCharacterParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VideoCharacterResource, crate::errors::SdkError> {
-        crate::methods::videos::get_video_character(&self.config, character_id, options)
+        crate::methods::videos::get_video_character(&self.config, params, options)
     }
     /// Create a new video generation job by editing a source video or existing generated video.
     ///
@@ -5439,11 +4450,10 @@ impl VideosNamespace {
     /// This operation is deprecated and may be removed in a future release.
     pub fn create_edit(
         &self,
-        body: Option<crate::methods::videos::CreateVideoEditBody>,
-        content_type: Option<String>,
+        params: crate::methods::videos::CreateVideoEditParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VideoResource, crate::errors::SdkError> {
-        crate::methods::videos::create_video_edit(&self.config, body, content_type, options)
+        crate::methods::videos::create_video_edit(&self.config, params, options)
     }
     /// Creates an extension of a completed video and returns a video generation job. Provide the source video, an updated `prompt`, and `seconds` set to an accepted duration. This operation is closing down and will be removed on a date not specified in the API definition.
     ///
@@ -5454,11 +4464,10 @@ impl VideosNamespace {
     /// This operation is deprecated and may be removed in a future release.
     pub fn create_extend(
         &self,
-        body: Option<crate::methods::videos::CreateVideoExtendBody>,
-        content_type: Option<String>,
+        params: crate::methods::videos::CreateVideoExtendParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VideoResource, crate::errors::SdkError> {
-        crate::methods::videos::create_video_extend(&self.config, body, content_type, options)
+        crate::methods::videos::create_video_extend(&self.config, params, options)
     }
     /// Retrieves the latest metadata for a generated video. Use `video_id` to identify the video job and check its current status, progress, and other job details.
     ///
@@ -5469,10 +4478,10 @@ impl VideosNamespace {
     /// This operation is deprecated and may be removed in a future release.
     pub fn get(
         &self,
-        video_id: String,
+        params: crate::methods::videos::GetVideoParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VideoResource, crate::errors::SdkError> {
-        crate::methods::videos::get_video(&self.config, video_id, options)
+        crate::methods::videos::get_video(&self.config, params, options)
     }
     /// Permanently delete a completed or failed video and its stored assets.
     ///
@@ -5481,10 +4490,10 @@ impl VideosNamespace {
     /// This operation is deprecated and may be removed in a future release.
     pub fn delete(
         &self,
-        video_id: String,
+        params: crate::methods::videos::DeleteVideoParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeletedVideoResource, crate::errors::SdkError> {
-        crate::methods::videos::delete_video(&self.config, video_id, options)
+        crate::methods::videos::delete_video(&self.config, params, options)
     }
     /// Download the generated video bytes or a derived preview asset. Streams the rendered video content for the specified video job.
     ///
@@ -5493,11 +4502,10 @@ impl VideosNamespace {
     /// This operation is deprecated and may be removed in a future release.
     pub fn retrieve_content(
         &self,
-        video_id: String,
-        variant: Option<VideoContentVariant>,
+        params: crate::methods::videos::RetrieveVideoContentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Vec<u8>, crate::errors::SdkError> {
-        crate::methods::videos::retrieve_video_content(&self.config, video_id, variant, options)
+        crate::methods::videos::retrieve_video_content(&self.config, params, options)
     }
     /// Create a remix of a completed video using a refreshed prompt.
     ///
@@ -5506,18 +4514,10 @@ impl VideosNamespace {
     /// This operation is deprecated and may be removed in a future release.
     pub fn create_remix(
         &self,
-        video_id: String,
-        prompt: String,
-        content_type: Option<String>,
+        params: crate::methods::videos::CreateVideoRemixParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VideoResource, crate::errors::SdkError> {
-        crate::methods::videos::create_video_remix(
-            &self.config,
-            video_id,
-            prompt,
-            content_type,
-            options,
-        )
+        crate::methods::videos::create_video_remix(&self.config, params, options)
     }
 }
 
@@ -5538,148 +4538,104 @@ impl SkillsNamespace {
     /// Create a new skill.
     pub fn create(
         &self,
-        files: Vec<crate::client::Base64Bytes>,
-        content_type: Option<String>,
+        params: crate::methods::skills::CreateSkillParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SkillResource, crate::errors::SdkError> {
-        crate::methods::skills::create_skill(&self.config, files, content_type, options)
+        crate::methods::skills::create_skill(&self.config, params, options)
     }
     /// Lists skills available in the current project. Use `limit` to control the number of results, `order` to sort them, and `after` to continue from a previous result.
     ///
     /// List all skills for the current project.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        order: Option<OrderEnum>,
-        after: Option<String>,
+        params: crate::methods::skills::ListSkillsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SkillListResource, crate::errors::SdkError> {
-        crate::methods::skills::list_skills(&self.config, limit, order, after, options)
+        crate::methods::skills::list_skills(&self.config, params, options)
     }
     /// Lists skills available in the current project. Use `limit` to control the number of results, `order` to sort them, and `after` to continue from a previous result.
     ///
     /// List all skills for the current project.
     pub fn list_paginated(
         &self,
-        limit: Option<i64>,
-        order: Option<OrderEnum>,
-        after: Option<String>,
+        params: crate::methods::skills::ListSkillsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&SkillResource) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
-        crate::methods::skills::list_skills_paginated(
-            &self.config,
-            limit,
-            order,
-            after,
-            options,
-            yield_fn,
-        )
+        crate::methods::skills::list_skills_paginated(&self.config, params, options, yield_fn)
     }
     /// Deletes a skill by its identifier. Use `skill_id` to select the skill to remove. The response confirms whether the skill was deleted and includes its identifier.
     ///
     /// Delete a skill by its ID.
     pub fn delete(
         &self,
-        skill_id: String,
+        params: crate::methods::skills::DeleteSkillParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeletedSkillResource, crate::errors::SdkError> {
-        crate::methods::skills::delete_skill(&self.config, skill_id, options)
+        crate::methods::skills::delete_skill(&self.config, params, options)
     }
     /// Retrieves a skill by its identifier. Use `skill_id` to select the skill whose details you need.
     ///
     /// Get a skill by its ID.
     pub fn get(
         &self,
-        skill_id: String,
+        params: crate::methods::skills::GetSkillParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SkillResource, crate::errors::SdkError> {
-        crate::methods::skills::get_skill(&self.config, skill_id, options)
+        crate::methods::skills::get_skill(&self.config, params, options)
     }
     /// Updates the default version pointer for a skill. Provide `default_version` to select the version that should be the skill's default. The response contains the updated skill details.
     ///
     /// Update the default version pointer for a skill.
     pub fn update_default_version(
         &self,
-        skill_id: String,
-        default_version: String,
+        params: crate::methods::skills::UpdateSkillDefaultVersionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SkillResource, crate::errors::SdkError> {
-        crate::methods::skills::update_skill_default_version(
-            &self.config,
-            skill_id,
-            default_version,
-            options,
-        )
+        crate::methods::skills::update_skill_default_version(&self.config, params, options)
     }
     /// Retrieves the ZIP bundle for a skill. Use `skill_id` to select the skill whose files you want to download.
     ///
     /// Download a skill zip bundle by its ID.
     pub fn get_content(
         &self,
-        skill_id: String,
+        params: crate::methods::skills::GetSkillContentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Vec<u8>, crate::errors::SdkError> {
-        crate::methods::skills::get_skill_content(&self.config, skill_id, options)
+        crate::methods::skills::get_skill_content(&self.config, params, options)
     }
     /// Creates a new immutable version of a skill from uploaded files or a ZIP archive. Include `files` with the version contents and optionally set `default` to make the new version the default. The response contains the created version details.
     ///
     /// Create a new immutable skill version.
     pub fn create_version(
         &self,
-        skill_id: String,
-        files: Vec<crate::client::Base64Bytes>,
-        default: Option<bool>,
-        content_type: Option<String>,
+        params: crate::methods::skills::CreateSkillVersionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SkillVersionResource, crate::errors::SdkError> {
-        crate::methods::skills::create_skill_version(
-            &self.config,
-            skill_id,
-            files,
-            default,
-            content_type,
-            options,
-        )
+        crate::methods::skills::create_skill_version(&self.config, params, options)
     }
     /// Lists versions for a skill. Use `after` to continue from a skill version ID, `limit` to control the number of results, and `order` to sort by version number.
     ///
     /// List skill versions for a skill.
     pub fn list_versions(
         &self,
-        skill_id: String,
-        limit: Option<i64>,
-        order: Option<OrderEnum>,
-        after: Option<String>,
+        params: crate::methods::skills::ListSkillVersionsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SkillVersionListResource, crate::errors::SdkError> {
-        crate::methods::skills::list_skill_versions(
-            &self.config,
-            skill_id,
-            limit,
-            order,
-            after,
-            options,
-        )
+        crate::methods::skills::list_skill_versions(&self.config, params, options)
     }
     /// Lists versions for a skill. Use `after` to continue from a skill version ID, `limit` to control the number of results, and `order` to sort by version number.
     ///
     /// List skill versions for a skill.
     pub fn list_versions_paginated(
         &self,
-        skill_id: String,
-        limit: Option<i64>,
-        order: Option<OrderEnum>,
-        after: Option<String>,
+        params: crate::methods::skills::ListSkillVersionsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&SkillVersionResource) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::skills::list_skill_versions_paginated(
             &self.config,
-            skill_id,
-            limit,
-            order,
-            after,
+            params,
             options,
             yield_fn,
         )
@@ -5689,33 +4645,30 @@ impl SkillsNamespace {
     /// Get a specific skill version.
     pub fn get_version(
         &self,
-        skill_id: String,
-        version: String,
+        params: crate::methods::skills::GetSkillVersionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SkillVersionResource, crate::errors::SdkError> {
-        crate::methods::skills::get_skill_version(&self.config, skill_id, version, options)
+        crate::methods::skills::get_skill_version(&self.config, params, options)
     }
     /// Deletes a version of a skill. Use `skill_id` and `version` to select the version to remove. You cannot delete the default version while other versions remain.
     ///
     /// Delete a skill version.
     pub fn delete_version(
         &self,
-        skill_id: String,
-        version: String,
+        params: crate::methods::skills::DeleteSkillVersionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeletedSkillVersionResource, crate::errors::SdkError> {
-        crate::methods::skills::delete_skill_version(&self.config, skill_id, version, options)
+        crate::methods::skills::delete_skill_version(&self.config, params, options)
     }
     /// Retrieves the ZIP bundle for a specific skill version. Use `skill_id` and `version` to identify the skill and version whose content you need. The response provides the bundle as a downloadable binary file.
     ///
     /// Download a skill version zip bundle.
     pub fn get_version_content(
         &self,
-        skill_id: String,
-        version: String,
+        params: crate::methods::skills::GetSkillVersionContentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Vec<u8>, crate::errors::SdkError> {
-        crate::methods::skills::get_skill_version_content(&self.config, skill_id, version, options)
+        crate::methods::skills::get_skill_version_content(&self.config, params, options)
     }
 }
 
@@ -5734,10 +4687,10 @@ impl ChatkitNamespace {
     /// Cancel an active ChatKit session and return its most recent metadata. Cancelling prevents new requests from using the issued client secret.
     pub fn cancel_session(
         &self,
-        session_id: String,
+        params: crate::methods::chatkit::CancelChatkitSessionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ChatSessionResource, crate::errors::SdkError> {
-        crate::methods::chatkit::cancel_chatkit_session(&self.config, session_id, options)
+        crate::methods::chatkit::cancel_chatkit_session(&self.config, params, options)
     }
     /// Creates a ChatKit session powered by a specified workflow. Supply `workflow` with its required `id` and a non-empty `user` identifier; optionally configure expiration, rate limits, tracing, and ChatKit features. The response includes the session's client secret, expiration time, and resolved configuration.
     ///
@@ -5780,18 +4733,18 @@ impl ChatkitNamespace {
     /// Retrieve a ChatKit thread by its identifier.
     pub fn retrieve_thread(
         &self,
-        thread_id: String,
+        params: crate::methods::chatkit::RetrieveChatkitThreadParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<ThreadResource, crate::errors::SdkError> {
-        crate::methods::chatkit::retrieve_chatkit_thread(&self.config, thread_id, options)
+        crate::methods::chatkit::retrieve_chatkit_thread(&self.config, params, options)
     }
     /// Delete a ChatKit thread along with its items and stored attachments.
     pub fn delete_thread(
         &self,
-        thread_id: String,
+        params: crate::methods::chatkit::DeleteChatkitThreadParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeletedThreadResource, crate::errors::SdkError> {
-        crate::methods::chatkit::delete_chatkit_thread(&self.config, thread_id, options)
+        crate::methods::chatkit::delete_chatkit_thread(&self.config, params, options)
     }
     /// List ChatKit threads with optional pagination and user filters.
     pub fn list_threads(
@@ -5854,37 +4807,21 @@ impl AgentsNamespace {
     /// Lists OpenAI-hosted environments owned by the authenticated principal. Requires access to the prewarming beta.
     pub fn list_environments(
         &self,
-        limit: Option<i64>,
-        order: Option<ListOrderParam>,
-        after: Option<String>,
-        type_: Option<EnvironmentTypeParam>,
+        params: crate::methods::agents::ListAgentEnvironmentsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<AgentEnvironmentListResource, crate::errors::SdkError> {
-        crate::methods::agents::list_agent_environments(
-            &self.config,
-            limit,
-            order,
-            after,
-            type_,
-            options,
-        )
+        crate::methods::agents::list_agent_environments(&self.config, params, options)
     }
     /// Lists OpenAI-hosted environments owned by the authenticated principal. Requires access to the prewarming beta.
     pub fn list_environments_paginated(
         &self,
-        limit: Option<i64>,
-        order: Option<ListOrderParam>,
-        after: Option<String>,
-        type_: Option<EnvironmentTypeParam>,
+        params: crate::methods::agents::ListAgentEnvironmentsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&PublicEnvironmentResource) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::agents::list_agent_environments_paginated(
             &self.config,
-            limit,
-            order,
-            after,
-            type_,
+            params,
             options,
             yield_fn,
         )
@@ -5892,26 +4829,18 @@ impl AgentsNamespace {
     /// Creates an OpenAI-hosted environment before creating a session. Requires access to the prewarming beta.
     pub fn create_environment(
         &self,
-        environment: CreateEnvironmentParam,
-        idempotency_key: Option<String>,
-        vault_ids: Option<Option<Vec<String>>>,
+        params: crate::methods::agents::CreateAgentEnvironmentParams2,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<PublicEnvironmentResource, crate::errors::SdkError> {
-        crate::methods::agents::create_agent_environment(
-            &self.config,
-            environment,
-            idempotency_key,
-            vault_ids,
-            options,
-        )
+        crate::methods::agents::create_agent_environment(&self.config, params, options)
     }
     /// Retrieves an execution environment's connection status and safe installed metadata. See [environment lifecycle](https://developers.openai.com/api/docs/guides/agents-api/environments/lifecycle).
     pub fn retrieve_environment(
         &self,
-        environment_id: String,
+        params: crate::methods::agents::RetrieveAgentEnvironmentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<PublicEnvironmentResource, crate::errors::SdkError> {
-        crate::methods::agents::retrieve_agent_environment(&self.config, environment_id, options)
+        crate::methods::agents::retrieve_agent_environment(&self.config, params, options)
     }
     /// Lists live files on a connected execution environment with optional directory filtering and opaque cursor pagination. See [environment files](https://developers.openai.com/api/docs/guides/agents-api/environments/files).
     pub fn list_environment_files(
@@ -5926,52 +4855,30 @@ impl AgentsNamespace {
     /// Copies inline bytes or a Files API file into a connected execution environment, replacing an existing regular file at the same path. Upload between turns and wait for success before starting the next turn. See [environment files](https://developers.openai.com/api/docs/guides/agents-api/environments/files).
     pub fn create_environment_file(
         &self,
-        environment_id: String,
-        body: Option<HostedEnvironmentFileParam>,
+        params: crate::methods::agents::CreateAgentEnvironmentFileParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<EnvironmentFileResource, crate::errors::SdkError> {
-        crate::methods::agents::create_agent_environment_file(
-            &self.config,
-            environment_id,
-            body,
-            options,
-        )
+        crate::methods::agents::create_agent_environment_file(&self.config, params, options)
     }
     /// Lists subagents in a session, including nested and closed subagents. See [subagent workflows](https://developers.openai.com/api/docs/guides/agents-api/multi-agent).
     pub fn list_session_subagents(
         &self,
-        session_id: String,
-        limit: Option<i64>,
-        order: Option<ListOrderParam>,
-        after: Option<String>,
+        params: crate::methods::agents::ListAgentSessionSubagentsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<crate::methods::agents::ListAgentSessionSubagentsResponse, crate::errors::SdkError>
     {
-        crate::methods::agents::list_agent_session_subagents(
-            &self.config,
-            session_id,
-            limit,
-            order,
-            after,
-            options,
-        )
+        crate::methods::agents::list_agent_session_subagents(&self.config, params, options)
     }
     /// Lists subagents in a session, including nested and closed subagents. See [subagent workflows](https://developers.openai.com/api/docs/guides/agents-api/multi-agent).
     pub fn list_session_subagents_paginated(
         &self,
-        session_id: String,
-        limit: Option<i64>,
-        order: Option<ListOrderParam>,
-        after: Option<String>,
+        params: crate::methods::agents::ListAgentSessionSubagentsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&SubagentResource) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::agents::list_agent_session_subagents_paginated(
             &self.config,
-            session_id,
-            limit,
-            order,
-            after,
+            params,
             options,
             yield_fn,
         )
@@ -5979,16 +4886,10 @@ impl AgentsNamespace {
     /// Retrieves a subagent belonging to this session. See [subagent workflows](https://developers.openai.com/api/docs/guides/agents-api/multi-agent).
     pub fn retrieve_session_subagent(
         &self,
-        session_id: String,
-        subagent_id: String,
+        params: crate::methods::agents::RetrieveAgentSessionSubagentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SubagentResource, crate::errors::SdkError> {
-        crate::methods::agents::retrieve_agent_session_subagent(
-            &self.config,
-            session_id,
-            subagent_id,
-            options,
-        )
+        crate::methods::agents::retrieve_agent_session_subagent(&self.config, params, options)
     }
     /// Lists this subagent's own items across all of its turns. See [subagent workflows](https://developers.openai.com/api/docs/guides/agents-api/multi-agent).
     pub fn list_session_subagent_items(
@@ -6037,18 +4938,10 @@ impl AgentsNamespace {
     /// Retrieves a turn belonging to this subagent. See [subagent workflows](https://developers.openai.com/api/docs/guides/agents-api/multi-agent).
     pub fn retrieve_session_subagent_turn(
         &self,
-        session_id: String,
-        subagent_id: String,
-        turn_id: String,
+        params: crate::methods::agents::RetrieveAgentSessionSubagentTurnParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<TurnResource, crate::errors::SdkError> {
-        crate::methods::agents::retrieve_agent_session_subagent_turn(
-            &self.config,
-            session_id,
-            subagent_id,
-            turn_id,
-            options,
-        )
+        crate::methods::agents::retrieve_agent_session_subagent_turn(&self.config, params, options)
     }
     /// Lists items belonging to one turn of this subagent. See [subagent workflows](https://developers.openai.com/api/docs/guides/agents-api/multi-agent).
     pub fn list_session_subagent_turn_items(
@@ -6079,30 +4972,19 @@ impl AgentsNamespace {
     /// Lists reusable agents in the current project. See [agent configuration](https://developers.openai.com/api/docs/guides/agents-api/configuration).
     pub fn list(
         &self,
-        limit: Option<i64>,
-        order: Option<ListOrderParam>,
-        after: Option<String>,
+        params: crate::methods::agents::ListAgentsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<AgentListResource, crate::errors::SdkError> {
-        crate::methods::agents::list_agents(&self.config, limit, order, after, options)
+        crate::methods::agents::list_agents(&self.config, params, options)
     }
     /// Lists reusable agents in the current project. See [agent configuration](https://developers.openai.com/api/docs/guides/agents-api/configuration).
     pub fn list_paginated(
         &self,
-        limit: Option<i64>,
-        order: Option<ListOrderParam>,
-        after: Option<String>,
+        params: crate::methods::agents::ListAgentsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&AgentResource) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
-        crate::methods::agents::list_agents_paginated(
-            &self.config,
-            limit,
-            order,
-            after,
-            options,
-            yield_fn,
-        )
+        crate::methods::agents::list_agents_paginated(&self.config, params, options, yield_fn)
     }
     /// Creates a reusable agent without storing credentials. See [agent configuration](https://developers.openai.com/api/docs/guides/agents-api/configuration).
     pub fn create(
@@ -6115,10 +4997,10 @@ impl AgentsNamespace {
     /// Retrieves a reusable agent by ID. See [agent configuration](https://developers.openai.com/api/docs/guides/agents-api/configuration).
     pub fn retrieve(
         &self,
-        agent_id: String,
+        params: crate::methods::agents::RetrieveAgentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<AgentResource, crate::errors::SdkError> {
-        crate::methods::agents::retrieve_agent(&self.config, agent_id, options)
+        crate::methods::agents::retrieve_agent(&self.config, params, options)
     }
     /// Updates a reusable agent. See [agent configuration](https://developers.openai.com/api/docs/guides/agents-api/configuration).
     pub fn update(
@@ -6131,41 +5013,29 @@ impl AgentsNamespace {
     /// Deletes a reusable agent. See [agent configuration](https://developers.openai.com/api/docs/guides/agents-api/configuration).
     pub fn delete(
         &self,
-        agent_id: String,
+        params: crate::methods::agents::DeleteAgentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeletedAgentResource, crate::errors::SdkError> {
-        crate::methods::agents::delete_agent(&self.config, agent_id, options)
+        crate::methods::agents::delete_agent(&self.config, params, options)
     }
     /// Lists reusable environment templates without returning confidential values. See [reusing a hosted setup](https://developers.openai.com/api/docs/guides/agents-api/tools#reuse-a-hosted-plugin-setup).
     pub fn list_environment_templates(
         &self,
-        limit: Option<i64>,
-        order: Option<ListOrderParam>,
-        after: Option<String>,
+        params: crate::methods::agents::ListAgentEnvironmentTemplatesParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<EnvironmentTemplateListResource, crate::errors::SdkError> {
-        crate::methods::agents::list_agent_environment_templates(
-            &self.config,
-            limit,
-            order,
-            after,
-            options,
-        )
+        crate::methods::agents::list_agent_environment_templates(&self.config, params, options)
     }
     /// Lists reusable environment templates without returning confidential values. See [reusing a hosted setup](https://developers.openai.com/api/docs/guides/agents-api/tools#reuse-a-hosted-plugin-setup).
     pub fn list_environment_templates_paginated(
         &self,
-        limit: Option<i64>,
-        order: Option<ListOrderParam>,
-        after: Option<String>,
+        params: crate::methods::agents::ListAgentEnvironmentTemplatesParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&EnvironmentTemplateResource) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::agents::list_agent_environment_templates_paginated(
             &self.config,
-            limit,
-            order,
-            after,
+            params,
             options,
             yield_fn,
         )
@@ -6181,14 +5051,10 @@ impl AgentsNamespace {
     /// Retrieves reusable environment configuration without returning confidential values. See [reusing a hosted setup](https://developers.openai.com/api/docs/guides/agents-api/tools#reuse-a-hosted-plugin-setup).
     pub fn retrieve_environment_template(
         &self,
-        environment_template_id: String,
+        params: crate::methods::agents::RetrieveAgentEnvironmentTemplateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<EnvironmentTemplateResource, crate::errors::SdkError> {
-        crate::methods::agents::retrieve_agent_environment_template(
-            &self.config,
-            environment_template_id,
-            options,
-        )
+        crate::methods::agents::retrieve_agent_environment_template(&self.config, params, options)
     }
     /// Updates reusable environment configuration without returning confidential values. See [reusing a hosted setup](https://developers.openai.com/api/docs/guides/agents-api/tools#reuse-a-hosted-plugin-setup).
     pub fn update_environment_template(
@@ -6201,49 +5067,29 @@ impl AgentsNamespace {
     /// Deletes reusable environment configuration and all confidential template inputs. See [reusing a hosted setup](https://developers.openai.com/api/docs/guides/agents-api/tools#reuse-a-hosted-plugin-setup).
     pub fn delete_environment_template(
         &self,
-        environment_template_id: String,
+        params: crate::methods::agents::DeleteAgentEnvironmentTemplateParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeletedEnvironmentTemplateResource, crate::errors::SdkError> {
-        crate::methods::agents::delete_agent_environment_template(
-            &self.config,
-            environment_template_id,
-            options,
-        )
+        crate::methods::agents::delete_agent_environment_template(&self.config, params, options)
     }
     /// Lists managed agent sessions using ID-based pagination and the requested sort order. See [managing sessions](https://developers.openai.com/api/docs/guides/agents-api/sessions/manage).
     pub fn list_sessions(
         &self,
-        limit: Option<i64>,
-        order: Option<ListOrderParam>,
-        after: Option<String>,
-        agent_id: Option<String>,
+        params: crate::methods::agents::ListAgentSessionsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SessionListResource, crate::errors::SdkError> {
-        crate::methods::agents::list_agent_sessions(
-            &self.config,
-            limit,
-            order,
-            after,
-            agent_id,
-            options,
-        )
+        crate::methods::agents::list_agent_sessions(&self.config, params, options)
     }
     /// Lists managed agent sessions using ID-based pagination and the requested sort order. See [managing sessions](https://developers.openai.com/api/docs/guides/agents-api/sessions/manage).
     pub fn list_sessions_paginated(
         &self,
-        limit: Option<i64>,
-        order: Option<ListOrderParam>,
-        after: Option<String>,
-        agent_id: Option<String>,
+        params: crate::methods::agents::ListAgentSessionsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&SessionResource) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::agents::list_agent_sessions_paginated(
             &self.config,
-            limit,
-            order,
-            after,
-            agent_id,
+            params,
             options,
             yield_fn,
         )
@@ -6270,36 +5116,26 @@ impl AgentsNamespace {
     /// Retrieves the current state of a managed agent session. See [managing sessions](https://developers.openai.com/api/docs/guides/agents-api/sessions/manage).
     pub fn retrieve_session(
         &self,
-        session_id: String,
+        params: crate::methods::agents::RetrieveAgentSessionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SessionResource, crate::errors::SdkError> {
-        crate::methods::agents::retrieve_agent_session(&self.config, session_id, options)
+        crate::methods::agents::retrieve_agent_session(&self.config, params, options)
     }
     /// Updates session metadata, model, reasoning effort, or service tier. Model settings apply to subsequent turns. Omitted fields are unchanged. See [managing sessions](https://developers.openai.com/api/docs/guides/agents-api/sessions/manage).
     pub fn update_session(
         &self,
-        session_id: String,
-        spend_control: Option<Option<SessionSpendControlParam>>,
-        agent: Option<UpdateSessionAgentParam>,
-        metadata: Option<Option<std::collections::HashMap<String, String>>>,
+        params: crate::methods::agents::UpdateAgentSessionParams2,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SessionResource, crate::errors::SdkError> {
-        crate::methods::agents::update_agent_session(
-            &self.config,
-            session_id,
-            spend_control,
-            agent,
-            metadata,
-            options,
-        )
+        crate::methods::agents::update_agent_session(&self.config, params, options)
     }
     /// Removes a managed agent session from the public API and returns a deletion confirmation. If backend execution has ended, deletion can cancel a still-open public turn and abandon unpublished outputs. Running execution must be cancelled first. Physical cleanup may continue asynchronously. See [managing sessions](https://developers.openai.com/api/docs/guides/agents-api/sessions/manage).
     pub fn delete_session(
         &self,
-        session_id: String,
+        params: crate::methods::agents::DeleteAgentSessionParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeletedSessionResource, crate::errors::SdkError> {
-        crate::methods::agents::delete_agent_session(&self.config, session_id, options)
+        crate::methods::agents::delete_agent_session(&self.config, params, options)
     }
     /// Lists immutable artifacts published by completed hosted session turns. See [session artifacts](https://developers.openai.com/api/docs/guides/agents-api/environments/files#openai-hosted-artifacts).
     pub fn list_session_artifacts(
@@ -6326,106 +5162,68 @@ impl AgentsNamespace {
     /// Retrieves immutable metadata for one durable session artifact. See [session artifacts](https://developers.openai.com/api/docs/guides/agents-api/environments/files#openai-hosted-artifacts).
     pub fn retrieve_session_artifact(
         &self,
-        session_id: String,
-        artifact_id: String,
+        params: crate::methods::agents::RetrieveAgentSessionArtifactParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SessionArtifactResource, crate::errors::SdkError> {
-        crate::methods::agents::retrieve_agent_session_artifact(
-            &self.config,
-            session_id,
-            artifact_id,
-            options,
-        )
+        crate::methods::agents::retrieve_agent_session_artifact(&self.config, params, options)
     }
     /// Deletes an immutable session artifact without deleting its live environment file or original Files API object. See [session artifacts](https://developers.openai.com/api/docs/guides/agents-api/environments/files#openai-hosted-artifacts).
     pub fn delete_session_artifact(
         &self,
-        session_id: String,
-        artifact_id: String,
+        params: crate::methods::agents::DeleteAgentSessionArtifactParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeletedSessionArtifactResource, crate::errors::SdkError> {
-        crate::methods::agents::delete_agent_session_artifact(
-            &self.config,
-            session_id,
-            artifact_id,
-            options,
-        )
+        crate::methods::agents::delete_agent_session_artifact(&self.config, params, options)
     }
     /// Downloads immutable session artifact bytes after the execution environment expires. See [session artifacts](https://developers.openai.com/api/docs/guides/agents-api/environments/files#openai-hosted-artifacts).
     pub fn retrieve_session_artifact_content(
         &self,
-        session_id: String,
-        artifact_id: String,
+        params: crate::methods::agents::RetrieveAgentSessionArtifactContentParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<Vec<u8>, crate::errors::SdkError> {
         crate::methods::agents::retrieve_agent_session_artifact_content(
             &self.config,
-            session_id,
-            artifact_id,
+            params,
             options,
         )
     }
     /// Streams live events for an agent session. See [session events](https://developers.openai.com/api/docs/guides/agents-api/sessions/events).
     pub fn list_session_events(
         &self,
-        session_id: String,
+        params: crate::methods::agents::ListAgentSessionEventsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<
         impl Iterator<Item = Result<SessionEvent, crate::errors::SdkError>>,
         crate::errors::SdkError,
     > {
-        crate::methods::agents::list_agent_session_events(&self.config, session_id, options)
+        crate::methods::agents::list_agent_session_events(&self.config, params, options)
     }
     /// Submits message, cancellation, tool-result, or computer-use approval-response events to a managed agent session. Cancellation can recover a still-open turn whose backend execution has ended by marking it cancelled and abandoning unpublished outputs. Saved results, published files, and existing terminal outcomes are preserved. HTTP 202 confirms acceptance, not durable completion. See [session events](https://developers.openai.com/api/docs/guides/agents-api/sessions/events).
     pub fn create_session_events(
         &self,
-        session_id: String,
-        events: Vec<SessionInputParam>,
-        idempotency_key: Option<String>,
+        params: crate::methods::agents::CreateAgentSessionEventsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<serde_json::Value, crate::errors::SdkError> {
-        crate::methods::agents::create_agent_session_events(
-            &self.config,
-            session_id,
-            events,
-            idempotency_key,
-            options,
-        )
+        crate::methods::agents::create_agent_session_events(&self.config, params, options)
     }
     /// Lists items produced by the session's root agent, including its interactions with subagents. Each subagent has its own item history. See [inspecting agent output](https://developers.openai.com/api/docs/guides/agents-api/observability).
     pub fn list_session_items(
         &self,
-        session_id: String,
-        limit: Option<i64>,
-        order: Option<ListOrderParam>,
-        after: Option<String>,
+        params: crate::methods::agents::ListAgentSessionItemsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SessionItemListResource, crate::errors::SdkError> {
-        crate::methods::agents::list_agent_session_items(
-            &self.config,
-            session_id,
-            limit,
-            order,
-            after,
-            options,
-        )
+        crate::methods::agents::list_agent_session_items(&self.config, params, options)
     }
     /// Lists items produced by the session's root agent, including its interactions with subagents. Each subagent has its own item history. See [inspecting agent output](https://developers.openai.com/api/docs/guides/agents-api/observability).
     pub fn list_session_items_paginated(
         &self,
-        session_id: String,
-        limit: Option<i64>,
-        order: Option<ListOrderParam>,
-        after: Option<String>,
+        params: crate::methods::agents::ListAgentSessionItemsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&SessionTurnItemResource) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::agents::list_agent_session_items_paginated(
             &self.config,
-            session_id,
-            limit,
-            order,
-            after,
+            params,
             options,
             yield_fn,
         )
@@ -6433,37 +5231,21 @@ impl AgentsNamespace {
     /// Lists published root-turn traces as OTLP JSON, ordered by turn creation time and ID. Unpublished traces are skipped. Each page returns data available when read; it does not wait for late traces. Trace reads and the JSON response are limited to 16 MiB per request. If the limit is exceeded, request fewer traces.
     pub fn list_session_traces(
         &self,
-        session_id: String,
-        limit: Option<i64>,
-        order: Option<ListOrderParam>,
-        after: Option<String>,
+        params: crate::methods::agents::ListAgentSessionTracesParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SessionTraceListResource, crate::errors::SdkError> {
-        crate::methods::agents::list_agent_session_traces(
-            &self.config,
-            session_id,
-            limit,
-            order,
-            after,
-            options,
-        )
+        crate::methods::agents::list_agent_session_traces(&self.config, params, options)
     }
     /// Lists published root-turn traces as OTLP JSON, ordered by turn creation time and ID. Unpublished traces are skipped. Each page returns data available when read; it does not wait for late traces. Trace reads and the JSON response are limited to 16 MiB per request. If the limit is exceeded, request fewer traces.
     pub fn list_session_traces_paginated(
         &self,
-        session_id: String,
-        limit: Option<i64>,
-        order: Option<ListOrderParam>,
-        after: Option<String>,
+        params: crate::methods::agents::ListAgentSessionTracesParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&SessionTurnTraceResource) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::agents::list_agent_session_traces_paginated(
             &self.config,
-            session_id,
-            limit,
-            order,
-            after,
+            params,
             options,
             yield_fn,
         )
@@ -6471,37 +5253,21 @@ impl AgentsNamespace {
     /// Lists turns by creation time and turn ID. The after cursor is exclusive in the selected order. See [session turns](https://developers.openai.com/api/docs/guides/agents-api/sessions/manage#inspect-session-turns).
     pub fn list_session_turns(
         &self,
-        session_id: String,
-        limit: Option<i64>,
-        order: Option<ListOrderParam>,
-        after: Option<String>,
+        params: crate::methods::agents::ListAgentSessionTurnsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<SessionTurnListResource, crate::errors::SdkError> {
-        crate::methods::agents::list_agent_session_turns(
-            &self.config,
-            session_id,
-            limit,
-            order,
-            after,
-            options,
-        )
+        crate::methods::agents::list_agent_session_turns(&self.config, params, options)
     }
     /// Lists turns by creation time and turn ID. The after cursor is exclusive in the selected order. See [session turns](https://developers.openai.com/api/docs/guides/agents-api/sessions/manage#inspect-session-turns).
     pub fn list_session_turns_paginated(
         &self,
-        session_id: String,
-        limit: Option<i64>,
-        order: Option<ListOrderParam>,
-        after: Option<String>,
+        params: crate::methods::agents::ListAgentSessionTurnsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&TurnResource) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::agents::list_agent_session_turns_paginated(
             &self.config,
-            session_id,
-            limit,
-            order,
-            after,
+            params,
             options,
             yield_fn,
         )
@@ -6509,16 +5275,10 @@ impl AgentsNamespace {
     /// Retrieves a turn's current status, timestamps, usage, and error. Returns 404 if the turn does not belong to the session. See [session turns](https://developers.openai.com/api/docs/guides/agents-api/sessions/manage#inspect-session-turns).
     pub fn retrieve_session_turn(
         &self,
-        session_id: String,
-        turn_id: String,
+        params: crate::methods::agents::RetrieveAgentSessionTurnParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<TurnResource, crate::errors::SdkError> {
-        crate::methods::agents::retrieve_agent_session_turn(
-            &self.config,
-            session_id,
-            turn_id,
-            options,
-        )
+        crate::methods::agents::retrieve_agent_session_turn(&self.config, params, options)
     }
     /// Lists items belonging to one root-agent turn, including its interactions with subagents. See [inspecting agent output](https://developers.openai.com/api/docs/guides/agents-api/observability).
     pub fn list_session_turn_items(
@@ -6576,37 +5336,34 @@ impl VaultsNamespace {
     /// Creates a vault for the current project. See [vaults](https://developers.openai.com/api/docs/guides/agents-api/tools/vaults).
     pub fn create(
         &self,
-        name: Option<String>,
-        metadata: Option<Option<std::collections::HashMap<String, String>>>,
+        params: crate::methods::vaults::CreateVaultParams2,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VaultResource, crate::errors::SdkError> {
-        crate::methods::vaults::create_vault(&self.config, name, metadata, options)
+        crate::methods::vaults::create_vault(&self.config, params, options)
     }
     /// Retrieves a vault by its ID. See [vaults](https://developers.openai.com/api/docs/guides/agents-api/tools/vaults).
     pub fn retrieve(
         &self,
-        vault_id: String,
+        params: crate::methods::vaults::RetrieveVaultParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VaultResource, crate::errors::SdkError> {
-        crate::methods::vaults::retrieve_vault(&self.config, vault_id, options)
+        crate::methods::vaults::retrieve_vault(&self.config, params, options)
     }
     /// Updates the name or metadata of an active vault. Omitted fields remain unchanged. See [vaults](https://developers.openai.com/api/docs/guides/agents-api/tools/vaults).
     pub fn update(
         &self,
-        vault_id: String,
-        metadata: Option<std::collections::HashMap<String, String>>,
-        name: Option<Option<String>>,
+        params: crate::methods::vaults::UpdateVaultParams2,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VaultResource, crate::errors::SdkError> {
-        crate::methods::vaults::update_vault(&self.config, vault_id, metadata, name, options)
+        crate::methods::vaults::update_vault(&self.config, params, options)
     }
     /// Deletes a vault and all its credentials. See [vaults](https://developers.openai.com/api/docs/guides/agents-api/tools/vaults).
     pub fn delete(
         &self,
-        vault_id: String,
+        params: crate::methods::vaults::DeleteVaultParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeletedVaultResource, crate::errors::SdkError> {
-        crate::methods::vaults::delete_vault(&self.config, vault_id, options)
+        crate::methods::vaults::delete_vault(&self.config, params, options)
     }
     /// Lists a vault's credentials using ID-based pagination without returning secret values. See [vaults](https://developers.openai.com/api/docs/guides/agents-api/tools/vaults).
     pub fn list_credentials(
@@ -6633,66 +5390,34 @@ impl VaultsNamespace {
     /// Creates a vault credential. Secret values are write-only and are never returned. See [vaults](https://developers.openai.com/api/docs/guides/agents-api/tools/vaults).
     pub fn create_credential(
         &self,
-        vault_id: String,
-        name: String,
-        auth: CreateVaultCredentialAuthParam,
-        metadata: Option<std::collections::HashMap<String, String>>,
+        params: crate::methods::vaults::CreateVaultCredentialParams2,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VaultCredentialResource, crate::errors::SdkError> {
-        crate::methods::vaults::create_vault_credential(
-            &self.config,
-            vault_id,
-            name,
-            auth,
-            metadata,
-            options,
-        )
+        crate::methods::vaults::create_vault_credential(&self.config, params, options)
     }
     /// Retrieves vault credential metadata without returning secret values. See [vaults](https://developers.openai.com/api/docs/guides/agents-api/tools/vaults).
     pub fn retrieve_credential(
         &self,
-        vault_id: String,
-        credential_id: String,
+        params: crate::methods::vaults::RetrieveVaultCredentialParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VaultCredentialResource, crate::errors::SdkError> {
-        crate::methods::vaults::retrieve_vault_credential(
-            &self.config,
-            vault_id,
-            credential_id,
-            options,
-        )
+        crate::methods::vaults::retrieve_vault_credential(&self.config, params, options)
     }
     /// Updates credential metadata or rotates its write-only secret. See [vaults](https://developers.openai.com/api/docs/guides/agents-api/tools/vaults).
     pub fn rotate_credential(
         &self,
-        vault_id: String,
-        credential_id: String,
-        auth: Option<RotateVaultCredentialAuthParam>,
-        metadata: Option<std::collections::HashMap<String, String>>,
+        params: crate::methods::vaults::RotateVaultCredentialParams2,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<VaultCredentialResource, crate::errors::SdkError> {
-        crate::methods::vaults::rotate_vault_credential(
-            &self.config,
-            vault_id,
-            credential_id,
-            auth,
-            metadata,
-            options,
-        )
+        crate::methods::vaults::rotate_vault_credential(&self.config, params, options)
     }
     /// Deletes a vault credential. See [vaults](https://developers.openai.com/api/docs/guides/agents-api/tools/vaults).
     pub fn delete_credential(
         &self,
-        vault_id: String,
-        credential_id: String,
+        params: crate::methods::vaults::DeleteVaultCredentialParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeletedVaultCredentialResource, crate::errors::SdkError> {
-        crate::methods::vaults::delete_vault_credential(
-            &self.config,
-            vault_id,
-            credential_id,
-            options,
-        )
+        crate::methods::vaults::delete_vault_credential(&self.config, params, options)
     }
 }
 
@@ -6711,29 +5436,21 @@ impl WebhookEndpointsNamespace {
     /// Returns webhook endpoints for the authenticated project in newest-first order.
     pub fn list(
         &self,
-        limit: Option<i64>,
-        after: Option<Option<String>>,
+        params: crate::methods::webhook_endpoints::ListWebhookEndpointsParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<WebhookEndpointListResource, crate::errors::SdkError> {
-        crate::methods::webhook_endpoints::list_webhook_endpoints(
-            &self.config,
-            limit,
-            after,
-            options,
-        )
+        crate::methods::webhook_endpoints::list_webhook_endpoints(&self.config, params, options)
     }
     /// Returns webhook endpoints for the authenticated project in newest-first order.
     pub fn list_paginated(
         &self,
-        limit: Option<i64>,
-        after: Option<Option<String>>,
+        params: crate::methods::webhook_endpoints::ListWebhookEndpointsParams,
         options: Option<&crate::client::RequestOptions>,
         yield_fn: impl FnMut(&WebhookEndpointBody) -> bool,
     ) -> Result<(), crate::errors::SdkError> {
         crate::methods::webhook_endpoints::list_webhook_endpoints_paginated(
             &self.config,
-            limit,
-            after,
+            params,
             options,
             yield_fn,
         )
@@ -6741,88 +5458,54 @@ impl WebhookEndpointsNamespace {
     /// Creates a webhook endpoint for the authenticated project.
     pub fn create(
         &self,
-        name: String,
-        url: String,
-        event_types: Vec<ProjectEventTypeEnum>,
+        params: crate::methods::webhook_endpoints::CreateWebhookEndpointParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<WebhookEndpointWithSecretResource, crate::errors::SdkError> {
-        crate::methods::webhook_endpoints::create_webhook_endpoint(
-            &self.config,
-            name,
-            url,
-            event_types,
-            options,
-        )
+        crate::methods::webhook_endpoints::create_webhook_endpoint(&self.config, params, options)
     }
     /// Retrieves a webhook endpoint for the authenticated project.
     pub fn retrieve(
         &self,
-        webhook_endpoint_id: String,
+        params: crate::methods::webhook_endpoints::RetrieveWebhookEndpointParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<WebhookEndpointBody, crate::errors::SdkError> {
-        crate::methods::webhook_endpoints::retrieve_webhook_endpoint(
-            &self.config,
-            webhook_endpoint_id,
-            options,
-        )
+        crate::methods::webhook_endpoints::retrieve_webhook_endpoint(&self.config, params, options)
     }
     /// Updates a webhook endpoint for the authenticated project.
     pub fn update(
         &self,
-        webhook_endpoint_id: String,
-        name: Option<String>,
-        url: Option<String>,
-        event_types: Option<Vec<ProjectEventTypeEnum>>,
+        params: crate::methods::webhook_endpoints::UpdateWebhookEndpointParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<WebhookEndpointBody, crate::errors::SdkError> {
-        crate::methods::webhook_endpoints::update_webhook_endpoint(
-            &self.config,
-            webhook_endpoint_id,
-            name,
-            url,
-            event_types,
-            options,
-        )
+        crate::methods::webhook_endpoints::update_webhook_endpoint(&self.config, params, options)
     }
     /// Deletes a webhook endpoint for the authenticated project.
     pub fn delete(
         &self,
-        webhook_endpoint_id: String,
+        params: crate::methods::webhook_endpoints::DeleteWebhookEndpointParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<DeletedWebhookEndpointResource, crate::errors::SdkError> {
-        crate::methods::webhook_endpoints::delete_webhook_endpoint(
-            &self.config,
-            webhook_endpoint_id,
-            options,
-        )
+        crate::methods::webhook_endpoints::delete_webhook_endpoint(&self.config, params, options)
     }
     /// Rotates the signing secret for a webhook endpoint in the authenticated project.
     pub fn rotate_signing_secret(
         &self,
-        webhook_endpoint_id: String,
-        keep_old_secret_active_for_24_hours: Option<bool>,
+        params: crate::methods::webhook_endpoints::RotateWebhookEndpointSigningSecretParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<WebhookEndpointWithSecretResource, crate::errors::SdkError> {
         crate::methods::webhook_endpoints::rotate_webhook_endpoint_signing_secret(
             &self.config,
-            webhook_endpoint_id,
-            keep_old_secret_active_for_24_hours,
+            params,
             options,
         )
     }
     /// Sends a sample event to a webhook endpoint for the authenticated project.
     pub fn test(
         &self,
-        webhook_endpoint_id: String,
-        event_type: ProjectEventTypeEnum,
+        params: crate::methods::webhook_endpoints::TestWebhookEndpointParams,
         options: Option<&crate::client::RequestOptions>,
     ) -> Result<WebhookEndpointTestResultResource, crate::errors::SdkError> {
-        crate::methods::webhook_endpoints::test_webhook_endpoint(
-            &self.config,
-            webhook_endpoint_id,
-            event_type,
-            options,
-        )
+        crate::methods::webhook_endpoints::test_webhook_endpoint(&self.config, params, options)
     }
 }
 

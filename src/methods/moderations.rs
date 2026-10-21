@@ -6,6 +6,12 @@ use crate::client::{sdk_request, RequestOptions, RequestOpts};
 use crate::errors::{SdkError, SdkNetworkError};
 use crate::types::{CreateModerationRequestInput, CreateModerationResponse};
 
+#[derive(Debug, Clone)]
+pub struct CreateModerationParams {
+    pub input: CreateModerationRequestInput,
+    pub model: Option<String>,
+}
+
 /// Classifies text and image inputs for potentially harmful content. Supply `input` as a string, an array of strings, or supported multimodal input; `model` defaults to `omni-moderation-latest`. Use the returned results to review moderation flags, categories, and category scores.
 ///
 /// Classifies if text and/or image inputs are potentially harmful. Learn more in the [moderation guide](https://developers.openai.com/api/docs/guides/moderation).
@@ -22,10 +28,10 @@ use crate::types::{CreateModerationRequestInput, CreateModerationResponse};
 ///   [here](https://developers.openai.com/api/docs/guides/moderation).
 pub fn create_moderation(
     config: &ClientConfig,
-    input: CreateModerationRequestInput,
-    model: Option<String>,
+    params: CreateModerationParams,
     options: Option<&RequestOptions>,
 ) -> Result<CreateModerationResponse, SdkError> {
+    let CreateModerationParams { input, model } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "input".to_string(),

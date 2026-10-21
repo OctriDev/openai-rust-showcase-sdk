@@ -455,27 +455,3 @@ impl BetaResponse {
         }
     }
 }
-
-/// The type of the event, always `response.compaction.compacting`.
-#[derive(Debug, Clone, PartialEq, Default, serde::Serialize, serde::Deserialize)]
-pub enum BetaResponseCompactionCompactingStreamingEventTypeEnum {
-    #[serde(rename = "response.compaction.compacting")]
-    #[default]
-    ResponseCompactionCompacting,
-}
-
-impl BetaResponseCompactionCompactingStreamingEventTypeEnum {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::ResponseCompactionCompacting => "response.compaction.compacting",
-        }
-    }
-}
-
-impl std::fmt::Display for BetaResponseCompactionCompactingStreamingEventTypeEnum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            BetaResponseCompactionCompactingStreamingEventTypeEnum::ResponseCompactionCompacting => f.write_str("response.compaction.compacting"),
-        }
-    }
-}

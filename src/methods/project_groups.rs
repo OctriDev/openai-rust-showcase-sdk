@@ -101,6 +101,14 @@ impl std::fmt::Display for RetrieveProjectGroupEnum {
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ListProjectGroupsParams {
+    pub project_id: String,
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub order: Option<ListProjectGroupsEnum>,
+}
+
 /// Lists the groups that have access to a project. Use `after` to continue from the last group in a previous response, and set `limit` and `order` to control the page size and sort order.
 ///
 /// Lists the groups that have access to a project.
@@ -115,12 +123,15 @@ impl std::fmt::Display for RetrieveProjectGroupEnum {
 /// * `order` - Sort order for the returned groups.
 pub fn list_project_groups(
     config: &ClientConfig,
-    project_id: String,
-    limit: Option<i64>,
-    after: Option<String>,
-    order: Option<ListProjectGroupsEnum>,
+    params: ListProjectGroupsParams,
     options: Option<&RequestOptions>,
 ) -> Result<ProjectGroupListResource, SdkError> {
+    let ListProjectGroupsParams {
+        project_id,
+        limit,
+        after,
+        order,
+    } = params;
     if let Some(ref limit_v) = limit {
         validate_range(
             "limit",
@@ -182,21 +193,27 @@ pub fn list_project_groups(
 /// * `order` - Sort order for the returned groups.
 pub fn list_project_groups_paginated(
     config: &ClientConfig,
-    project_id: String,
-    limit: Option<i64>,
-    after: Option<String>,
-    order: Option<ListProjectGroupsEnum>,
+    params: ListProjectGroupsParams,
     options: Option<&RequestOptions>,
     mut yield_fn: impl FnMut(&ProjectGroup) -> bool,
 ) -> Result<(), SdkError> {
+    let ListProjectGroupsParams {
+        project_id,
+        limit,
+        after,
+        order,
+    } = params;
+
     let mut _cursor: Option<String> = after;
     loop {
         let _page = list_project_groups(
             config,
-            project_id.clone(),
-            limit,
-            _cursor,
-            order.clone(),
+            ListProjectGroupsParams {
+                project_id: project_id.clone(),
+                limit,
+                after: _cursor,
+                order: order.clone(),
+            },
             options,
         )?;
         let _items: Vec<_> = _page.data.iter().collect();
@@ -227,21 +244,27 @@ pub struct ListProjectGroupsPage<'a> {
 
 pub fn list_project_groups_pages(
     config: &ClientConfig,
-    project_id: String,
-    limit: Option<i64>,
-    after: Option<String>,
-    order: Option<ListProjectGroupsEnum>,
+    params: ListProjectGroupsParams,
     options: Option<&RequestOptions>,
     mut yield_page: impl FnMut(ListProjectGroupsPage<'_>) -> bool,
 ) -> Result<(), SdkError> {
+    let ListProjectGroupsParams {
+        project_id,
+        limit,
+        after,
+        order,
+    } = params;
+
     let mut _cursor: Option<String> = after;
     loop {
         let _page = list_project_groups(
             config,
-            project_id.clone(),
-            limit,
-            _cursor,
-            order.clone(),
+            ListProjectGroupsParams {
+                project_id: project_id.clone(),
+                limit,
+                after: _cursor,
+                order: order.clone(),
+            },
             options,
         )?;
         let _items: Vec<_> = _page.data.iter().collect();
@@ -267,6 +290,13 @@ pub fn list_project_groups_pages(
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct AddProjectGroupParams {
+    pub project_id: String,
+    pub group_id: String,
+    pub role: String,
+}
+
 /// Grants a group access to a project with a specified project role. Supply the group ID and role identifier to create the group’s project membership.
 ///
 /// Grants a group access to a project.
@@ -278,11 +308,14 @@ pub fn list_project_groups_pages(
 /// * `role` - Identifier of the project role to grant to the group.
 pub fn add_project_group(
     config: &ClientConfig,
-    project_id: String,
-    group_id: String,
-    role: String,
+    params: AddProjectGroupParams,
     options: Option<&RequestOptions>,
 ) -> Result<ProjectGroup, SdkError> {
+    let AddProjectGroupParams {
+        project_id,
+        group_id,
+        role,
+    } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "group_id".to_string(),
@@ -329,6 +362,13 @@ pub fn add_project_group(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveProjectGroupParams {
+    pub project_id: String,
+    pub group_id: String,
+    pub group_type: Option<RetrieveProjectGroupEnum>,
+}
+
 /// Retrieves a group's membership details for a project. Use `project_id` and `group_id` to identify the project and group, and `group_type` to select a group type; it defaults to `group` when omitted.
 ///
 /// Retrieves a project's group.
@@ -340,11 +380,14 @@ pub fn add_project_group(
 /// * `group_type` - The type of group to retrieve.
 pub fn retrieve_project_group(
     config: &ClientConfig,
-    project_id: String,
-    group_id: String,
-    group_type: Option<RetrieveProjectGroupEnum>,
+    params: RetrieveProjectGroupParams,
     options: Option<&RequestOptions>,
 ) -> Result<ProjectGroup, SdkError> {
+    let RetrieveProjectGroupParams {
+        project_id,
+        group_id,
+        group_type,
+    } = params;
     let mut __query: Vec<(&str, String)> = Vec::with_capacity(1);
     if let Some(ref v) = group_type {
         __query.push(("group_type", crate::client::query_value(v)));
@@ -375,6 +418,12 @@ pub fn retrieve_project_group(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RemoveProjectGroupParams {
+    pub project_id: String,
+    pub group_id: String,
+}
+
 /// Removes a group's access to a project. Use `project_id` and `group_id` to identify the project membership to revoke. The response confirms whether the membership was removed.
 ///
 /// Revokes a group's access to a project.
@@ -385,10 +434,13 @@ pub fn retrieve_project_group(
 /// * `group_id` - The ID of the group to remove from the project.
 pub fn remove_project_group(
     config: &ClientConfig,
-    project_id: String,
-    group_id: String,
+    params: RemoveProjectGroupParams,
     options: Option<&RequestOptions>,
 ) -> Result<ProjectGroupDeletedResource, SdkError> {
+    let RemoveProjectGroupParams {
+        project_id,
+        group_id,
+    } = params;
     Ok(sdk_request::<ProjectGroupDeletedResource>(
         "DELETE",
         &format!(

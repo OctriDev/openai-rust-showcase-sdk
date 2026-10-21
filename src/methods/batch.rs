@@ -132,6 +132,12 @@ pub fn create_batch(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ListBatchParams {
+    pub after: Option<String>,
+    pub limit: Option<i64>,
+}
+
 /// Lists batches created by your organization. Use `after` to continue from a batch ID and `limit` to set the number of results, from 1 to 100.
 ///
 /// List your organization's batches.
@@ -146,10 +152,10 @@ pub fn create_batch(
 ///   between 1 and 100, and the default is 20.
 pub fn list_batch(
     config: &ClientConfig,
-    after: Option<String>,
-    limit: Option<i64>,
+    params: ListBatchParams,
     options: Option<&RequestOptions>,
 ) -> Result<ListBatchesResponse, SdkError> {
+    let ListBatchParams { after, limit } = params;
     let mut __query: Vec<(&str, String)> = Vec::with_capacity(2);
     if let Some(ref v) = after {
         __query.push(("after", crate::client::query_value(v)));
@@ -192,14 +198,22 @@ pub fn list_batch(
 ///   between 1 and 100, and the default is 20.
 pub fn list_batch_paginated(
     config: &ClientConfig,
-    after: Option<String>,
-    limit: Option<i64>,
+    params: ListBatchParams,
     options: Option<&RequestOptions>,
     mut yield_fn: impl FnMut(&Batch) -> bool,
 ) -> Result<(), SdkError> {
+    let ListBatchParams { after, limit } = params;
+
     let mut _cursor: Option<String> = after;
     loop {
-        let _page = list_batch(config, _cursor, limit, options)?;
+        let _page = list_batch(
+            config,
+            ListBatchParams {
+                after: _cursor,
+                limit,
+            },
+            options,
+        )?;
         let _items: Vec<_> = _page.data.iter().collect();
         if _items.is_empty() {
             return Ok(());
@@ -228,14 +242,22 @@ pub struct ListBatchPage<'a> {
 
 pub fn list_batch_pages(
     config: &ClientConfig,
-    after: Option<String>,
-    limit: Option<i64>,
+    params: ListBatchParams,
     options: Option<&RequestOptions>,
     mut yield_page: impl FnMut(ListBatchPage<'_>) -> bool,
 ) -> Result<(), SdkError> {
+    let ListBatchParams { after, limit } = params;
+
     let mut _cursor: Option<String> = after;
     loop {
-        let _page = list_batch(config, _cursor, limit, options)?;
+        let _page = list_batch(
+            config,
+            ListBatchParams {
+                after: _cursor,
+                limit,
+            },
+            options,
+        )?;
         let _items: Vec<_> = _page.data.iter().collect();
         if _items.is_empty() {
             return Ok(());
@@ -259,6 +281,11 @@ pub fn list_batch_pages(
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveBatchParams {
+    pub batch_id: String,
+}
+
 /// Retrieves a batch by its identifier. Use `batch_id` to inspect the batch configuration, status, and available output or error file references.
 ///
 /// Retrieves a batch.
@@ -268,9 +295,10 @@ pub fn list_batch_pages(
 /// * `batch_id` - The ID of the batch to retrieve.
 pub fn retrieve_batch(
     config: &ClientConfig,
-    batch_id: String,
+    params: RetrieveBatchParams,
     options: Option<&RequestOptions>,
 ) -> Result<Batch, SdkError> {
+    let RetrieveBatchParams { batch_id } = params;
     Ok(sdk_request::<Batch>(
         "GET",
         &format!("/batches/{}", crate::client::encode_path_segment(&batch_id)),
@@ -290,6 +318,11 @@ pub fn retrieve_batch(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct CancelBatchParams {
+    pub batch_id: String,
+}
+
 /// Cancels an in-progress batch. The batch will be in status `cancelling` for up to 10 minutes, before changing to `cancelled`, where it will have partial results (if any) available in the output file.
 ///
 /// # Arguments
@@ -297,9 +330,10 @@ pub fn retrieve_batch(
 /// * `batch_id` - The ID of the batch to cancel.
 pub fn cancel_batch(
     config: &ClientConfig,
-    batch_id: String,
+    params: CancelBatchParams,
     options: Option<&RequestOptions>,
 ) -> Result<Batch, SdkError> {
+    let CancelBatchParams { batch_id } = params;
     Ok(sdk_request::<Batch>(
         "POST",
         &format!(

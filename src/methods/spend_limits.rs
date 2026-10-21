@@ -34,6 +34,13 @@ pub fn retrieve_spend_limits_organization(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct UpdateSpendLimitsOrganizationParams {
+    pub threshold_amount: i64,
+    pub currency: UpdateOrganizationSpendLimitBodyCurrencyEnum,
+    pub interval: UpdateOrganizationSpendLimitBodyIntervalEnum,
+}
+
 /// Create or replace the organization's hard spend limit.
 ///
 /// # Arguments
@@ -45,11 +52,14 @@ pub fn retrieve_spend_limits_organization(
 ///   Currently, only `month` is supported.
 pub fn update_spend_limits_organization(
     config: &ClientConfig,
-    threshold_amount: i64,
-    currency: UpdateOrganizationSpendLimitBodyCurrencyEnum,
-    interval: UpdateOrganizationSpendLimitBodyIntervalEnum,
+    params: UpdateSpendLimitsOrganizationParams,
     options: Option<&RequestOptions>,
 ) -> Result<OrganizationSpendLimitResource, SdkError> {
+    let UpdateSpendLimitsOrganizationParams {
+        threshold_amount,
+        currency,
+        interval,
+    } = params;
     validate_range(
         "threshold_amount",
         threshold_amount as f64,
@@ -127,6 +137,11 @@ pub fn delete_spend_limits_organization(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveSpendLimitsProjectParams {
+    pub project_id: String,
+}
+
 /// Retrieves the hard spend limit configured for a project. Use `project_id` to identify the project whose limit and enforcement state you want to inspect.
 ///
 /// Get a project's hard spend limit.
@@ -137,9 +152,10 @@ pub fn delete_spend_limits_organization(
 ///   managed.
 pub fn retrieve_spend_limits_project(
     config: &ClientConfig,
-    project_id: String,
+    params: RetrieveSpendLimitsProjectParams,
     options: Option<&RequestOptions>,
 ) -> Result<ProjectSpendLimitResource, SdkError> {
+    let RetrieveSpendLimitsProjectParams { project_id } = params;
     Ok(sdk_request::<ProjectSpendLimitResource>(
         "GET",
         &format!(
@@ -162,6 +178,11 @@ pub fn retrieve_spend_limits_project(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct DeleteSpendLimitsProjectParams {
+    pub project_id: String,
+}
+
 /// Deletes a project's hard spend limit. Use `project_id` to identify the project whose configured spending threshold you want to remove. The response confirms whether the limit was deleted.
 ///
 /// Delete a project's hard spend limit.
@@ -172,9 +193,10 @@ pub fn retrieve_spend_limits_project(
 ///   managed.
 pub fn delete_spend_limits_project(
     config: &ClientConfig,
-    project_id: String,
+    params: DeleteSpendLimitsProjectParams,
     options: Option<&RequestOptions>,
 ) -> Result<ProjectSpendLimitDeletedResource, SdkError> {
+    let DeleteSpendLimitsProjectParams { project_id } = params;
     Ok(sdk_request::<ProjectSpendLimitDeletedResource>(
         "DELETE",
         &format!(
@@ -197,6 +219,14 @@ pub fn delete_spend_limits_project(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct UpdateProjectSpendLimitParams {
+    pub project_id: String,
+    pub threshold_amount: i64,
+    pub currency: UpdateProjectSpendLimitBodyCurrencyEnum,
+    pub interval: UpdateProjectSpendLimitBodyIntervalEnum,
+}
+
 /// Creates or replaces a project's hard spend limit. Supply `threshold_amount`, `currency`, and `interval` to set the spending threshold and the period used to evaluate it. The response includes the resulting limit and its enforcement state.
 ///
 /// Create or replace a project's hard spend limit.
@@ -210,14 +240,17 @@ pub fn delete_spend_limits_project(
 ///   is supported.
 /// * `interval` - The time interval for evaluating spend against the threshold.
 ///   Currently, only `month` is supported.
-pub fn update_spend_limits_project(
+pub fn update_project_spend_limit(
     config: &ClientConfig,
-    project_id: String,
-    threshold_amount: i64,
-    currency: UpdateProjectSpendLimitBodyCurrencyEnum,
-    interval: UpdateProjectSpendLimitBodyIntervalEnum,
+    params: UpdateProjectSpendLimitParams,
     options: Option<&RequestOptions>,
 ) -> Result<ProjectSpendLimitResource, SdkError> {
+    let UpdateProjectSpendLimitParams {
+        project_id,
+        threshold_amount,
+        currency,
+        interval,
+    } = params;
     validate_range(
         "threshold_amount",
         threshold_amount as f64,
@@ -267,7 +300,7 @@ pub fn update_spend_limits_project(
         RequestOpts {
             body: Some(__body),
             decoder: crate::client::ResponseDecoder::Json,
-            operation_id: "update_spend_limits_project",
+            operation_id: "update_project_spend_limit",
             options,
             errors: &[
                 ("400", "ErrorResponse"),

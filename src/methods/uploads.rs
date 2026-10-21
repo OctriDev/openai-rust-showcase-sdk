@@ -112,6 +112,11 @@ pub fn create_upload(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct CancelUploadParams {
+    pub upload_id: String,
+}
+
 /// Cancels a pending upload so that no more parts can be added. Use this operation when you no longer intend to complete the upload; the returned upload object has status `cancelled`.
 ///
 /// Cancels the Upload. No Parts may be added after an Upload is cancelled. Returns the Upload object with status `cancelled`.
@@ -121,9 +126,10 @@ pub fn create_upload(
 /// * `upload_id` - The ID of the Upload.
 pub fn cancel_upload(
     config: &ClientConfig,
-    upload_id: String,
+    params: CancelUploadParams,
     options: Option<&RequestOptions>,
 ) -> Result<Upload, SdkError> {
+    let CancelUploadParams { upload_id } = params;
     Ok(sdk_request::<Upload>(
         "POST",
         &format!(
@@ -147,6 +153,13 @@ pub fn cancel_upload(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct CompleteUploadParams {
+    pub upload_id: String,
+    pub part_ids: Vec<String>,
+    pub md5: Option<String>,
+}
+
 /// Completes an upload by assembling its parts into a file that can be used on the platform. Supply the ordered part IDs and optionally an MD5 checksum; the total uploaded bytes must match the byte count specified when creating the upload. No more parts can be added after completion.
 ///
 /// Completes the [Upload](https://developers.openai.com/api/reference/resources/uploads). Within the returned Upload object, there is a nested [File](https://developers.openai.com/api/reference/resources/files) object that is ready to use in the rest of the platform. You can specify the order of the Parts by passing in an ordered list of the Part IDs. The number of bytes uploaded upon completion must match the number of bytes initially specified when creating the Upload object. No Parts may be added after an Upload is completed. Returns the Upload object with status `completed`, including an additional `file` property containing the created usable File object.
@@ -159,11 +172,14 @@ pub fn cancel_upload(
 ///   bytes uploaded matches what you expect.
 pub fn complete_upload(
     config: &ClientConfig,
-    upload_id: String,
-    part_ids: Vec<String>,
-    md5: Option<String>,
+    params: CompleteUploadParams,
     options: Option<&RequestOptions>,
 ) -> Result<Upload, SdkError> {
+    let CompleteUploadParams {
+        upload_id,
+        part_ids,
+        md5,
+    } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "part_ids".to_string(),
@@ -212,6 +228,12 @@ pub fn complete_upload(
     .data)
 }
 
+#[derive(Debug, Clone)]
+pub struct AddUploadPartParams {
+    pub upload_id: String,
+    pub data: crate::client::UploadFile,
+}
+
 /// Adds a chunk of file bytes as a part of an existing upload. Send the chunk in the `data` field; each part can be at most 64 MB, and the upload can contain up to 8 GB in total. You can add parts in parallel and specify their order when you complete the upload.
 ///
 /// Adds a [Part](https://developers.openai.com/api/reference/resources/uploads/subresources/parts) to an [Upload](https://developers.openai.com/api/reference/resources/uploads) object. A Part represents a chunk of bytes from the file you are trying to upload. Each Part can be at most 64 MB, and you can add Parts until you hit the Upload maximum of 8 GB. It is possible to add multiple Parts in parallel. You can decide the intended order of the Parts when you [complete the Upload](https://developers.openai.com/api/reference/resources/uploads/methods/complete).
@@ -222,10 +244,10 @@ pub fn complete_upload(
 /// * `data` - The chunk of bytes for this Part.
 pub fn add_upload_part(
     config: &ClientConfig,
-    upload_id: String,
-    data: crate::client::UploadFile,
+    params: AddUploadPartParams,
     options: Option<&RequestOptions>,
 ) -> Result<UploadPart, SdkError> {
+    let AddUploadPartParams { upload_id, data } = params;
     let __boundary = format!(
         "----InterfacerFormBoundary{:x}",
         std::time::SystemTime::now()
