@@ -142,8 +142,10 @@ fn accept_live_session_accept_live_session_reaches_mock_and_decodes_response() {
     let _ = &config;
     live::accept_live_session(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#"{"model":"gpt-live-1","instructions":"instructions","audio":{"output":{"voice":{"id":"id-1"}}},"delegation":{"type":"client"},"triggers":[{"type":"decisions","event_type":"session.input_transcript.delta","decisions":{"questions":[{"type":"choice","name":"Example Name","instructions":"instructions","choices":[{"value":"value","description":"string"},{"value":"value","description":"string"}]}]}}],"store":false,"input":[{"id":"id-1","type":"message","status":"incomplete","role":"developer","content":[{"type":"input_text","text":"text"}]}],"type":"live"}"#)),
+        live::AcceptLiveSessionParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            session: decode(fixture(r#"{"model":"gpt-live-1","instructions":"instructions","audio":{"output":{"voice":{"id":"id-1"}}},"delegation":{"type":"client"},"triggers":[{"type":"decisions","event_type":"session.input_transcript.delta","decisions":{"questions":[{"type":"choice","name":"Example Name","instructions":"instructions","choices":[{"value":"value","description":"string"},{"value":"value","description":"string"}]}]}}],"store":false,"input":[{"id":"id-1","type":"message","status":"incomplete","role":"developer","content":[{"type":"input_text","text":"text"}]}],"type":"live"}"#)),
+        },
         None,
     )
     .expect("accept_live_session request failed");
@@ -162,10 +164,12 @@ fn accept_live_session_accept_live_session_400_decodes_declared_error() {
     };
     let result = live::accept_live_session(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(
-            r#"{"model":"gpt-live-1","instructions":"instructions","audio":{"output":{"voice":{"id":"id-1"}}},"delegation":{"type":"client"},"triggers":[{"type":"decisions","event_type":"session.input_transcript.delta","decisions":{"questions":[{"type":"choice","name":"Example Name","instructions":"instructions","choices":[{"value":"value","description":"string"},{"value":"value","description":"string"}]}]}}],"store":false,"input":[{"id":"id-1","type":"message","status":"incomplete","role":"developer","content":[{"type":"input_text","text":"text"}]}],"type":"live"}"#,
-        )),
+        live::AcceptLiveSessionParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            session: decode(fixture(
+                r#"{"model":"gpt-live-1","instructions":"instructions","audio":{"output":{"voice":{"id":"id-1"}}},"delegation":{"type":"client"},"triggers":[{"type":"decisions","event_type":"session.input_transcript.delta","decisions":{"questions":[{"type":"choice","name":"Example Name","instructions":"instructions","choices":[{"value":"value","description":"string"},{"value":"value","description":"string"}]}]}}],"store":false,"input":[{"id":"id-1","type":"message","status":"incomplete","role":"developer","content":[{"type":"input_text","text":"text"}]}],"type":"live"}"#,
+            )),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -275,7 +279,9 @@ fn activate_certificates_for_organization_activate_certificates_for_organization
     let _ = &config;
     let actual = certificates::activate_certificates_for_organization(
         &config,
-        decode(fixture(r#"["cert_abc"]"#)),
+        certificates::ActivateCertificatesForOrganizationParams {
+            certificate_ids: decode(fixture(r#"["cert_abc"]"#)),
+        },
         None,
     )
     .expect("activate_certificates_for_organization request failed");
@@ -303,7 +309,9 @@ fn activate_certificates_for_organization_activate_certificates_for_organization
     };
     let result = certificates::activate_certificates_for_organization(
         &config,
-        decode(fixture(r#"["cert_abc"]"#)),
+        certificates::ActivateCertificatesForOrganizationParams {
+            certificate_ids: decode(fixture(r#"["cert_abc"]"#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -329,8 +337,10 @@ fn activate_certificates_for_project_activate_certificates_for_project_reaches_m
     let _ = &config;
     let actual = certificates::activate_certificates_for_project(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#"["cert_abc"]"#)),
+        certificates::ActivateCertificatesForProjectParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            certificate_ids: decode(fixture(r#"["cert_abc"]"#)),
+        },
         None,
     )
     .expect("activate_certificates_for_project request failed");
@@ -358,8 +368,10 @@ fn activate_certificates_for_project_activate_certificates_for_project_400_decod
     };
     let result = certificates::activate_certificates_for_project(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#"["cert_abc"]"#)),
+        certificates::ActivateCertificatesForProjectParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            certificate_ids: decode(fixture(r#"["cert_abc"]"#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -384,8 +396,10 @@ fn add_group_user_add_group_user_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = group_users::add_group_user(
         &config,
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""user-1""#)),
+        group_users::AddGroupUserParams {
+            group_id: decode(fixture(r#""group-1""#)),
+            user_id: decode(fixture(r#""user-1""#)),
+        },
         None,
     )
     .expect("add_group_user request failed");
@@ -410,8 +424,10 @@ fn add_group_user_add_group_user_400_decodes_declared_error() {
     };
     let result = group_users::add_group_user(
         &config,
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""user-1""#)),
+        group_users::AddGroupUserParams {
+            group_id: decode(fixture(r#""group-1""#)),
+            user_id: decode(fixture(r#""user-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -436,9 +452,11 @@ fn add_project_group_add_project_group_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = project_groups::add_project_group(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""role""#)),
+        project_groups::AddProjectGroupParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            group_id: decode(fixture(r#""group-1""#)),
+            role: decode(fixture(r#""role""#)),
+        },
         None,
     )
     .expect("add_project_group request failed");
@@ -465,9 +483,11 @@ fn add_project_group_add_project_group_400_decodes_declared_error() {
     };
     let result = project_groups::add_project_group(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""role""#)),
+        project_groups::AddProjectGroupParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            group_id: decode(fixture(r#""group-1""#)),
+            role: decode(fixture(r#""role""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -492,12 +512,14 @@ fn add_upload_part_add_upload_part_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = uploads::add_upload_part(
         &config,
-        decode(fixture(r#""upload_abc123""#)),
-        ::octridev_openai::client::UploadFile::new(
-            b"mock upload".to_vec(),
-            "mock.bin",
-            "application/octet-stream",
-        ),
+        uploads::AddUploadPartParams {
+            upload_id: decode(fixture(r#""upload_abc123""#)),
+            data: ::octridev_openai::client::UploadFile::new(
+                b"mock upload".to_vec(),
+                "mock.bin",
+                "application/octet-stream",
+            ),
+        },
         None,
     )
     .expect("add_upload_part request failed");
@@ -524,12 +546,14 @@ fn add_upload_part_add_upload_part_400_decodes_declared_error() {
     };
     let result = uploads::add_upload_part(
         &config,
-        decode(fixture(r#""upload_abc123""#)),
-        ::octridev_openai::client::UploadFile::new(
-            b"mock upload".to_vec(),
-            "mock.bin",
-            "application/octet-stream",
-        ),
+        uploads::AddUploadPartParams {
+            upload_id: decode(fixture(r#""upload_abc123""#)),
+            data: ::octridev_openai::client::UploadFile::new(
+                b"mock upload".to_vec(),
+                "mock.bin",
+                "application/octet-stream",
+            ),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -552,8 +576,14 @@ fn archive_project_archive_project_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = projects::archive_project(&config, decode(fixture(r#""project-1""#)), None)
-        .expect("archive_project request failed");
+    let actual = projects::archive_project(
+        &config,
+        projects::ArchiveProjectParams {
+            project_id: decode(fixture(r#""project-1""#)),
+        },
+        None,
+    )
+    .expect("archive_project request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","object":"organization.project","name":"Example Name","created_at":1,"archived_at":1,"status":"active","external_key_id":"external_key-1","residency":"GLOBAL"}"#,
@@ -575,7 +605,13 @@ fn archive_project_archive_project_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = projects::archive_project(&config, decode(fixture(r#""project-1""#)), None);
+    let result = projects::archive_project(
+        &config,
+        projects::ArchiveProjectParams {
+            project_id: decode(fixture(r#""project-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("archive_project did not fail with SdkError::Http on 400");
     };
@@ -598,8 +634,10 @@ fn assign_group_role_assign_group_role_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = group_organization_role_assignments::assign_group_role(
         &config,
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""role-1""#)),
+        group_organization_role_assignments::AssignGroupRoleParams {
+            group_id: decode(fixture(r#""group-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     )
     .expect("assign_group_role request failed");
@@ -626,8 +664,10 @@ fn assign_group_role_assign_group_role_400_decodes_declared_error() {
     };
     let result = group_organization_role_assignments::assign_group_role(
         &config,
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""role-1""#)),
+        group_organization_role_assignments::AssignGroupRoleParams {
+            group_id: decode(fixture(r#""group-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -652,9 +692,11 @@ fn assign_project_group_role_assign_project_group_role_reaches_mock_and_decodes_
     let _ = &config;
     let actual = project_group_role_assignments::assign_project_group_role(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""role-1""#)),
+        project_group_role_assignments::AssignProjectGroupRoleParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            group_id: decode(fixture(r#""group-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     )
     .expect("assign_project_group_role request failed");
@@ -681,9 +723,11 @@ fn assign_project_group_role_assign_project_group_role_400_decodes_declared_erro
     };
     let result = project_group_role_assignments::assign_project_group_role(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""role-1""#)),
+        project_group_role_assignments::AssignProjectGroupRoleParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            group_id: decode(fixture(r#""group-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -708,9 +752,11 @@ fn assign_project_user_role_assign_project_user_role_reaches_mock_and_decodes_re
     let _ = &config;
     let actual = project_user_role_assignments::assign_project_user_role(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""user-1""#)),
-        decode(fixture(r#""role-1""#)),
+        project_user_role_assignments::AssignProjectUserRoleParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            user_id: decode(fixture(r#""user-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     )
     .expect("assign_project_user_role request failed");
@@ -737,9 +783,11 @@ fn assign_project_user_role_assign_project_user_role_400_decodes_declared_error(
     };
     let result = project_user_role_assignments::assign_project_user_role(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""user-1""#)),
-        decode(fixture(r#""role-1""#)),
+        project_user_role_assignments::AssignProjectUserRoleParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            user_id: decode(fixture(r#""user-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -764,8 +812,10 @@ fn assign_user_role_assign_user_role_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = user_organization_role_assignments::assign_user_role(
         &config,
-        decode(fixture(r#""user-1""#)),
-        decode(fixture(r#""role-1""#)),
+        user_organization_role_assignments::AssignUserRoleParams {
+            user_id: decode(fixture(r#""user-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     )
     .expect("assign_user_role request failed");
@@ -792,8 +842,10 @@ fn assign_user_role_assign_user_role_400_decodes_declared_error() {
     };
     let result = user_organization_role_assignments::assign_user_role(
         &config,
-        decode(fixture(r#""user-1""#)),
-        decode(fixture(r#""role-1""#)),
+        user_organization_role_assignments::AssignUserRoleParams {
+            user_id: decode(fixture(r#""user-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -818,8 +870,10 @@ fn beta_cancel_response_beta_cancel_response_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = responses::beta_cancel_response(
         &config,
-        decode(fixture(r#""resp_677efb5139a88190b512bc3fef8e535d""#)),
-        Some(decode(fixture(r#"["responses_multi_agent=v1"]"#))),
+        responses::BetaCancelResponseParams {
+            response_id: decode(fixture(r#""resp_677efb5139a88190b512bc3fef8e535d""#)),
+            openai_beta: Some(decode(fixture(r#"["responses_multi_agent=v1"]"#))),
+        },
         None,
     )
     .expect("beta_cancel_response request failed");
@@ -846,8 +900,10 @@ fn beta_cancel_response_beta_cancel_response_404_decodes_declared_error() {
     };
     let result = responses::beta_cancel_response(
         &config,
-        decode(fixture(r#""resp_677efb5139a88190b512bc3fef8e535d""#)),
-        Some(decode(fixture(r#"["responses_multi_agent=v1"]"#))),
+        responses::BetaCancelResponseParams {
+            response_id: decode(fixture(r#""resp_677efb5139a88190b512bc3fef8e535d""#)),
+            openai_beta: Some(decode(fixture(r#"["responses_multi_agent=v1"]"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -872,8 +928,10 @@ fn beta_create_response_beta_create_response_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = responses::beta_create_response(
         &config,
-        decode(fixture(r#"{"metadata":{"key":"key"},"top_logprobs":0,"temperature":1,"top_p":1,"user":"user-1234","safety_identifier":"safety-identifier-1234","prompt_cache_key":"prompt_cache_key","prompt_cache_retention":"in_memory","prompt_cache_options":{"ttl":"30m","mode":"implicit","prewarm":false,"comparison_response_id":"comparison_response-1"},"previous_response_id":"previous_response-1","model":"gpt-6-astra","background":false,"max_tool_calls":1,"text":{"format":{"type":"text"},"verbosity":"medium"},"tools":[{"type":"function","name":"Example Name","async":false,"description":"example text","parameters":{"key":null},"output_schema":{"key":null},"strict":false,"defer_loading":false,"allowed_callers":["direct"]}],"tool_choice":"none","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}},"access_programs":{"cyber":"standard"},"service_tier":"auto","truncation":"disabled","reasoning":{"mode":"mode","effort":"medium","summary":"auto","context":"auto","generate_summary":"auto"},"input":"input","include":["file_search_call.results"],"parallel_tool_calls":false,"store":false,"instructions":"instructions","moderation":{"model":"model","policy":{"input":{"mode":"score"},"output":{"mode":"score"}}},"stream":false,"stream_options":{"include_obfuscation":false},"conversation":null,"context_management":[{"type":"compaction","compact_threshold":1000}],"max_output_tokens":16,"multi_agent":{"enabled":false,"max_concurrent_subagents":1}}"#)),
-        Some(decode(fixture(r#"["responses_multi_agent=v1"]"#))),
+        responses::BetaCreateResponseParams {
+            body: decode(fixture(r#"{"metadata":{"key":"key"},"top_logprobs":0,"temperature":1,"top_p":1,"user":"user-1234","safety_identifier":"safety-identifier-1234","prompt_cache_key":"prompt_cache_key","prompt_cache_retention":"in_memory","prompt_cache_options":{"ttl":"30m","mode":"implicit","prewarm":false,"comparison_response_id":"comparison_response-1"},"previous_response_id":"previous_response-1","model":"gpt-6-astra","background":false,"max_tool_calls":1,"text":{"format":{"type":"text"},"verbosity":"medium"},"tools":[{"type":"function","name":"Example Name","async":false,"description":"example text","parameters":{"key":null},"output_schema":{"key":null},"strict":false,"defer_loading":false,"allowed_callers":["direct"]}],"tool_choice":"none","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}},"access_programs":{"cyber":"standard"},"service_tier":"auto","truncation":"disabled","reasoning":{"mode":"mode","effort":"medium","summary":"auto","context":"auto","generate_summary":"auto"},"input":"input","include":["file_search_call.results"],"parallel_tool_calls":false,"store":false,"instructions":"instructions","moderation":{"model":"model","policy":{"input":{"mode":"score"},"output":{"mode":"score"}}},"stream":false,"stream_options":{"include_obfuscation":false},"conversation":null,"context_management":[{"type":"compaction","compact_threshold":1000}],"max_output_tokens":16,"multi_agent":{"enabled":false,"max_concurrent_subagents":1}}"#)),
+            openai_beta: Some(decode(fixture(r#"["responses_multi_agent=v1"]"#))),
+        },
         None,
     )
     .expect("beta_create_response request failed");
@@ -900,10 +958,12 @@ fn beta_create_response_beta_create_response_400_decodes_declared_error() {
     };
     let result = responses::beta_create_response(
         &config,
-        decode(fixture(
-            r#"{"metadata":{"key":"key"},"top_logprobs":0,"temperature":1,"top_p":1,"user":"user-1234","safety_identifier":"safety-identifier-1234","prompt_cache_key":"prompt_cache_key","prompt_cache_retention":"in_memory","prompt_cache_options":{"ttl":"30m","mode":"implicit","prewarm":false,"comparison_response_id":"comparison_response-1"},"previous_response_id":"previous_response-1","model":"gpt-6-astra","background":false,"max_tool_calls":1,"text":{"format":{"type":"text"},"verbosity":"medium"},"tools":[{"type":"function","name":"Example Name","async":false,"description":"example text","parameters":{"key":null},"output_schema":{"key":null},"strict":false,"defer_loading":false,"allowed_callers":["direct"]}],"tool_choice":"none","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}},"access_programs":{"cyber":"standard"},"service_tier":"auto","truncation":"disabled","reasoning":{"mode":"mode","effort":"medium","summary":"auto","context":"auto","generate_summary":"auto"},"input":"input","include":["file_search_call.results"],"parallel_tool_calls":false,"store":false,"instructions":"instructions","moderation":{"model":"model","policy":{"input":{"mode":"score"},"output":{"mode":"score"}}},"stream":false,"stream_options":{"include_obfuscation":false},"conversation":null,"context_management":[{"type":"compaction","compact_threshold":1000}],"max_output_tokens":16,"multi_agent":{"enabled":false,"max_concurrent_subagents":1}}"#,
-        )),
-        Some(decode(fixture(r#"["responses_multi_agent=v1"]"#))),
+        responses::BetaCreateResponseParams {
+            body: decode(fixture(
+                r#"{"metadata":{"key":"key"},"top_logprobs":0,"temperature":1,"top_p":1,"user":"user-1234","safety_identifier":"safety-identifier-1234","prompt_cache_key":"prompt_cache_key","prompt_cache_retention":"in_memory","prompt_cache_options":{"ttl":"30m","mode":"implicit","prewarm":false,"comparison_response_id":"comparison_response-1"},"previous_response_id":"previous_response-1","model":"gpt-6-astra","background":false,"max_tool_calls":1,"text":{"format":{"type":"text"},"verbosity":"medium"},"tools":[{"type":"function","name":"Example Name","async":false,"description":"example text","parameters":{"key":null},"output_schema":{"key":null},"strict":false,"defer_loading":false,"allowed_callers":["direct"]}],"tool_choice":"none","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}},"access_programs":{"cyber":"standard"},"service_tier":"auto","truncation":"disabled","reasoning":{"mode":"mode","effort":"medium","summary":"auto","context":"auto","generate_summary":"auto"},"input":"input","include":["file_search_call.results"],"parallel_tool_calls":false,"store":false,"instructions":"instructions","moderation":{"model":"model","policy":{"input":{"mode":"score"},"output":{"mode":"score"}}},"stream":false,"stream_options":{"include_obfuscation":false},"conversation":null,"context_management":[{"type":"compaction","compact_threshold":1000}],"max_output_tokens":16,"multi_agent":{"enabled":false,"max_concurrent_subagents":1}}"#,
+            )),
+            openai_beta: Some(decode(fixture(r#"["responses_multi_agent=v1"]"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -928,8 +988,10 @@ fn beta_create_response_beta_create_response_stream_reaches_mock_and_decodes_res
     let _ = &config;
     let mut events = responses::beta_create_response_stream(
         &config,
-        decode(fixture(r#"{"metadata":{"key":"key"},"top_logprobs":0,"temperature":1,"top_p":1,"user":"user-1234","safety_identifier":"safety-identifier-1234","prompt_cache_key":"prompt_cache_key","prompt_cache_retention":"in_memory","prompt_cache_options":{"ttl":"30m","mode":"implicit","prewarm":false,"comparison_response_id":"comparison_response-1"},"previous_response_id":"previous_response-1","model":"gpt-6-astra","background":false,"max_tool_calls":1,"text":{"format":{"type":"text"},"verbosity":"medium"},"tools":[{"type":"function","name":"Example Name","async":false,"description":"example text","parameters":{"key":null},"output_schema":{"key":null},"strict":false,"defer_loading":false,"allowed_callers":["direct"]}],"tool_choice":"none","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}},"access_programs":{"cyber":"standard"},"service_tier":"auto","truncation":"disabled","reasoning":{"mode":"mode","effort":"medium","summary":"auto","context":"auto","generate_summary":"auto"},"input":"input","include":["file_search_call.results"],"parallel_tool_calls":false,"store":false,"instructions":"instructions","moderation":{"model":"model","policy":{"input":{"mode":"score"},"output":{"mode":"score"}}},"stream":false,"stream_options":{"include_obfuscation":false},"conversation":null,"context_management":[{"type":"compaction","compact_threshold":1000}],"max_output_tokens":16,"multi_agent":{"enabled":false,"max_concurrent_subagents":1}}"#)),
-        Some(decode(fixture(r#"["responses_multi_agent=v1"]"#))),
+        responses::BetaCreateResponseStreamParams {
+            body: decode(fixture(r#"{"metadata":{"key":"key"},"top_logprobs":0,"temperature":1,"top_p":1,"user":"user-1234","safety_identifier":"safety-identifier-1234","prompt_cache_key":"prompt_cache_key","prompt_cache_retention":"in_memory","prompt_cache_options":{"ttl":"30m","mode":"implicit","prewarm":false,"comparison_response_id":"comparison_response-1"},"previous_response_id":"previous_response-1","model":"gpt-6-astra","background":false,"max_tool_calls":1,"text":{"format":{"type":"text"},"verbosity":"medium"},"tools":[{"type":"function","name":"Example Name","async":false,"description":"example text","parameters":{"key":null},"output_schema":{"key":null},"strict":false,"defer_loading":false,"allowed_callers":["direct"]}],"tool_choice":"none","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}},"access_programs":{"cyber":"standard"},"service_tier":"auto","truncation":"disabled","reasoning":{"mode":"mode","effort":"medium","summary":"auto","context":"auto","generate_summary":"auto"},"input":"input","include":["file_search_call.results"],"parallel_tool_calls":false,"store":false,"instructions":"instructions","moderation":{"model":"model","policy":{"input":{"mode":"score"},"output":{"mode":"score"}}},"stream":false,"stream_options":{"include_obfuscation":false},"conversation":null,"context_management":[{"type":"compaction","compact_threshold":1000}],"max_output_tokens":16,"multi_agent":{"enabled":false,"max_concurrent_subagents":1}}"#)),
+            openai_beta: Some(decode(fixture(r#"["responses_multi_agent=v1"]"#))),
+        },
         None,
     )
     .expect("beta_create_response_stream request failed");
@@ -955,8 +1017,10 @@ fn beta_delete_response_beta_delete_response_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = responses::beta_delete_response(
         &config,
-        decode(fixture(r#""resp_677efb5139a88190b512bc3fef8e535d""#)),
-        Some(decode(fixture(r#"["responses_multi_agent=v1"]"#))),
+        responses::BetaDeleteResponseParams {
+            response_id: decode(fixture(r#""resp_677efb5139a88190b512bc3fef8e535d""#)),
+            openai_beta: Some(decode(fixture(r#"["responses_multi_agent=v1"]"#))),
+        },
         None,
     )
     .expect("beta_delete_response request failed");
@@ -981,8 +1045,10 @@ fn beta_delete_response_beta_delete_response_404_decodes_declared_error() {
     };
     let result = responses::beta_delete_response(
         &config,
-        decode(fixture(r#""resp_677efb5139a88190b512bc3fef8e535d""#)),
-        Some(decode(fixture(r#"["responses_multi_agent=v1"]"#))),
+        responses::BetaDeleteResponseParams {
+            response_id: decode(fixture(r#""resp_677efb5139a88190b512bc3fef8e535d""#)),
+            openai_beta: Some(decode(fixture(r#"["responses_multi_agent=v1"]"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -1328,8 +1394,14 @@ fn cancel_batch_cancel_batch_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = batch::cancel_batch(&config, decode(fixture(r#""batch-1""#)), None)
-        .expect("cancel_batch request failed");
+    let actual = batch::cancel_batch(
+        &config,
+        batch::CancelBatchParams {
+            batch_id: decode(fixture(r#""batch-1""#)),
+        },
+        None,
+    )
+    .expect("cancel_batch request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","object":"batch","endpoint":"endpoint","model":"model","errors":{"object":"object","data":[{"code":"code","message":"example text","param":"param","line":1}]},"input_file_id":"input_file-1","completion_window":"completion_window","status":"validating","output_file_id":"output_file-1","error_file_id":"error_file-1","created_at":1,"in_progress_at":1,"expires_at":1,"finalizing_at":1,"completed_at":1,"failed_at":1,"expired_at":1,"cancelling_at":1,"cancelled_at":1,"request_counts":{"total":100,"completed":1,"failed":1},"usage":{"input_tokens":1,"input_tokens_details":{"cached_tokens":1},"output_tokens":1,"output_tokens_details":{"reasoning_tokens":1},"total_tokens":100},"metadata":{"key":"key"}}"#,
@@ -1351,7 +1423,13 @@ fn cancel_batch_cancel_batch_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = batch::cancel_batch(&config, decode(fixture(r#""batch-1""#)), None);
+    let result = batch::cancel_batch(
+        &config,
+        batch::CancelBatchParams {
+            batch_id: decode(fixture(r#""batch-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("cancel_batch did not fail with SdkError::Http on 400");
     };
@@ -1372,8 +1450,14 @@ fn cancel_chatkit_session_cancel_chatkit_session_reaches_mock_and_decodes_respon
         return;
     };
     let _ = &config;
-    let actual = chatkit::cancel_chatkit_session(&config, decode(fixture(r#""cksess_123""#)), None)
-        .expect("cancel_chatkit_session request failed");
+    let actual = chatkit::cancel_chatkit_session(
+        &config,
+        chatkit::CancelChatkitSessionParams {
+            session_id: decode(fixture(r#""cksess_123""#)),
+        },
+        None,
+    )
+    .expect("cancel_chatkit_session request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"cksess_123","object":"chatkit.session","client_secret":"","expires_at":1712349876,"workflow":{"id":"workflow_alpha","version":"2024-10-01","state_variables":{"message":"hello"},"tracing":{"enabled":true}},"user":"user_789","rate_limits":{"max_requests_per_1_minute":60},"max_requests_per_1_minute":60,"status":"cancelled","chatkit_configuration":{"automatic_thread_titling":{"enabled":true},"file_upload":{"enabled":true,"max_file_size":16,"max_files":20},"history":{"enabled":true,"recent_threads":10}}}"#,
@@ -1395,7 +1479,13 @@ fn cancel_chatkit_session_cancel_chatkit_session_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = chatkit::cancel_chatkit_session(&config, decode(fixture(r#""cksess_123""#)), None);
+    let result = chatkit::cancel_chatkit_session(
+        &config,
+        chatkit::CancelChatkitSessionParams {
+            session_id: decode(fixture(r#""cksess_123""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("cancel_chatkit_session did not fail with SdkError::Http on 400");
     };
@@ -1418,8 +1508,10 @@ fn cancel_eval_run_cancel_eval_run_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = evals::cancel_eval_run(
         &config,
-        decode(fixture(r#""eval-1""#)),
-        decode(fixture(r#""run-1""#)),
+        evals::CancelEvalRunParams {
+            eval_id: decode(fixture(r#""eval-1""#)),
+            run_id: decode(fixture(r#""run-1""#)),
+        },
         None,
     )
     .expect("cancel_eval_run request failed");
@@ -1441,7 +1533,9 @@ fn cancel_fine_tuning_job_cancel_fine_tuning_job_reaches_mock_and_decodes_respon
     let _ = &config;
     let actual = fine_tuning::cancel_fine_tuning_job(
         &config,
-        decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+        fine_tuning::CancelFineTuningJobParams {
+            fine_tuning_job_id: decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+        },
         None,
     )
     .expect("cancel_fine_tuning_job request failed");
@@ -1468,7 +1562,9 @@ fn cancel_fine_tuning_job_cancel_fine_tuning_job_400_decodes_declared_error() {
     };
     let result = fine_tuning::cancel_fine_tuning_job(
         &config,
-        decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+        fine_tuning::CancelFineTuningJobParams {
+            fine_tuning_job_id: decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -1493,7 +1589,9 @@ fn cancel_response_cancel_response_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = responses::cancel_response(
         &config,
-        decode(fixture(r#""resp_677efb5139a88190b512bc3fef8e535d""#)),
+        responses::CancelResponseParams {
+            response_id: decode(fixture(r#""resp_677efb5139a88190b512bc3fef8e535d""#)),
+        },
         None,
     )
     .expect("cancel_response request failed");
@@ -1520,7 +1618,9 @@ fn cancel_response_cancel_response_404_decodes_declared_error() {
     };
     let result = responses::cancel_response(
         &config,
-        decode(fixture(r#""resp_677efb5139a88190b512bc3fef8e535d""#)),
+        responses::CancelResponseParams {
+            response_id: decode(fixture(r#""resp_677efb5139a88190b512bc3fef8e535d""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -1545,8 +1645,10 @@ fn cancel_run_cancel_run_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = assistants::cancel_run(
         &config,
-        decode(fixture(r#""thread-1""#)),
-        decode(fixture(r#""run-1""#)),
+        assistants::CancelRunParams {
+            thread_id: decode(fixture(r#""thread-1""#)),
+            run_id: decode(fixture(r#""run-1""#)),
+        },
         None,
     )
     .expect("cancel_run request failed");
@@ -1566,8 +1668,14 @@ fn cancel_upload_cancel_upload_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = uploads::cancel_upload(&config, decode(fixture(r#""upload_abc123""#)), None)
-        .expect("cancel_upload request failed");
+    let actual = uploads::cancel_upload(
+        &config,
+        uploads::CancelUploadParams {
+            upload_id: decode(fixture(r#""upload_abc123""#)),
+        },
+        None,
+    )
+    .expect("cancel_upload request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","created_at":1,"filename":"Example Name","bytes":1,"purpose":"purpose","status":"pending","expires_at":1,"object":"upload","file":{"id":"id-1","bytes":1,"created_at":1,"expires_at":1,"filename":"Example Name","object":"file","purpose":"assistants","status":"uploaded","status_details":"active"}}"#,
@@ -1589,7 +1697,13 @@ fn cancel_upload_cancel_upload_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = uploads::cancel_upload(&config, decode(fixture(r#""upload_abc123""#)), None);
+    let result = uploads::cancel_upload(
+        &config,
+        uploads::CancelUploadParams {
+            upload_id: decode(fixture(r#""upload_abc123""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("cancel_upload did not fail with SdkError::Http on 400");
     };
@@ -1613,8 +1727,10 @@ fn cancel_vector_store_file_batch_cancel_vector_store_file_batch_reaches_mock_an
     let _ = &config;
     let actual = vector_stores::cancel_vector_store_file_batch(
         &config,
-        decode(fixture(r#""vector_store-1""#)),
-        decode(fixture(r#""batch-1""#)),
+        vector_stores::CancelVectorStoreFileBatchParams {
+            vector_store_id: decode(fixture(r#""vector_store-1""#)),
+            batch_id: decode(fixture(r#""batch-1""#)),
+        },
         None,
     )
     .expect("cancel_vector_store_file_batch request failed");
@@ -1641,8 +1757,10 @@ fn cancel_vector_store_file_batch_cancel_vector_store_file_batch_400_decodes_dec
     };
     let result = vector_stores::cancel_vector_store_file_batch(
         &config,
-        decode(fixture(r#""vector_store-1""#)),
-        decode(fixture(r#""batch-1""#)),
+        vector_stores::CancelVectorStoreFileBatchParams {
+            vector_store_id: decode(fixture(r#""vector_store-1""#)),
+            batch_id: decode(fixture(r#""batch-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -1737,9 +1855,11 @@ fn complete_upload_complete_upload_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = uploads::complete_upload(
         &config,
-        decode(fixture(r#""upload_abc123""#)),
-        decode(fixture(r#"["part_ids"]"#)),
-        Some(decode(fixture(r#""md5""#))),
+        uploads::CompleteUploadParams {
+            upload_id: decode(fixture(r#""upload_abc123""#)),
+            part_ids: decode(fixture(r#"["part_ids"]"#)),
+            md5: Some(decode(fixture(r#""md5""#))),
+        },
         None,
     )
     .expect("complete_upload request failed");
@@ -1766,9 +1886,11 @@ fn complete_upload_complete_upload_400_decodes_declared_error() {
     };
     let result = uploads::complete_upload(
         &config,
-        decode(fixture(r#""upload_abc123""#)),
-        decode(fixture(r#"["part_ids"]"#)),
-        Some(decode(fixture(r#""md5""#))),
+        uploads::CompleteUploadParams {
+            upload_id: decode(fixture(r#""upload_abc123""#)),
+            part_ids: decode(fixture(r#"["part_ids"]"#)),
+            md5: Some(decode(fixture(r#""md5""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -1875,8 +1997,10 @@ fn create_admin_api_keys_create_admin_api_keys_reaches_mock_and_decodes_response
     let _ = &config;
     let actual = admin_api_keys::create_admin_api_keys(
         &config,
-        decode(fixture(r#""New Admin Key""#)),
-        Some(decode(fixture(r#"2592000"#))),
+        admin_api_keys::CreateAdminApiKeysParams {
+            name: decode(fixture(r#""New Admin Key""#)),
+            expires_in_seconds: Some(decode(fixture(r#"2592000"#))),
+        },
         None,
     )
     .expect("create_admin_api_keys request failed");
@@ -1903,8 +2027,10 @@ fn create_admin_api_keys_create_admin_api_keys_400_decodes_declared_error() {
     };
     let result = admin_api_keys::create_admin_api_keys(
         &config,
-        decode(fixture(r#""New Admin Key""#)),
-        Some(decode(fixture(r#"2592000"#))),
+        admin_api_keys::CreateAdminApiKeysParams {
+            name: decode(fixture(r#""New Admin Key""#)),
+            expires_in_seconds: Some(decode(fixture(r#"2592000"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -2009,9 +2135,11 @@ fn create_agent_environment_create_agent_environment_reaches_mock_and_decodes_re
     let _ = &config;
     let actual = agents::create_agent_environment(
         &config,
-        decode(fixture(r#"{"type":"openai_hosted","packages":{"python":["python"],"system":["system"],"npm":["npm"]},"setup_commands":[{"command":"command","cwd":"cwd"}],"network":{"access":"enabled","allowed_domains":["allowed_domains"],"blocked_domains":["blocked_domains"]},"desktop":{"enabled":false},"env":{"key":"key"},"capability_directories":["capability_directories"],"skills":[{"type":"skill_reference","skill_id":"skill-1","version":"version"}],"plugins":[{"type":"inline","name":"Example Name","description":"example text","source":{"type":"base64","media_type":"application/zip","data":"x"}}],"files":[{"type":"file_id","file_id":"file-1","path":"x"}],"environment_template_id":"environment_template-1"}"#)),
-        Some(decode(fixture(r#""x""#))),
-        Some(Some(decode(fixture(r#"["vault_ids"]"#)))),
+        agents::CreateAgentEnvironmentParams2 {
+            environment: decode(fixture(r#"{"type":"openai_hosted","packages":{"python":["python"],"system":["system"],"npm":["npm"]},"setup_commands":[{"command":"command","cwd":"cwd"}],"network":{"access":"enabled","allowed_domains":["allowed_domains"],"blocked_domains":["blocked_domains"]},"desktop":{"enabled":false},"env":{"key":"key"},"capability_directories":["capability_directories"],"skills":[{"type":"skill_reference","skill_id":"skill-1","version":"version"}],"plugins":[{"type":"inline","name":"Example Name","description":"example text","source":{"type":"base64","media_type":"application/zip","data":"x"}}],"files":[{"type":"file_id","file_id":"file-1","path":"x"}],"environment_template_id":"environment_template-1"}"#)),
+            idempotency_key: Some(decode(fixture(r#""x""#))),
+            vault_ids: Some(Some(decode(fixture(r#"["vault_ids"]"#)))),
+        },
         None,
     )
     .expect("create_agent_environment request failed");
@@ -2038,11 +2166,13 @@ fn create_agent_environment_create_agent_environment_400_decodes_declared_error(
     };
     let result = agents::create_agent_environment(
         &config,
-        decode(fixture(
-            r#"{"type":"openai_hosted","packages":{"python":["python"],"system":["system"],"npm":["npm"]},"setup_commands":[{"command":"command","cwd":"cwd"}],"network":{"access":"enabled","allowed_domains":["allowed_domains"],"blocked_domains":["blocked_domains"]},"desktop":{"enabled":false},"env":{"key":"key"},"capability_directories":["capability_directories"],"skills":[{"type":"skill_reference","skill_id":"skill-1","version":"version"}],"plugins":[{"type":"inline","name":"Example Name","description":"example text","source":{"type":"base64","media_type":"application/zip","data":"x"}}],"files":[{"type":"file_id","file_id":"file-1","path":"x"}],"environment_template_id":"environment_template-1"}"#,
-        )),
-        Some(decode(fixture(r#""x""#))),
-        Some(Some(decode(fixture(r#"["vault_ids"]"#)))),
+        agents::CreateAgentEnvironmentParams2 {
+            environment: decode(fixture(
+                r#"{"type":"openai_hosted","packages":{"python":["python"],"system":["system"],"npm":["npm"]},"setup_commands":[{"command":"command","cwd":"cwd"}],"network":{"access":"enabled","allowed_domains":["allowed_domains"],"blocked_domains":["blocked_domains"]},"desktop":{"enabled":false},"env":{"key":"key"},"capability_directories":["capability_directories"],"skills":[{"type":"skill_reference","skill_id":"skill-1","version":"version"}],"plugins":[{"type":"inline","name":"Example Name","description":"example text","source":{"type":"base64","media_type":"application/zip","data":"x"}}],"files":[{"type":"file_id","file_id":"file-1","path":"x"}],"environment_template_id":"environment_template-1"}"#,
+            )),
+            idempotency_key: Some(decode(fixture(r#""x""#))),
+            vault_ids: Some(Some(decode(fixture(r#"["vault_ids"]"#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -2067,10 +2197,12 @@ fn create_agent_environment_file_create_agent_environment_file_reaches_mock_and_
     let _ = &config;
     let actual = agents::create_agent_environment_file(
         &config,
-        decode(fixture(r#""environment-1""#)),
-        Some(decode(fixture(
-            r#"{"type":"file_id","file_id":"file-1","path":"x"}"#,
-        ))),
+        agents::CreateAgentEnvironmentFileParams {
+            environment_id: decode(fixture(r#""environment-1""#)),
+            body: Some(decode(fixture(
+                r#"{"type":"file_id","file_id":"file-1","path":"x"}"#,
+            ))),
+        },
         None,
     )
     .expect("create_agent_environment_file request failed");
@@ -2097,10 +2229,12 @@ fn create_agent_environment_file_create_agent_environment_file_400_decodes_decla
     };
     let result = agents::create_agent_environment_file(
         &config,
-        decode(fixture(r#""environment-1""#)),
-        Some(decode(fixture(
-            r#"{"type":"file_id","file_id":"file-1","path":"x"}"#,
-        ))),
+        agents::CreateAgentEnvironmentFileParams {
+            environment_id: decode(fixture(r#""environment-1""#)),
+            body: Some(decode(fixture(
+                r#"{"type":"file_id","file_id":"file-1","path":"x"}"#,
+            ))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -2285,9 +2419,11 @@ fn create_agent_session_events_create_agent_session_events_reaches_mock_and_deco
     let _ = &config;
     agents::create_agent_session_events(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#"[{"type":"agent.session.input.computer_use_approval_request_result","request_id":"request-1","response":{"type":"browser_authentication","action":"submit","fields":[{"field_id":"field-1","value":"value"}],"selected_option":"selected_option"}}]"#)),
-        Some(decode(fixture(r#""x""#))),
+        agents::CreateAgentSessionEventsParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            events: decode(fixture(r#"[{"type":"agent.session.input.computer_use_approval_request_result","request_id":"request-1","response":{"type":"browser_authentication","action":"submit","fields":[{"field_id":"field-1","value":"value"}],"selected_option":"selected_option"}}]"#)),
+            idempotency_key: Some(decode(fixture(r#""x""#))),
+        },
         None,
     )
     .expect("create_agent_session_events request failed");
@@ -2306,11 +2442,13 @@ fn create_agent_session_events_create_agent_session_events_400_decodes_declared_
     };
     let result = agents::create_agent_session_events(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(
-            r#"[{"type":"agent.session.input.computer_use_approval_request_result","request_id":"request-1","response":{"type":"browser_authentication","action":"submit","fields":[{"field_id":"field-1","value":"value"}],"selected_option":"selected_option"}}]"#,
-        )),
-        Some(decode(fixture(r#""x""#))),
+        agents::CreateAgentSessionEventsParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            events: decode(fixture(
+                r#"[{"type":"agent.session.input.computer_use_approval_request_result","request_id":"request-1","response":{"type":"browser_authentication","action":"submit","fields":[{"field_id":"field-1","value":"value"}],"selected_option":"selected_option"}}]"#,
+            )),
+            idempotency_key: Some(decode(fixture(r#""x""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -2472,7 +2610,9 @@ fn create_chat_completion_create_chat_completion_reaches_mock_and_decodes_respon
     let _ = &config;
     let actual = chat::create_chat_completion(
         &config,
-        decode(fixture(r#"{"metadata":{"key":"key"},"top_logprobs":0,"temperature":1,"top_p":1,"user":"user-1234","safety_identifier":"safety-identifier-1234","prompt_cache_key":"prompt_cache_key","prompt_cache_retention":"in_memory","prompt_cache_options":{"ttl":"30m","mode":"implicit"},"messages":[{"content":"content","role":"developer","name":"Example Name"}],"model":"gpt-6-astra","service_tier":"auto","modalities":["text"],"verbosity":"medium","reasoning_effort":"medium","max_completion_tokens":1,"frequency_penalty":0,"presence_penalty":0,"web_search_options":{"user_location":{"type":"approximate","approximate":{"country":"country","region":"region","city":"city","timezone":"2024-01-01T00:00:00Z"}},"search_context_size":"medium"},"response_format":{"type":"text"},"audio":{"voice":"ash","format":"wav"},"store":false,"moderation":{"model":"model","policy":{"input":{"mode":"score"},"output":{"mode":"score"}}},"stream":false,"stop":null,"logit_bias":null,"logprobs":false,"max_tokens":1,"n":1,"prediction":{"type":"content","content":"content"},"seed":-9007199254740991,"stream_options":{"include_usage":false,"include_obfuscation":false},"tools":[{"type":"function","function":{"description":"example text","name":"Example Name","parameters":{},"strict":false}}],"tool_choice":{"type":"allowed_tools","allowed_tools":{"mode":"auto","tools":[{}]}},"parallel_tool_calls":true,"function_call":{"name":"Example Name"},"functions":[{"description":"example text","name":"Example Name","parameters":{}}]}"#)),
+        chat::CreateChatCompletionParams {
+            body: decode(fixture(r#"{"metadata":{"key":"key"},"top_logprobs":0,"temperature":1,"top_p":1,"user":"user-1234","safety_identifier":"safety-identifier-1234","prompt_cache_key":"prompt_cache_key","prompt_cache_retention":"in_memory","prompt_cache_options":{"ttl":"30m","mode":"implicit"},"messages":[{"content":"content","role":"developer","name":"Example Name"}],"model":"gpt-6-astra","service_tier":"auto","modalities":["text"],"verbosity":"medium","reasoning_effort":"medium","max_completion_tokens":1,"frequency_penalty":0,"presence_penalty":0,"web_search_options":{"user_location":{"type":"approximate","approximate":{"country":"country","region":"region","city":"city","timezone":"2024-01-01T00:00:00Z"}},"search_context_size":"medium"},"response_format":{"type":"text"},"audio":{"voice":"ash","format":"wav"},"store":false,"moderation":{"model":"model","policy":{"input":{"mode":"score"},"output":{"mode":"score"}}},"stream":false,"stop":null,"logit_bias":null,"logprobs":false,"max_tokens":1,"n":1,"prediction":{"type":"content","content":"content"},"seed":-9007199254740991,"stream_options":{"include_usage":false,"include_obfuscation":false},"tools":[{"type":"function","function":{"description":"example text","name":"Example Name","parameters":{},"strict":false}}],"tool_choice":{"type":"allowed_tools","allowed_tools":{"mode":"auto","tools":[{}]}},"parallel_tool_calls":true,"function_call":{"name":"Example Name"},"functions":[{"description":"example text","name":"Example Name","parameters":{}}]}"#)),
+        },
         None,
     )
     .expect("create_chat_completion request failed");
@@ -2499,9 +2639,11 @@ fn create_chat_completion_create_chat_completion_400_decodes_declared_error() {
     };
     let result = chat::create_chat_completion(
         &config,
-        decode(fixture(
-            r#"{"metadata":{"key":"key"},"top_logprobs":0,"temperature":1,"top_p":1,"user":"user-1234","safety_identifier":"safety-identifier-1234","prompt_cache_key":"prompt_cache_key","prompt_cache_retention":"in_memory","prompt_cache_options":{"ttl":"30m","mode":"implicit"},"messages":[{"content":"content","role":"developer","name":"Example Name"}],"model":"gpt-6-astra","service_tier":"auto","modalities":["text"],"verbosity":"medium","reasoning_effort":"medium","max_completion_tokens":1,"frequency_penalty":0,"presence_penalty":0,"web_search_options":{"user_location":{"type":"approximate","approximate":{"country":"country","region":"region","city":"city","timezone":"2024-01-01T00:00:00Z"}},"search_context_size":"medium"},"response_format":{"type":"text"},"audio":{"voice":"ash","format":"wav"},"store":false,"moderation":{"model":"model","policy":{"input":{"mode":"score"},"output":{"mode":"score"}}},"stream":false,"stop":null,"logit_bias":null,"logprobs":false,"max_tokens":1,"n":1,"prediction":{"type":"content","content":"content"},"seed":-9007199254740991,"stream_options":{"include_usage":false,"include_obfuscation":false},"tools":[{"type":"function","function":{"description":"example text","name":"Example Name","parameters":{},"strict":false}}],"tool_choice":{"type":"allowed_tools","allowed_tools":{"mode":"auto","tools":[{}]}},"parallel_tool_calls":true,"function_call":{"name":"Example Name"},"functions":[{"description":"example text","name":"Example Name","parameters":{}}]}"#,
-        )),
+        chat::CreateChatCompletionParams {
+            body: decode(fixture(
+                r#"{"metadata":{"key":"key"},"top_logprobs":0,"temperature":1,"top_p":1,"user":"user-1234","safety_identifier":"safety-identifier-1234","prompt_cache_key":"prompt_cache_key","prompt_cache_retention":"in_memory","prompt_cache_options":{"ttl":"30m","mode":"implicit"},"messages":[{"content":"content","role":"developer","name":"Example Name"}],"model":"gpt-6-astra","service_tier":"auto","modalities":["text"],"verbosity":"medium","reasoning_effort":"medium","max_completion_tokens":1,"frequency_penalty":0,"presence_penalty":0,"web_search_options":{"user_location":{"type":"approximate","approximate":{"country":"country","region":"region","city":"city","timezone":"2024-01-01T00:00:00Z"}},"search_context_size":"medium"},"response_format":{"type":"text"},"audio":{"voice":"ash","format":"wav"},"store":false,"moderation":{"model":"model","policy":{"input":{"mode":"score"},"output":{"mode":"score"}}},"stream":false,"stop":null,"logit_bias":null,"logprobs":false,"max_tokens":1,"n":1,"prediction":{"type":"content","content":"content"},"seed":-9007199254740991,"stream_options":{"include_usage":false,"include_obfuscation":false},"tools":[{"type":"function","function":{"description":"example text","name":"Example Name","parameters":{},"strict":false}}],"tool_choice":{"type":"allowed_tools","allowed_tools":{"mode":"auto","tools":[{}]}},"parallel_tool_calls":true,"function_call":{"name":"Example Name"},"functions":[{"description":"example text","name":"Example Name","parameters":{}}]}"#,
+            )),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -2526,7 +2668,9 @@ fn create_chat_completion_create_chat_completion_stream_reaches_mock_and_decodes
     let _ = &config;
     let mut events = chat::create_chat_completion_stream(
         &config,
-        decode(fixture(r#"{"metadata":{"key":"key"},"top_logprobs":0,"temperature":1,"top_p":1,"user":"user-1234","safety_identifier":"safety-identifier-1234","prompt_cache_key":"prompt_cache_key","prompt_cache_retention":"in_memory","prompt_cache_options":{"ttl":"30m","mode":"implicit"},"messages":[{"content":"content","role":"developer","name":"Example Name"}],"model":"gpt-6-astra","service_tier":"auto","modalities":["text"],"verbosity":"medium","reasoning_effort":"medium","max_completion_tokens":1,"frequency_penalty":0,"presence_penalty":0,"web_search_options":{"user_location":{"type":"approximate","approximate":{"country":"country","region":"region","city":"city","timezone":"2024-01-01T00:00:00Z"}},"search_context_size":"medium"},"response_format":{"type":"text"},"audio":{"voice":"ash","format":"wav"},"store":false,"moderation":{"model":"model","policy":{"input":{"mode":"score"},"output":{"mode":"score"}}},"stream":false,"stop":null,"logit_bias":null,"logprobs":false,"max_tokens":1,"n":1,"prediction":{"type":"content","content":"content"},"seed":-9007199254740991,"stream_options":{"include_usage":false,"include_obfuscation":false},"tools":[{"type":"function","function":{"description":"example text","name":"Example Name","parameters":{},"strict":false}}],"tool_choice":{"type":"allowed_tools","allowed_tools":{"mode":"auto","tools":[{}]}},"parallel_tool_calls":true,"function_call":{"name":"Example Name"},"functions":[{"description":"example text","name":"Example Name","parameters":{}}]}"#)),
+        chat::CreateChatCompletionStreamParams {
+            body: decode(fixture(r#"{"metadata":{"key":"key"},"top_logprobs":0,"temperature":1,"top_p":1,"user":"user-1234","safety_identifier":"safety-identifier-1234","prompt_cache_key":"prompt_cache_key","prompt_cache_retention":"in_memory","prompt_cache_options":{"ttl":"30m","mode":"implicit"},"messages":[{"content":"content","role":"developer","name":"Example Name"}],"model":"gpt-6-astra","service_tier":"auto","modalities":["text"],"verbosity":"medium","reasoning_effort":"medium","max_completion_tokens":1,"frequency_penalty":0,"presence_penalty":0,"web_search_options":{"user_location":{"type":"approximate","approximate":{"country":"country","region":"region","city":"city","timezone":"2024-01-01T00:00:00Z"}},"search_context_size":"medium"},"response_format":{"type":"text"},"audio":{"voice":"ash","format":"wav"},"store":false,"moderation":{"model":"model","policy":{"input":{"mode":"score"},"output":{"mode":"score"}}},"stream":false,"stop":null,"logit_bias":null,"logprobs":false,"max_tokens":1,"n":1,"prediction":{"type":"content","content":"content"},"seed":-9007199254740991,"stream_options":{"include_usage":false,"include_obfuscation":false},"tools":[{"type":"function","function":{"description":"example text","name":"Example Name","parameters":{},"strict":false}}],"tool_choice":{"type":"allowed_tools","allowed_tools":{"mode":"auto","tools":[{}]}},"parallel_tool_calls":true,"function_call":{"name":"Example Name"},"functions":[{"description":"example text","name":"Example Name","parameters":{}}]}"#)),
+        },
         None,
     )
     .expect("create_chat_completion_stream request failed");
@@ -2835,10 +2979,12 @@ fn create_container_file_create_container_file_reaches_mock_and_decodes_response
     let _ = &config;
     let actual = containers::create_container_file(
         &config,
-        decode(fixture(r#""container-1""#)),
-        Some(decode(fixture(r#""file-1""#))),
-        Some(decode(fixture(r#""ZXhhbXBsZQ==""#))),
-        None,
+        containers::CreateContainerFileParams {
+            container_id: decode(fixture(r#""container-1""#)),
+            file_id: Some(decode(fixture(r#""file-1""#))),
+            file: Some(decode(fixture(r#""ZXhhbXBsZQ==""#))),
+            content_type: None,
+        },
         None,
     )
     .expect("create_container_file request failed");
@@ -2865,10 +3011,12 @@ fn create_container_file_create_container_file_400_decodes_declared_error() {
     };
     let result = containers::create_container_file(
         &config,
-        decode(fixture(r#""container-1""#)),
-        Some(decode(fixture(r#""file-1""#))),
-        Some(decode(fixture(r#""ZXhhbXBsZQ==""#))),
-        None,
+        containers::CreateContainerFileParams {
+            container_id: decode(fixture(r#""container-1""#)),
+            file_id: Some(decode(fixture(r#""file-1""#))),
+            file: Some(decode(fixture(r#""ZXhhbXBsZQ==""#))),
+            content_type: None,
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -2894,10 +3042,12 @@ fn create_container_file_create_container_file_multipart_form_data_reaches_mock_
     let _ = &config;
     let actual = containers::create_container_file(
         &config,
-        decode(fixture(r#""container-1""#)),
-        Some(decode(fixture(r#""file-1""#))),
-        Some(decode(fixture(r#""ZXhhbXBsZQ==""#))),
-        Some(decode(fixture(r#""multipart/form-data""#))),
+        containers::CreateContainerFileParams {
+            container_id: decode(fixture(r#""container-1""#)),
+            file_id: Some(decode(fixture(r#""file-1""#))),
+            file: Some(decode(fixture(r#""ZXhhbXBsZQ==""#))),
+            content_type: Some(decode(fixture(r#""multipart/form-data""#))),
+        },
         None,
     )
     .expect("create_container_file request failed");
@@ -2920,11 +3070,13 @@ fn create_content_provenance_checks_create_content_provenance_checks_reaches_moc
     let _ = &config;
     let actual = content_provenance_checks::create_content_provenance_checks(
         &config,
-        ::octridev_openai::client::UploadFile::new(
-            b"mock upload".to_vec(),
-            "mock.bin",
-            "application/octet-stream",
-        ),
+        content_provenance_checks::CreateContentProvenanceChecksParams {
+            file: ::octridev_openai::client::UploadFile::new(
+                b"mock upload".to_vec(),
+                "mock.bin",
+                "application/octet-stream",
+            ),
+        },
         None,
     )
     .expect("create_content_provenance_checks request failed");
@@ -2951,11 +3103,13 @@ fn create_content_provenance_checks_create_content_provenance_checks_400_decodes
     };
     let result = content_provenance_checks::create_content_provenance_checks(
         &config,
-        ::octridev_openai::client::UploadFile::new(
-            b"mock upload".to_vec(),
-            "mock.bin",
-            "application/octet-stream",
-        ),
+        content_provenance_checks::CreateContentProvenanceChecksParams {
+            file: ::octridev_openai::client::UploadFile::new(
+                b"mock upload".to_vec(),
+                "mock.bin",
+                "application/octet-stream",
+            ),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -2980,8 +3134,10 @@ fn create_conversation_create_conversation_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = conversations::create_conversation(
         &config,
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
-        Some(Some(decode(fixture(r#"[{"role":"user","content":[{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}],"phase":"commentary","type":"message"}]"#)))),
+        conversations::CreateConversationParams {
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+            items: Some(Some(decode(fixture(r#"[{"role":"user","content":[{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}],"phase":"commentary","type":"message"}]"#)))),
+        },
         None,
     )
     .expect("create_conversation request failed");
@@ -3007,10 +3163,12 @@ fn create_conversation_create_conversation_400_decodes_declared_error() {
     };
     let result = conversations::create_conversation(
         &config,
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
-        Some(Some(decode(fixture(
-            r#"[{"role":"user","content":[{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}],"phase":"commentary","type":"message"}]"#,
-        )))),
+        conversations::CreateConversationParams {
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+            items: Some(Some(decode(fixture(
+                r#"[{"role":"user","content":[{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}],"phase":"commentary","type":"message"}]"#,
+            )))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -3035,9 +3193,11 @@ fn create_conversation_items_create_conversation_items_reaches_mock_and_decodes_
     let _ = &config;
     let actual = conversations::create_conversation_items(
         &config,
-        decode(fixture(r#""conv_123""#)),
-        decode(fixture(r#"[{"role":"user","content":[{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}],"phase":"commentary","type":"message"}]"#)),
-        Some(decode(fixture(r#"["file_search_call.results"]"#))),
+        conversations::CreateConversationItemsParams {
+            conversation_id: decode(fixture(r#""conv_123""#)),
+            items: decode(fixture(r#"[{"role":"user","content":[{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}],"phase":"commentary","type":"message"}]"#)),
+            include: Some(decode(fixture(r#"["file_search_call.results"]"#))),
+        },
         None,
     )
     .expect("create_conversation_items request failed");
@@ -3064,11 +3224,13 @@ fn create_conversation_items_create_conversation_items_400_decodes_declared_erro
     };
     let result = conversations::create_conversation_items(
         &config,
-        decode(fixture(r#""conv_123""#)),
-        decode(fixture(
-            r#"[{"role":"user","content":[{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}],"phase":"commentary","type":"message"}]"#,
-        )),
-        Some(decode(fixture(r#"["file_search_call.results"]"#))),
+        conversations::CreateConversationItemsParams {
+            conversation_id: decode(fixture(r#""conv_123""#)),
+            items: decode(fixture(
+                r#"[{"role":"user","content":[{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}],"phase":"commentary","type":"message"}]"#,
+            )),
+            include: Some(decode(fixture(r#"["file_search_call.results"]"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -3188,10 +3350,12 @@ fn create_eval_create_eval_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = evals::create_eval(
         &config,
-        decode(fixture(r#"{"type":"custom","item_schema":{"type":"object","properties":{"name":{"type":"string"},"age":{"type":"integer"}},"required":["name","age"]},"include_sample_schema":false}"#)),
-        decode(fixture(r#"[{"type":"label_model","name":"Example Name","model":"model","input":[{"role":"user","content":"content","type":"message"}],"labels":["labels"],"passing_labels":["passing_labels"]}]"#)),
-        Some(decode(fixture(r#""Example Name""#))),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        evals::CreateEvalParams {
+            data_source_config: decode(fixture(r#"{"type":"custom","item_schema":{"type":"object","properties":{"name":{"type":"string"},"age":{"type":"integer"}},"required":["name","age"]},"include_sample_schema":false}"#)),
+            testing_criteria: decode(fixture(r#"[{"type":"label_model","name":"Example Name","model":"model","input":[{"role":"user","content":"content","type":"message"}],"labels":["labels"],"passing_labels":["passing_labels"]}]"#)),
+            name: Some(decode(fixture(r#""Example Name""#))),
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     )
     .expect("create_eval request failed");
@@ -3218,14 +3382,16 @@ fn create_eval_create_eval_400_decodes_declared_error() {
     };
     let result = evals::create_eval(
         &config,
-        decode(fixture(
-            r#"{"type":"custom","item_schema":{"type":"object","properties":{"name":{"type":"string"},"age":{"type":"integer"}},"required":["name","age"]},"include_sample_schema":false}"#,
-        )),
-        decode(fixture(
-            r#"[{"type":"label_model","name":"Example Name","model":"model","input":[{"role":"user","content":"content","type":"message"}],"labels":["labels"],"passing_labels":["passing_labels"]}]"#,
-        )),
-        Some(decode(fixture(r#""Example Name""#))),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        evals::CreateEvalParams {
+            data_source_config: decode(fixture(
+                r#"{"type":"custom","item_schema":{"type":"object","properties":{"name":{"type":"string"},"age":{"type":"integer"}},"required":["name","age"]},"include_sample_schema":false}"#,
+            )),
+            testing_criteria: decode(fixture(
+                r#"[{"type":"label_model","name":"Example Name","model":"model","input":[{"role":"user","content":"content","type":"message"}],"labels":["labels"],"passing_labels":["passing_labels"]}]"#,
+            )),
+            name: Some(decode(fixture(r#""Example Name""#))),
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -3250,10 +3416,12 @@ fn create_eval_run_create_eval_run_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = evals::create_eval_run(
         &config,
-        decode(fixture(r#""eval-1""#)),
-        decode(fixture(r#"{"type":"jsonl","source":{"type":"file_content","content":[{"item":{},"sample":{}}]}}"#)),
-        Some(decode(fixture(r#""Example Name""#))),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        evals::CreateEvalRunParams {
+            eval_id: decode(fixture(r#""eval-1""#)),
+            data_source: decode(fixture(r#"{"type":"jsonl","source":{"type":"file_content","content":[{"item":{},"sample":{}}]}}"#)),
+            name: Some(decode(fixture(r#""Example Name""#))),
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     )
     .expect("create_eval_run request failed");
@@ -3280,12 +3448,14 @@ fn create_eval_run_create_eval_run_400_decodes_declared_error() {
     };
     let result = evals::create_eval_run(
         &config,
-        decode(fixture(r#""eval-1""#)),
-        decode(fixture(
-            r#"{"type":"jsonl","source":{"type":"file_content","content":[{"item":{},"sample":{}}]}}"#,
-        )),
-        Some(decode(fixture(r#""Example Name""#))),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        evals::CreateEvalRunParams {
+            eval_id: decode(fixture(r#""eval-1""#)),
+            data_source: decode(fixture(
+                r#"{"type":"jsonl","source":{"type":"file_content","content":[{"item":{},"sample":{}}]}}"#,
+            )),
+            name: Some(decode(fixture(r#""Example Name""#))),
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -3310,10 +3480,12 @@ fn create_external_storage_create_external_storage_reaches_mock_and_decodes_resp
     let _ = &config;
     let actual = external_storage::create_external_storage(
         &config,
-        decode(fixture(r#""proj_123""#)),
-        decode(fixture(
-            r#"{"type":"aws","bucket":"bucket","role_arn":"role_arn"}"#,
-        )),
+        external_storage::CreateExternalStorageParams {
+            project_id: decode(fixture(r#""proj_123""#)),
+            provider: decode(fixture(
+                r#"{"type":"aws","bucket":"bucket","role_arn":"role_arn"}"#,
+            )),
+        },
         None,
     )
     .expect("create_external_storage request failed");
@@ -3340,10 +3512,12 @@ fn create_external_storage_create_external_storage_400_decodes_declared_error() 
     };
     let result = external_storage::create_external_storage(
         &config,
-        decode(fixture(r#""proj_123""#)),
-        decode(fixture(
-            r#"{"type":"aws","bucket":"bucket","role_arn":"role_arn"}"#,
-        )),
+        external_storage::CreateExternalStorageParams {
+            project_id: decode(fixture(r#""proj_123""#)),
+            provider: decode(fixture(
+                r#"{"type":"aws","bucket":"bucket","role_arn":"role_arn"}"#,
+            )),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -3368,13 +3542,15 @@ fn create_file_create_file_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = files::create_file(
         &config,
-        ::octridev_openai::client::UploadFile::new(
-            b"mock upload".to_vec(),
-            "mock.bin",
-            "application/octet-stream",
-        ),
-        decode(fixture(r#""assistants""#)),
-        Some(decode(fixture(r#"{"anchor":"created_at","seconds":3600}"#))),
+        files::CreateFileParams {
+            file: ::octridev_openai::client::UploadFile::new(
+                b"mock upload".to_vec(),
+                "mock.bin",
+                "application/octet-stream",
+            ),
+            purpose: decode(fixture(r#""assistants""#)),
+            expires_after: Some(decode(fixture(r#"{"anchor":"created_at","seconds":3600}"#))),
+        },
         None,
     )
     .expect("create_file request failed");
@@ -3401,13 +3577,15 @@ fn create_file_create_file_400_decodes_declared_error() {
     };
     let result = files::create_file(
         &config,
-        ::octridev_openai::client::UploadFile::new(
-            b"mock upload".to_vec(),
-            "mock.bin",
-            "application/octet-stream",
-        ),
-        decode(fixture(r#""assistants""#)),
-        Some(decode(fixture(r#"{"anchor":"created_at","seconds":3600}"#))),
+        files::CreateFileParams {
+            file: ::octridev_openai::client::UploadFile::new(
+                b"mock upload".to_vec(),
+                "mock.bin",
+                "application/octet-stream",
+            ),
+            purpose: decode(fixture(r#""assistants""#)),
+            expires_after: Some(decode(fixture(r#"{"anchor":"created_at","seconds":3600}"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -3433,10 +3611,12 @@ fn create_fine_tuning_checkpoint_permission_create_fine_tuning_checkpoint_permis
     let _ = &config;
     let actual = fine_tuning::create_fine_tuning_checkpoint_permission(
         &config,
-        decode(fixture(
-            r#""ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd""#,
-        )),
-        decode(fixture(r#"["project_ids"]"#)),
+        fine_tuning::CreateFineTuningCheckpointPermissionParams {
+            fine_tuned_model_checkpoint: decode(fixture(
+                r#""ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd""#,
+            )),
+            project_ids: decode(fixture(r#"["project_ids"]"#)),
+        },
         None,
     )
     .expect("create_fine_tuning_checkpoint_permission request failed");
@@ -3464,10 +3644,12 @@ fn create_fine_tuning_checkpoint_permission_create_fine_tuning_checkpoint_permis
     };
     let result = fine_tuning::create_fine_tuning_checkpoint_permission(
         &config,
-        decode(fixture(
-            r#""ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd""#,
-        )),
-        decode(fixture(r#"["project_ids"]"#)),
+        fine_tuning::CreateFineTuningCheckpointPermissionParams {
+            fine_tuned_model_checkpoint: decode(fixture(
+                r#""ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd""#,
+            )),
+            project_ids: decode(fixture(r#"["project_ids"]"#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -3568,8 +3750,14 @@ fn create_group_create_group_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = groups::create_group(&config, decode(fixture(r#""Example Name""#)), None)
-        .expect("create_group request failed");
+    let actual = groups::create_group(
+        &config,
+        groups::CreateGroupParams {
+            name: decode(fixture(r#""Example Name""#)),
+        },
+        None,
+    )
+    .expect("create_group request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","name":"Example Name","created_at":1,"is_scim_managed":false,"group_type":"group"}"#,
@@ -3591,7 +3779,13 @@ fn create_group_create_group_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = groups::create_group(&config, decode(fixture(r#""Example Name""#)), None);
+    let result = groups::create_group(
+        &config,
+        groups::CreateGroupParams {
+            name: decode(fixture(r#""Example Name""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("create_group did not fail with SdkError::Http on 400");
     };
@@ -3698,8 +3892,10 @@ fn create_image_edit_create_image_edit_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = images::create_image_edit(
         &config,
-        images::CreateImageEditBody::EditImageBodyJsonParam(decode(fixture(r#"{"model":"gpt-image-1.5","prompt":"Add a watercolor effect to this image","images":[{"image_url":"https://example.com/source-image.png"}],"size":"1024x1024","quality":"high"}"#))),
-        None,
+        images::CreateImageEditParams {
+            body: images::CreateImageEditBody::EditImageBodyJsonParam(decode(fixture(r#"{"model":"gpt-image-1.5","prompt":"Add a watercolor effect to this image","images":[{"image_url":"https://example.com/source-image.png"}],"size":"1024x1024","quality":"high"}"#))),
+            content_type: None,
+        },
         None,
     )
     .expect("create_image_edit request failed");
@@ -3726,10 +3922,12 @@ fn create_image_edit_create_image_edit_400_decodes_declared_error() {
     };
     let result = images::create_image_edit(
         &config,
-        images::CreateImageEditBody::EditImageBodyJsonParam(decode(fixture(
-            r#"{"model":"gpt-image-1.5","prompt":"Add a watercolor effect to this image","images":[{"image_url":"https://example.com/source-image.png"}],"size":"1024x1024","quality":"high"}"#,
-        ))),
-        None,
+        images::CreateImageEditParams {
+            body: images::CreateImageEditBody::EditImageBodyJsonParam(decode(fixture(
+                r#"{"model":"gpt-image-1.5","prompt":"Add a watercolor effect to this image","images":[{"image_url":"https://example.com/source-image.png"}],"size":"1024x1024","quality":"high"}"#,
+            ))),
+            content_type: None,
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -3754,8 +3952,10 @@ fn create_image_edit_create_image_edit_multipart_form_data_reaches_mock_and_deco
     let _ = &config;
     let actual = images::create_image_edit(
         &config,
-        images::CreateImageEditBody::CreateImageEditRequest(decode(fixture(r#"{"model":"gpt-image-1.5","prompt":"Add a watercolor effect to this image","image":["ZXhhbXBsZQ=="],"size":"1024x1024","quality":"high"}"#))),
-        Some(decode(fixture(r#""multipart/form-data""#))),
+        images::CreateImageEditParams {
+            body: images::CreateImageEditBody::CreateImageEditRequest(decode(fixture(r#"{"model":"gpt-image-1.5","prompt":"Add a watercolor effect to this image","image":["ZXhhbXBsZQ=="],"size":"1024x1024","quality":"high"}"#))),
+            content_type: Some(decode(fixture(r#""multipart/form-data""#))),
+        },
         None,
     )
     .expect("create_image_edit request failed");
@@ -3777,8 +3977,10 @@ fn create_image_edit_create_image_edit_stream_reaches_mock_and_decodes_response(
     let _ = &config;
     let mut events = images::create_image_edit_stream(
         &config,
-        images::CreateImageEditStreamBody::EditImageBodyJsonParam(decode(fixture(r#"{"model":"gpt-image-1.5","prompt":"Add a watercolor effect to this image","images":[{"image_url":"https://example.com/source-image.png"}],"size":"1024x1024","quality":"high"}"#))),
-        None,
+        images::CreateImageEditStreamParams {
+            body: images::CreateImageEditStreamBody::EditImageBodyJsonParam(decode(fixture(r#"{"model":"gpt-image-1.5","prompt":"Add a watercolor effect to this image","images":[{"image_url":"https://example.com/source-image.png"}],"size":"1024x1024","quality":"high"}"#))),
+            content_type: None,
+        },
         None,
     )
     .expect("create_image_edit_stream request failed");
@@ -3920,9 +4122,11 @@ fn create_invites_create_invites_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = invites::create_invites(
         &config,
-        decode(fixture(r#""user@example.com""#)),
-        decode(fixture(r#""reader""#)),
-        Some(decode(fixture(r#"[{"id":"id-1","role":"member"}]"#))),
+        invites::CreateInvitesParams {
+            email: decode(fixture(r#""user@example.com""#)),
+            role: decode(fixture(r#""reader""#)),
+            projects: Some(decode(fixture(r#"[{"id":"id-1","role":"member"}]"#))),
+        },
         None,
     )
     .expect("create_invites request failed");
@@ -3949,9 +4153,11 @@ fn create_invites_create_invites_400_decodes_declared_error() {
     };
     let result = invites::create_invites(
         &config,
-        decode(fixture(r#""user@example.com""#)),
-        decode(fixture(r#""reader""#)),
-        Some(decode(fixture(r#"[{"id":"id-1","role":"member"}]"#))),
+        invites::CreateInvitesParams {
+            email: decode(fixture(r#""user@example.com""#)),
+            role: decode(fixture(r#""reader""#)),
+            projects: Some(decode(fixture(r#"[{"id":"id-1","role":"member"}]"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -3976,8 +4182,10 @@ fn create_live_create_live_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = live::create_live(
         &config,
-        decode(fixture(r#"{"model":"gpt-live-1","instructions":"instructions","audio":{"output":{"voice":{"id":"id-1"}}},"delegation":{"type":"client"},"triggers":[{"type":"decisions","event_type":"session.input_transcript.delta","decisions":{"questions":[{"type":"choice","name":"Example Name","instructions":"instructions","choices":[{"value":"value","description":"string"},{"value":"value","description":"string"}]}]}}],"store":false,"input":[{"id":"id-1","type":"message","status":"incomplete","role":"developer","content":[{"type":"input_text","text":"text"}]}],"client":{"data_channel":{"allowed_client_events":"all","allowed_server_events":"all"}}}"#)),
-        decode(fixture(r#"{"type":"webrtc","sdp":"x"}"#)),
+        live::CreateLiveParams {
+            session: decode(fixture(r#"{"model":"gpt-live-1","instructions":"instructions","audio":{"output":{"voice":{"id":"id-1"}}},"delegation":{"type":"client"},"triggers":[{"type":"decisions","event_type":"session.input_transcript.delta","decisions":{"questions":[{"type":"choice","name":"Example Name","instructions":"instructions","choices":[{"value":"value","description":"string"},{"value":"value","description":"string"}]}]}}],"store":false,"input":[{"id":"id-1","type":"message","status":"incomplete","role":"developer","content":[{"type":"input_text","text":"text"}]}],"client":{"data_channel":{"allowed_client_events":"all","allowed_server_events":"all"}}}"#)),
+            transport: decode(fixture(r#"{"type":"webrtc","sdp":"x"}"#)),
+        },
         None,
     )
     .expect("create_live request failed");
@@ -4004,10 +4212,12 @@ fn create_live_create_live_400_decodes_declared_error() {
     };
     let result = live::create_live(
         &config,
-        decode(fixture(
-            r#"{"model":"gpt-live-1","instructions":"instructions","audio":{"output":{"voice":{"id":"id-1"}}},"delegation":{"type":"client"},"triggers":[{"type":"decisions","event_type":"session.input_transcript.delta","decisions":{"questions":[{"type":"choice","name":"Example Name","instructions":"instructions","choices":[{"value":"value","description":"string"},{"value":"value","description":"string"}]}]}}],"store":false,"input":[{"id":"id-1","type":"message","status":"incomplete","role":"developer","content":[{"type":"input_text","text":"text"}]}],"client":{"data_channel":{"allowed_client_events":"all","allowed_server_events":"all"}}}"#,
-        )),
-        decode(fixture(r#"{"type":"webrtc","sdp":"x"}"#)),
+        live::CreateLiveParams {
+            session: decode(fixture(
+                r#"{"model":"gpt-live-1","instructions":"instructions","audio":{"output":{"voice":{"id":"id-1"}}},"delegation":{"type":"client"},"triggers":[{"type":"decisions","event_type":"session.input_transcript.delta","decisions":{"questions":[{"type":"choice","name":"Example Name","instructions":"instructions","choices":[{"value":"value","description":"string"},{"value":"value","description":"string"}]}]}}],"store":false,"input":[{"id":"id-1","type":"message","status":"incomplete","role":"developer","content":[{"type":"input_text","text":"text"}]}],"client":{"data_channel":{"allowed_client_events":"all","allowed_server_events":"all"}}}"#,
+            )),
+            transport: decode(fixture(r#"{"type":"webrtc","sdp":"x"}"#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -4062,8 +4272,10 @@ fn create_moderation_create_moderation_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = moderations::create_moderation(
         &config,
-        decode(fixture(r#""I want to kill them.""#)),
-        Some(decode(fixture(r#""omni-moderation-2024-09-26""#))),
+        moderations::CreateModerationParams {
+            input: decode(fixture(r#""I want to kill them.""#)),
+            model: Some(decode(fixture(r#""omni-moderation-2024-09-26""#))),
+        },
         None,
     )
     .expect("create_moderation request failed");
@@ -4090,8 +4302,10 @@ fn create_moderation_create_moderation_400_decodes_declared_error() {
     };
     let result = moderations::create_moderation(
         &config,
-        decode(fixture(r#""I want to kill them.""#)),
-        Some(decode(fixture(r#""omni-moderation-2024-09-26""#))),
+        moderations::CreateModerationParams {
+            input: decode(fixture(r#""I want to kill them.""#)),
+            model: Some(decode(fixture(r#""omni-moderation-2024-09-26""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -4117,12 +4331,14 @@ fn create_organization_spend_alert_create_organization_spend_alert_reaches_mock_
     let _ = &config;
     let actual = spend_alerts::create_organization_spend_alert(
         &config,
-        decode(fixture(r#"0"#)),
-        decode(fixture(r#""USD""#)),
-        decode(fixture(r#""month""#)),
-        decode(fixture(
-            r#"{"type":"email","recipients":["recipients"],"subject_prefix":"subject_prefix"}"#,
-        )),
+        spend_alerts::CreateOrganizationSpendAlertParams {
+            threshold_amount: decode(fixture(r#"0"#)),
+            currency: decode(fixture(r#""USD""#)),
+            interval: decode(fixture(r#""month""#)),
+            notification_channel: decode(fixture(
+                r#"{"type":"email","recipients":["recipients"],"subject_prefix":"subject_prefix"}"#,
+            )),
+        },
         None,
     )
     .expect("create_organization_spend_alert request failed");
@@ -4149,12 +4365,14 @@ fn create_organization_spend_alert_create_organization_spend_alert_400_decodes_d
     };
     let result = spend_alerts::create_organization_spend_alert(
         &config,
-        decode(fixture(r#"0"#)),
-        decode(fixture(r#""USD""#)),
-        decode(fixture(r#""month""#)),
-        decode(fixture(
-            r#"{"type":"email","recipients":["recipients"],"subject_prefix":"subject_prefix"}"#,
-        )),
+        spend_alerts::CreateOrganizationSpendAlertParams {
+            threshold_amount: decode(fixture(r#"0"#)),
+            currency: decode(fixture(r#""USD""#)),
+            interval: decode(fixture(r#""month""#)),
+            notification_channel: decode(fixture(
+                r#"{"type":"email","recipients":["recipients"],"subject_prefix":"subject_prefix"}"#,
+            )),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -4179,10 +4397,12 @@ fn create_project_create_project_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = projects::create_project(
         &config,
-        decode(fixture(r#""Example Name""#)),
-        Some(Some(decode(fixture(r#""geography""#)))),
-        Some(Some(decode(fixture(r#""GLOBAL""#)))),
-        Some(Some(decode(fixture(r#""external_key-1""#)))),
+        projects::CreateProjectParams {
+            name: decode(fixture(r#""Example Name""#)),
+            geography: Some(Some(decode(fixture(r#""geography""#)))),
+            residency: Some(Some(decode(fixture(r#""GLOBAL""#)))),
+            external_key_id: Some(Some(decode(fixture(r#""external_key-1""#)))),
+        },
         None,
     )
     .expect("create_project request failed");
@@ -4209,10 +4429,12 @@ fn create_project_create_project_400_decodes_declared_error() {
     };
     let result = projects::create_project(
         &config,
-        decode(fixture(r#""Example Name""#)),
-        Some(Some(decode(fixture(r#""geography""#)))),
-        Some(Some(decode(fixture(r#""GLOBAL""#)))),
-        Some(Some(decode(fixture(r#""external_key-1""#)))),
+        projects::CreateProjectParams {
+            name: decode(fixture(r#""Example Name""#)),
+            geography: Some(Some(decode(fixture(r#""geography""#)))),
+            residency: Some(Some(decode(fixture(r#""GLOBAL""#)))),
+            external_key_id: Some(Some(decode(fixture(r#""external_key-1""#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -4238,10 +4460,12 @@ fn create_project_service_account_create_project_service_account_reaches_mock_an
     let _ = &config;
     let actual = projects::create_project_service_account(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""Example Name""#)),
-        Some(Some(decode(fixture(r#"false"#)))),
-        Some(Some(decode(fixture(r#"1"#)))),
+        projects::CreateProjectServiceAccountParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            name: decode(fixture(r#""Example Name""#)),
+            create_service_account_only: Some(Some(decode(fixture(r#"false"#)))),
+            expires_in_seconds: Some(Some(decode(fixture(r#"1"#)))),
+        },
         None,
     )
     .expect("create_project_service_account request failed");
@@ -4268,10 +4492,12 @@ fn create_project_service_account_create_project_service_account_400_decodes_dec
     };
     let result = projects::create_project_service_account(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""Example Name""#)),
-        Some(Some(decode(fixture(r#"false"#)))),
-        Some(Some(decode(fixture(r#"1"#)))),
+        projects::CreateProjectServiceAccountParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            name: decode(fixture(r#""Example Name""#)),
+            create_service_account_only: Some(Some(decode(fixture(r#"false"#)))),
+            expires_in_seconds: Some(Some(decode(fixture(r#"1"#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -4430,10 +4656,12 @@ fn create_project_user_create_project_user_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = projects::create_project_user(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""role""#)),
-        Some(Some(decode(fixture(r#""user-1""#)))),
-        Some(Some(decode(fixture(r#""user@example.com""#)))),
+        projects::CreateProjectUserParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            role: decode(fixture(r#""role""#)),
+            user_id: Some(Some(decode(fixture(r#""user-1""#)))),
+            email: Some(Some(decode(fixture(r#""user@example.com""#)))),
+        },
         None,
     )
     .expect("create_project_user request failed");
@@ -4460,10 +4688,12 @@ fn create_project_user_create_project_user_400_decodes_declared_error() {
     };
     let result = projects::create_project_user(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""role""#)),
-        Some(Some(decode(fixture(r#""user-1""#)))),
-        Some(Some(decode(fixture(r#""user@example.com""#)))),
+        projects::CreateProjectUserParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            role: decode(fixture(r#""role""#)),
+            user_id: Some(Some(decode(fixture(r#""user-1""#)))),
+            email: Some(Some(decode(fixture(r#""user@example.com""#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -4488,7 +4718,9 @@ fn create_realtime_call_create_realtime_call_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = realtime::create_realtime_call(
         &config,
-        realtime::CreateRealtimeCallBody::RealtimeCallCreateRequest(decode(fixture(r#"{"sdp":"sdp","session":{"type":"realtime","output_modalities":["audio"],"model":"model","instructions":"instructions","audio":{"input":{"format":{"type":"audio/pcm","rate":24000},"transcription":{"model":"model","language":"language","languages":["languages"],"keywords":["keywords"],"prompt":"prompt","delay":"minimal"},"noise_reduction":{"type":"near_field"},"turn_detection":{"type":"server_vad","threshold":1,"prefix_padding_ms":1,"silence_duration_ms":1,"create_response":true,"interrupt_response":true,"idle_timeout_ms":5000}},"output":{"format":{"type":"audio/pcm","rate":24000},"voice":"alloy","speed":1}},"include":["item.input_audio_transcription.logprobs"],"tracing":null,"tools":[{"type":"function","name":"Example Name","description":"example text","parameters":{}}],"tool_choice":"auto","parallel_tool_calls":false,"reasoning":{"effort":"low"},"max_output_tokens":1,"truncation":"auto","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}}}}"#))),
+        realtime::CreateRealtimeCallParams {
+            body: realtime::CreateRealtimeCallBody::RealtimeCallCreateRequest(decode(fixture(r#"{"sdp":"sdp","session":{"type":"realtime","output_modalities":["audio"],"model":"model","instructions":"instructions","audio":{"input":{"format":{"type":"audio/pcm","rate":24000},"transcription":{"model":"model","language":"language","languages":["languages"],"keywords":["keywords"],"prompt":"prompt","delay":"minimal"},"noise_reduction":{"type":"near_field"},"turn_detection":{"type":"server_vad","threshold":1,"prefix_padding_ms":1,"silence_duration_ms":1,"create_response":true,"interrupt_response":true,"idle_timeout_ms":5000}},"output":{"format":{"type":"audio/pcm","rate":24000},"voice":"alloy","speed":1}},"include":["item.input_audio_transcription.logprobs"],"tracing":null,"tools":[{"type":"function","name":"Example Name","description":"example text","parameters":{}}],"tool_choice":"auto","parallel_tool_calls":false,"reasoning":{"effort":"low"},"max_output_tokens":1,"truncation":"auto","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}}}}"#))),
+        },
         None,
     )
     .expect("create_realtime_call request failed");
@@ -4508,7 +4740,9 @@ fn create_realtime_call_create_realtime_call_application_sdp_reaches_mock_and_de
     let _ = &config;
     let actual = realtime::create_realtime_call(
         &config,
-        realtime::CreateRealtimeCallBody::Bytes(vec![115, 116, 114, 105, 110, 103]),
+        realtime::CreateRealtimeCallParams {
+            body: realtime::CreateRealtimeCallBody::Bytes(vec![115, 116, 114, 105, 110, 103]),
+        },
         None,
     )
     .expect("create_realtime_call request failed");
@@ -4528,8 +4762,10 @@ fn create_realtime_client_secret_create_realtime_client_secret_reaches_mock_and_
     let _ = &config;
     let actual = realtime::create_realtime_client_secret(
         &config,
-        Some(decode(fixture(r#"{"anchor":"created_at","seconds":600}"#))),
-        Some(decode(fixture(r#"{"type":"realtime","output_modalities":["audio"],"model":"model","instructions":"instructions","audio":{"input":{"format":{"type":"audio/pcm","rate":24000},"transcription":{"model":"model","language":"language","languages":["languages"],"keywords":["keywords"],"prompt":"prompt","delay":"minimal"},"noise_reduction":{"type":"near_field"},"turn_detection":{"type":"server_vad","threshold":1,"prefix_padding_ms":1,"silence_duration_ms":1,"create_response":true,"interrupt_response":true,"idle_timeout_ms":5000}},"output":{"format":{"type":"audio/pcm","rate":24000},"voice":"alloy","speed":1}},"include":["item.input_audio_transcription.logprobs"],"tracing":null,"tools":[{"type":"function","name":"Example Name","description":"example text","parameters":{}}],"tool_choice":"auto","parallel_tool_calls":false,"reasoning":{"effort":"low"},"max_output_tokens":1,"truncation":"auto","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}}}"#))),
+        realtime::CreateRealtimeClientSecretParams {
+            expires_after: Some(decode(fixture(r#"{"anchor":"created_at","seconds":600}"#))),
+            session: Some(decode(fixture(r#"{"type":"realtime","output_modalities":["audio"],"model":"model","instructions":"instructions","audio":{"input":{"format":{"type":"audio/pcm","rate":24000},"transcription":{"model":"model","language":"language","languages":["languages"],"keywords":["keywords"],"prompt":"prompt","delay":"minimal"},"noise_reduction":{"type":"near_field"},"turn_detection":{"type":"server_vad","threshold":1,"prefix_padding_ms":1,"silence_duration_ms":1,"create_response":true,"interrupt_response":true,"idle_timeout_ms":5000}},"output":{"format":{"type":"audio/pcm","rate":24000},"voice":"alloy","speed":1}},"include":["item.input_audio_transcription.logprobs"],"tracing":null,"tools":[{"type":"function","name":"Example Name","description":"example text","parameters":{}}],"tool_choice":"auto","parallel_tool_calls":false,"reasoning":{"effort":"low"},"max_output_tokens":1,"truncation":"auto","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}}}"#))),
+        },
         None,
     )
     .expect("create_realtime_client_secret request failed");
@@ -4556,10 +4792,12 @@ fn create_realtime_client_secret_create_realtime_client_secret_400_decodes_decla
     };
     let result = realtime::create_realtime_client_secret(
         &config,
-        Some(decode(fixture(r#"{"anchor":"created_at","seconds":600}"#))),
-        Some(decode(fixture(
-            r#"{"type":"realtime","output_modalities":["audio"],"model":"model","instructions":"instructions","audio":{"input":{"format":{"type":"audio/pcm","rate":24000},"transcription":{"model":"model","language":"language","languages":["languages"],"keywords":["keywords"],"prompt":"prompt","delay":"minimal"},"noise_reduction":{"type":"near_field"},"turn_detection":{"type":"server_vad","threshold":1,"prefix_padding_ms":1,"silence_duration_ms":1,"create_response":true,"interrupt_response":true,"idle_timeout_ms":5000}},"output":{"format":{"type":"audio/pcm","rate":24000},"voice":"alloy","speed":1}},"include":["item.input_audio_transcription.logprobs"],"tracing":null,"tools":[{"type":"function","name":"Example Name","description":"example text","parameters":{}}],"tool_choice":"auto","parallel_tool_calls":false,"reasoning":{"effort":"low"},"max_output_tokens":1,"truncation":"auto","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}}}"#,
-        ))),
+        realtime::CreateRealtimeClientSecretParams {
+            expires_after: Some(decode(fixture(r#"{"anchor":"created_at","seconds":600}"#))),
+            session: Some(decode(fixture(
+                r#"{"type":"realtime","output_modalities":["audio"],"model":"model","instructions":"instructions","audio":{"input":{"format":{"type":"audio/pcm","rate":24000},"transcription":{"model":"model","language":"language","languages":["languages"],"keywords":["keywords"],"prompt":"prompt","delay":"minimal"},"noise_reduction":{"type":"near_field"},"turn_detection":{"type":"server_vad","threshold":1,"prefix_padding_ms":1,"silence_duration_ms":1,"create_response":true,"interrupt_response":true,"idle_timeout_ms":5000}},"output":{"format":{"type":"audio/pcm","rate":24000},"voice":"alloy","speed":1}},"include":["item.input_audio_transcription.logprobs"],"tracing":null,"tools":[{"type":"function","name":"Example Name","description":"example text","parameters":{}}],"tool_choice":"auto","parallel_tool_calls":false,"reasoning":{"effort":"low"},"max_output_tokens":1,"truncation":"auto","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}}}"#,
+            ))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -4653,8 +4891,10 @@ fn create_realtime_translation_client_secret_create_realtime_translation_client_
     let _ = &config;
     let actual = realtime::create_realtime_translation_client_secret(
         &config,
-        decode(fixture(r#"{"model":"model","audio":{"input":{"transcription":{"model":"model"},"noise_reduction":{"type":"near_field"}},"output":{"language":"language"}}}"#)),
-        Some(decode(fixture(r#"{"anchor":"created_at","seconds":600}"#))),
+        realtime::CreateRealtimeTranslationClientSecretParams {
+            session: decode(fixture(r#"{"model":"model","audio":{"input":{"transcription":{"model":"model"},"noise_reduction":{"type":"near_field"}},"output":{"language":"language"}}}"#)),
+            expires_after: Some(decode(fixture(r#"{"anchor":"created_at","seconds":600}"#))),
+        },
         None,
     )
     .expect("create_realtime_translation_client_secret request failed");
@@ -4682,10 +4922,12 @@ fn create_realtime_translation_client_secret_create_realtime_translation_client_
     };
     let result = realtime::create_realtime_translation_client_secret(
         &config,
-        decode(fixture(
-            r#"{"model":"model","audio":{"input":{"transcription":{"model":"model"},"noise_reduction":{"type":"near_field"}},"output":{"language":"language"}}}"#,
-        )),
-        Some(decode(fixture(r#"{"anchor":"created_at","seconds":600}"#))),
+        realtime::CreateRealtimeTranslationClientSecretParams {
+            session: decode(fixture(
+                r#"{"model":"model","audio":{"input":{"transcription":{"model":"model"},"noise_reduction":{"type":"near_field"}},"output":{"language":"language"}}}"#,
+            )),
+            expires_after: Some(decode(fixture(r#"{"anchor":"created_at","seconds":600}"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -4710,7 +4952,9 @@ fn create_response_create_response_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = responses::create_response(
         &config,
-        decode(fixture(r#"{"metadata":{"key":"key"},"top_logprobs":0,"temperature":1,"top_p":1,"user":"user-1234","safety_identifier":"safety-identifier-1234","prompt_cache_key":"prompt_cache_key","prompt_cache_retention":"in_memory","prompt_cache_options":{"ttl":"30m","mode":"implicit","prewarm":false,"comparison_response_id":"comparison_response-1"},"previous_response_id":"previous_response-1","model":"gpt-6-astra","background":false,"max_tool_calls":1,"text":{"format":{"type":"text"},"verbosity":"medium"},"tools":[{"type":"function","name":"Example Name","async":false,"description":"example text","parameters":{"key":null},"output_schema":{"key":null},"strict":false,"defer_loading":false,"allowed_callers":["direct"]}],"tool_choice":"none","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}},"access_programs":{"cyber":"standard"},"service_tier":"auto","truncation":"disabled","reasoning":{"mode":"mode","effort":"medium","summary":"auto","context":"auto","generate_summary":"auto"},"input":"input","include":["file_search_call.results"],"parallel_tool_calls":false,"store":false,"instructions":"instructions","moderation":{"model":"model","policy":{"input":{"mode":"score"},"output":{"mode":"score"}}},"stream":false,"stream_options":{"include_obfuscation":false},"conversation":null,"context_management":[{"type":"compaction","compact_threshold":1000}],"max_output_tokens":16}"#)),
+        responses::CreateResponseParams {
+            body: decode(fixture(r#"{"metadata":{"key":"key"},"top_logprobs":0,"temperature":1,"top_p":1,"user":"user-1234","safety_identifier":"safety-identifier-1234","prompt_cache_key":"prompt_cache_key","prompt_cache_retention":"in_memory","prompt_cache_options":{"ttl":"30m","mode":"implicit","prewarm":false,"comparison_response_id":"comparison_response-1"},"previous_response_id":"previous_response-1","model":"gpt-6-astra","background":false,"max_tool_calls":1,"text":{"format":{"type":"text"},"verbosity":"medium"},"tools":[{"type":"function","name":"Example Name","async":false,"description":"example text","parameters":{"key":null},"output_schema":{"key":null},"strict":false,"defer_loading":false,"allowed_callers":["direct"]}],"tool_choice":"none","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}},"access_programs":{"cyber":"standard"},"service_tier":"auto","truncation":"disabled","reasoning":{"mode":"mode","effort":"medium","summary":"auto","context":"auto","generate_summary":"auto"},"input":"input","include":["file_search_call.results"],"parallel_tool_calls":false,"store":false,"instructions":"instructions","moderation":{"model":"model","policy":{"input":{"mode":"score"},"output":{"mode":"score"}}},"stream":false,"stream_options":{"include_obfuscation":false},"conversation":null,"context_management":[{"type":"compaction","compact_threshold":1000}],"max_output_tokens":16}"#)),
+        },
         None,
     )
     .expect("create_response request failed");
@@ -4737,9 +4981,11 @@ fn create_response_create_response_400_decodes_declared_error() {
     };
     let result = responses::create_response(
         &config,
-        decode(fixture(
-            r#"{"metadata":{"key":"key"},"top_logprobs":0,"temperature":1,"top_p":1,"user":"user-1234","safety_identifier":"safety-identifier-1234","prompt_cache_key":"prompt_cache_key","prompt_cache_retention":"in_memory","prompt_cache_options":{"ttl":"30m","mode":"implicit","prewarm":false,"comparison_response_id":"comparison_response-1"},"previous_response_id":"previous_response-1","model":"gpt-6-astra","background":false,"max_tool_calls":1,"text":{"format":{"type":"text"},"verbosity":"medium"},"tools":[{"type":"function","name":"Example Name","async":false,"description":"example text","parameters":{"key":null},"output_schema":{"key":null},"strict":false,"defer_loading":false,"allowed_callers":["direct"]}],"tool_choice":"none","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}},"access_programs":{"cyber":"standard"},"service_tier":"auto","truncation":"disabled","reasoning":{"mode":"mode","effort":"medium","summary":"auto","context":"auto","generate_summary":"auto"},"input":"input","include":["file_search_call.results"],"parallel_tool_calls":false,"store":false,"instructions":"instructions","moderation":{"model":"model","policy":{"input":{"mode":"score"},"output":{"mode":"score"}}},"stream":false,"stream_options":{"include_obfuscation":false},"conversation":null,"context_management":[{"type":"compaction","compact_threshold":1000}],"max_output_tokens":16}"#,
-        )),
+        responses::CreateResponseParams {
+            body: decode(fixture(
+                r#"{"metadata":{"key":"key"},"top_logprobs":0,"temperature":1,"top_p":1,"user":"user-1234","safety_identifier":"safety-identifier-1234","prompt_cache_key":"prompt_cache_key","prompt_cache_retention":"in_memory","prompt_cache_options":{"ttl":"30m","mode":"implicit","prewarm":false,"comparison_response_id":"comparison_response-1"},"previous_response_id":"previous_response-1","model":"gpt-6-astra","background":false,"max_tool_calls":1,"text":{"format":{"type":"text"},"verbosity":"medium"},"tools":[{"type":"function","name":"Example Name","async":false,"description":"example text","parameters":{"key":null},"output_schema":{"key":null},"strict":false,"defer_loading":false,"allowed_callers":["direct"]}],"tool_choice":"none","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}},"access_programs":{"cyber":"standard"},"service_tier":"auto","truncation":"disabled","reasoning":{"mode":"mode","effort":"medium","summary":"auto","context":"auto","generate_summary":"auto"},"input":"input","include":["file_search_call.results"],"parallel_tool_calls":false,"store":false,"instructions":"instructions","moderation":{"model":"model","policy":{"input":{"mode":"score"},"output":{"mode":"score"}}},"stream":false,"stream_options":{"include_obfuscation":false},"conversation":null,"context_management":[{"type":"compaction","compact_threshold":1000}],"max_output_tokens":16}"#,
+            )),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -4764,7 +5010,9 @@ fn create_response_create_response_stream_reaches_mock_and_decodes_response() {
     let _ = &config;
     let mut events = responses::create_response_stream(
         &config,
-        decode(fixture(r#"{"metadata":{"key":"key"},"top_logprobs":0,"temperature":1,"top_p":1,"user":"user-1234","safety_identifier":"safety-identifier-1234","prompt_cache_key":"prompt_cache_key","prompt_cache_retention":"in_memory","prompt_cache_options":{"ttl":"30m","mode":"implicit","prewarm":false,"comparison_response_id":"comparison_response-1"},"previous_response_id":"previous_response-1","model":"gpt-6-astra","background":false,"max_tool_calls":1,"text":{"format":{"type":"text"},"verbosity":"medium"},"tools":[{"type":"function","name":"Example Name","async":false,"description":"example text","parameters":{"key":null},"output_schema":{"key":null},"strict":false,"defer_loading":false,"allowed_callers":["direct"]}],"tool_choice":"none","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}},"access_programs":{"cyber":"standard"},"service_tier":"auto","truncation":"disabled","reasoning":{"mode":"mode","effort":"medium","summary":"auto","context":"auto","generate_summary":"auto"},"input":"input","include":["file_search_call.results"],"parallel_tool_calls":false,"store":false,"instructions":"instructions","moderation":{"model":"model","policy":{"input":{"mode":"score"},"output":{"mode":"score"}}},"stream":false,"stream_options":{"include_obfuscation":false},"conversation":null,"context_management":[{"type":"compaction","compact_threshold":1000}],"max_output_tokens":16}"#)),
+        responses::CreateResponseStreamParams {
+            body: decode(fixture(r#"{"metadata":{"key":"key"},"top_logprobs":0,"temperature":1,"top_p":1,"user":"user-1234","safety_identifier":"safety-identifier-1234","prompt_cache_key":"prompt_cache_key","prompt_cache_retention":"in_memory","prompt_cache_options":{"ttl":"30m","mode":"implicit","prewarm":false,"comparison_response_id":"comparison_response-1"},"previous_response_id":"previous_response-1","model":"gpt-6-astra","background":false,"max_tool_calls":1,"text":{"format":{"type":"text"},"verbosity":"medium"},"tools":[{"type":"function","name":"Example Name","async":false,"description":"example text","parameters":{"key":null},"output_schema":{"key":null},"strict":false,"defer_loading":false,"allowed_callers":["direct"]}],"tool_choice":"none","prompt":{"id":"id-1","version":"version","variables":{"key":{"type":"input_text","text":"text","prompt_cache_breakpoint":{"mode":"explicit"}}}},"access_programs":{"cyber":"standard"},"service_tier":"auto","truncation":"disabled","reasoning":{"mode":"mode","effort":"medium","summary":"auto","context":"auto","generate_summary":"auto"},"input":"input","include":["file_search_call.results"],"parallel_tool_calls":false,"store":false,"instructions":"instructions","moderation":{"model":"model","policy":{"input":{"mode":"score"},"output":{"mode":"score"}}},"stream":false,"stream_options":{"include_obfuscation":false},"conversation":null,"context_management":[{"type":"compaction","compact_threshold":1000}],"max_output_tokens":16}"#)),
+        },
         None,
     )
     .expect("create_response_stream request failed");
@@ -4789,9 +5037,11 @@ fn create_role_create_role_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = roles::create_role(
         &config,
-        decode(fixture(r#""Example Name""#)),
-        decode(fixture(r#"["permissions"]"#)),
-        Some(Some(decode(fixture(r#""example text""#)))),
+        roles::CreateRoleParams {
+            role_name: decode(fixture(r#""Example Name""#)),
+            permissions: decode(fixture(r#"["permissions"]"#)),
+            description: Some(Some(decode(fixture(r#""example text""#)))),
+        },
         None,
     )
     .expect("create_role request failed");
@@ -4818,9 +5068,11 @@ fn create_role_create_role_400_decodes_declared_error() {
     };
     let result = roles::create_role(
         &config,
-        decode(fixture(r#""Example Name""#)),
-        decode(fixture(r#"["permissions"]"#)),
-        Some(Some(decode(fixture(r#""example text""#)))),
+        roles::CreateRoleParams {
+            role_name: decode(fixture(r#""Example Name""#)),
+            permissions: decode(fixture(r#"["permissions"]"#)),
+            description: Some(Some(decode(fixture(r#""example text""#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -4845,10 +5097,12 @@ fn create_roles_project_role_create_roles_project_role_reaches_mock_and_decodes_
     let _ = &config;
     let actual = roles::create_roles_project_role(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""Example Name""#)),
-        decode(fixture(r#"["permissions"]"#)),
-        Some(Some(decode(fixture(r#""example text""#)))),
+        roles::CreateRolesProjectRoleParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            role_name: decode(fixture(r#""Example Name""#)),
+            permissions: decode(fixture(r#"["permissions"]"#)),
+            description: Some(Some(decode(fixture(r#""example text""#)))),
+        },
         None,
     )
     .expect("create_roles_project_role request failed");
@@ -4875,10 +5129,12 @@ fn create_roles_project_role_create_roles_project_role_400_decodes_declared_erro
     };
     let result = roles::create_roles_project_role(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""Example Name""#)),
-        decode(fixture(r#"["permissions"]"#)),
-        Some(Some(decode(fixture(r#""example text""#)))),
+        roles::CreateRolesProjectRoleParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            role_name: decode(fixture(r#""Example Name""#)),
+            permissions: decode(fixture(r#"["permissions"]"#)),
+            description: Some(Some(decode(fixture(r#""example text""#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -4989,8 +5245,15 @@ fn create_skill_create_skill_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = skills::create_skill(&config, decode(fixture(r#"["ZXhhbXBsZQ=="]"#)), None, None)
-        .expect("create_skill request failed");
+    let actual = skills::create_skill(
+        &config,
+        skills::CreateSkillParams {
+            files: decode(fixture(r#"["ZXhhbXBsZQ=="]"#)),
+            content_type: None,
+        },
+        None,
+    )
+    .expect("create_skill request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","object":"skill","name":"Example Name","description":"example text","created_at":1,"default_version":"default_version","latest_version":"latest_version"}"#,
@@ -5012,7 +5275,14 @@ fn create_skill_create_skill_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = skills::create_skill(&config, decode(fixture(r#"["ZXhhbXBsZQ=="]"#)), None, None);
+    let result = skills::create_skill(
+        &config,
+        skills::CreateSkillParams {
+            files: decode(fixture(r#"["ZXhhbXBsZQ=="]"#)),
+            content_type: None,
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("create_skill did not fail with SdkError::Http on 400");
     };
@@ -5035,8 +5305,10 @@ fn create_skill_create_skill_multipart_form_data_reaches_mock_and_decodes_respon
     let _ = &config;
     let actual = skills::create_skill(
         &config,
-        decode(fixture(r#"["ZXhhbXBsZQ=="]"#)),
-        Some(decode(fixture(r#""multipart/form-data""#))),
+        skills::CreateSkillParams {
+            files: decode(fixture(r#"["ZXhhbXBsZQ=="]"#)),
+            content_type: Some(decode(fixture(r#""multipart/form-data""#))),
+        },
         None,
     )
     .expect("create_skill request failed");
@@ -5058,10 +5330,12 @@ fn create_skill_version_create_skill_version_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = skills::create_skill_version(
         &config,
-        decode(fixture(r#""skill_123""#)),
-        decode(fixture(r#"["ZXhhbXBsZQ=="]"#)),
-        Some(decode(fixture(r#"false"#))),
-        None,
+        skills::CreateSkillVersionParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+            files: decode(fixture(r#"["ZXhhbXBsZQ=="]"#)),
+            default: Some(decode(fixture(r#"false"#))),
+            content_type: None,
+        },
         None,
     )
     .expect("create_skill_version request failed");
@@ -5088,10 +5362,12 @@ fn create_skill_version_create_skill_version_400_decodes_declared_error() {
     };
     let result = skills::create_skill_version(
         &config,
-        decode(fixture(r#""skill_123""#)),
-        decode(fixture(r#"["ZXhhbXBsZQ=="]"#)),
-        Some(decode(fixture(r#"false"#))),
-        None,
+        skills::CreateSkillVersionParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+            files: decode(fixture(r#"["ZXhhbXBsZQ=="]"#)),
+            default: Some(decode(fixture(r#"false"#))),
+            content_type: None,
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -5117,10 +5393,12 @@ fn create_skill_version_create_skill_version_multipart_form_data_reaches_mock_an
     let _ = &config;
     let actual = skills::create_skill_version(
         &config,
-        decode(fixture(r#""skill_123""#)),
-        decode(fixture(r#"["ZXhhbXBsZQ=="]"#)),
-        Some(decode(fixture(r#"false"#))),
-        Some(decode(fixture(r#""multipart/form-data""#))),
+        skills::CreateSkillVersionParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+            files: decode(fixture(r#"["ZXhhbXBsZQ=="]"#)),
+            default: Some(decode(fixture(r#"false"#))),
+            content_type: Some(decode(fixture(r#""multipart/form-data""#))),
+        },
         None,
     )
     .expect("create_skill_version request failed");
@@ -5235,9 +5513,11 @@ fn create_thread_create_thread_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = assistants::create_thread(
         &config,
-        Some(decode(fixture(r#"[{"role":"user","content":"content","attachments":[{"file_id":"file-1","tools":[{"type":"code_interpreter"}]}],"metadata":{"key":"key"}}]"#))),
-        Some(Some(decode(fixture(r#"{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"],"vector_stores":[{"file_ids":["file_ids"],"chunking_strategy":{"type":"auto"},"metadata":{"key":"key"}}]}}"#)))),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        assistants::CreateThreadParams {
+            messages: Some(decode(fixture(r#"[{"role":"user","content":"content","attachments":[{"file_id":"file-1","tools":[{"type":"code_interpreter"}]}],"metadata":{"key":"key"}}]"#))),
+            tool_resources: Some(Some(decode(fixture(r#"{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"],"vector_stores":[{"file_ids":["file_ids"],"chunking_strategy":{"type":"auto"},"metadata":{"key":"key"}}]}}"#)))),
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     )
     .expect("create_thread request failed");
@@ -5604,8 +5884,10 @@ fn create_vault_create_vault_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = vaults::create_vault(
         &config,
-        Some(decode(fixture(r#""Example Name""#))),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        vaults::CreateVaultParams2 {
+            name: Some(decode(fixture(r#""Example Name""#))),
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     )
     .expect("create_vault request failed");
@@ -5632,8 +5914,10 @@ fn create_vault_create_vault_400_decodes_declared_error() {
     };
     let result = vaults::create_vault(
         &config,
-        Some(decode(fixture(r#""Example Name""#))),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        vaults::CreateVaultParams2 {
+            name: Some(decode(fixture(r#""Example Name""#))),
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -5658,10 +5942,12 @@ fn create_vault_credential_create_vault_credential_reaches_mock_and_decodes_resp
     let _ = &config;
     let actual = vaults::create_vault_credential(
         &config,
-        decode(fixture(r#""vault-1""#)),
-        decode(fixture(r#""Example Name""#)),
-        decode(fixture(r#"{"type":"mcp_oauth","mcp_server_url":"https://example.com","access_token":"access_token","expires_at":"2024-01-01T00:00:00Z","refresh":{"token_endpoint":"token_endpoint","client_id":"client-1","resource":"resource","scope":"scope","refresh_token":"refresh_token","token_endpoint_auth":{"type":"none"}}}"#)),
-        Some(decode(fixture(r#"{"key":"key"}"#))),
+        vaults::CreateVaultCredentialParams2 {
+            vault_id: decode(fixture(r#""vault-1""#)),
+            name: decode(fixture(r#""Example Name""#)),
+            auth: decode(fixture(r#"{"type":"mcp_oauth","mcp_server_url":"https://example.com","access_token":"access_token","expires_at":"2024-01-01T00:00:00Z","refresh":{"token_endpoint":"token_endpoint","client_id":"client-1","resource":"resource","scope":"scope","refresh_token":"refresh_token","token_endpoint_auth":{"type":"none"}}}"#)),
+            metadata: Some(decode(fixture(r#"{"key":"key"}"#))),
+        },
         None,
     )
     .expect("create_vault_credential request failed");
@@ -5688,12 +5974,14 @@ fn create_vault_credential_create_vault_credential_400_decodes_declared_error() 
     };
     let result = vaults::create_vault_credential(
         &config,
-        decode(fixture(r#""vault-1""#)),
-        decode(fixture(r#""Example Name""#)),
-        decode(fixture(
-            r#"{"type":"mcp_oauth","mcp_server_url":"https://example.com","access_token":"access_token","expires_at":"2024-01-01T00:00:00Z","refresh":{"token_endpoint":"token_endpoint","client_id":"client-1","resource":"resource","scope":"scope","refresh_token":"refresh_token","token_endpoint_auth":{"type":"none"}}}"#,
-        )),
-        Some(decode(fixture(r#"{"key":"key"}"#))),
+        vaults::CreateVaultCredentialParams2 {
+            vault_id: decode(fixture(r#""vault-1""#)),
+            name: decode(fixture(r#""Example Name""#)),
+            auth: decode(fixture(
+                r#"{"type":"mcp_oauth","mcp_server_url":"https://example.com","access_token":"access_token","expires_at":"2024-01-01T00:00:00Z","refresh":{"token_endpoint":"token_endpoint","client_id":"client-1","resource":"resource","scope":"scope","refresh_token":"refresh_token","token_endpoint_auth":{"type":"none"}}}"#,
+            )),
+            metadata: Some(decode(fixture(r#"{"key":"key"}"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -5784,10 +6072,12 @@ fn create_vector_store_file_create_vector_store_file_reaches_mock_and_decodes_re
     let _ = &config;
     let actual = vector_stores::create_vector_store_file(
         &config,
-        decode(fixture(r#""vs_abc123""#)),
-        decode(fixture(r#""file-1""#)),
-        Some(decode(fixture(r#"{"type":"auto"}"#))),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        vector_stores::CreateVectorStoreFileParams {
+            vector_store_id: decode(fixture(r#""vs_abc123""#)),
+            file_id: decode(fixture(r#""file-1""#)),
+            chunking_strategy: Some(decode(fixture(r#"{"type":"auto"}"#))),
+            attributes: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     )
     .expect("create_vector_store_file request failed");
@@ -5814,10 +6104,12 @@ fn create_vector_store_file_create_vector_store_file_400_decodes_declared_error(
     };
     let result = vector_stores::create_vector_store_file(
         &config,
-        decode(fixture(r#""vs_abc123""#)),
-        decode(fixture(r#""file-1""#)),
-        Some(decode(fixture(r#"{"type":"auto"}"#))),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        vector_stores::CreateVectorStoreFileParams {
+            vector_store_id: decode(fixture(r#""vs_abc123""#)),
+            file_id: decode(fixture(r#""file-1""#)),
+            chunking_strategy: Some(decode(fixture(r#"{"type":"auto"}"#))),
+            attributes: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -5909,8 +6201,10 @@ fn create_video_create_video_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = videos::create_video(
         &config,
-        Some(videos::CreateVideoBody::CreateVideoJsonBody(decode(fixture(r#"{"model":"model","prompt":"x","input_reference":{"image_url":"https://example.com","file_id":"file-123"},"seconds":"4","size":"720x1280"}"#)))),
-        None,
+        videos::CreateVideoParams {
+            body: Some(videos::CreateVideoBody::CreateVideoJsonBody(decode(fixture(r#"{"model":"model","prompt":"x","input_reference":{"image_url":"https://example.com","file_id":"file-123"},"seconds":"4","size":"720x1280"}"#)))),
+            content_type: None,
+        },
         None,
     )
     .expect("create_video request failed");
@@ -5937,12 +6231,14 @@ fn create_video_create_video_400_decodes_declared_error() {
     };
     let result = videos::create_video(
         &config,
-        Some(videos::CreateVideoBody::CreateVideoJsonBody(decode(
-            fixture(
-                r#"{"model":"model","prompt":"x","input_reference":{"image_url":"https://example.com","file_id":"file-123"},"seconds":"4","size":"720x1280"}"#,
-            ),
-        ))),
-        None,
+        videos::CreateVideoParams {
+            body: Some(videos::CreateVideoBody::CreateVideoJsonBody(decode(
+                fixture(
+                    r#"{"model":"model","prompt":"x","input_reference":{"image_url":"https://example.com","file_id":"file-123"},"seconds":"4","size":"720x1280"}"#,
+                ),
+            ))),
+            content_type: None,
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -5967,8 +6263,10 @@ fn create_video_create_video_multipart_form_data_reaches_mock_and_decodes_respon
     let _ = &config;
     let actual = videos::create_video(
         &config,
-        Some(videos::CreateVideoBody::CreateVideoMultipartBody(decode(fixture(r#"{"model":"model","prompt":"x","input_reference":{"image_url":"https://example.com","file_id":"file-123"},"seconds":"4","size":"720x1280"}"#)))),
-        Some(decode(fixture(r#""multipart/form-data""#))),
+        videos::CreateVideoParams {
+            body: Some(videos::CreateVideoBody::CreateVideoMultipartBody(decode(fixture(r#"{"model":"model","prompt":"x","input_reference":{"image_url":"https://example.com","file_id":"file-123"},"seconds":"4","size":"720x1280"}"#)))),
+            content_type: Some(decode(fixture(r#""multipart/form-data""#))),
+        },
         None,
     )
     .expect("create_video request failed");
@@ -5990,12 +6288,14 @@ fn create_video_character_create_video_character_reaches_mock_and_decodes_respon
     let _ = &config;
     let actual = videos::create_video_character(
         &config,
-        ::octridev_openai::client::UploadFile::new(
-            b"mock upload".to_vec(),
-            "mock.bin",
-            "application/octet-stream",
-        ),
-        decode(fixture(r#""Example Name""#)),
+        videos::CreateVideoCharacterParams {
+            video: ::octridev_openai::client::UploadFile::new(
+                b"mock upload".to_vec(),
+                "mock.bin",
+                "application/octet-stream",
+            ),
+            name: decode(fixture(r#""Example Name""#)),
+        },
         None,
     )
     .expect("create_video_character request failed");
@@ -6020,12 +6320,14 @@ fn create_video_character_create_video_character_400_decodes_declared_error() {
     };
     let result = videos::create_video_character(
         &config,
-        ::octridev_openai::client::UploadFile::new(
-            b"mock upload".to_vec(),
-            "mock.bin",
-            "application/octet-stream",
-        ),
-        decode(fixture(r#""Example Name""#)),
+        videos::CreateVideoCharacterParams {
+            video: ::octridev_openai::client::UploadFile::new(
+                b"mock upload".to_vec(),
+                "mock.bin",
+                "application/octet-stream",
+            ),
+            name: decode(fixture(r#""Example Name""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -6050,10 +6352,12 @@ fn create_video_edit_create_video_edit_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = videos::create_video_edit(
         &config,
-        Some(videos::CreateVideoEditBody::CreateVideoEditJsonBody(
-            decode(fixture(r#"{"video":{"id":"video_123"},"prompt":"x"}"#)),
-        )),
-        None,
+        videos::CreateVideoEditParams {
+            body: Some(videos::CreateVideoEditBody::CreateVideoEditJsonBody(
+                decode(fixture(r#"{"video":{"id":"video_123"},"prompt":"x"}"#)),
+            )),
+            content_type: None,
+        },
         None,
     )
     .expect("create_video_edit request failed");
@@ -6080,10 +6384,12 @@ fn create_video_edit_create_video_edit_400_decodes_declared_error() {
     };
     let result = videos::create_video_edit(
         &config,
-        Some(videos::CreateVideoEditBody::CreateVideoEditJsonBody(
-            decode(fixture(r#"{"video":{"id":"video_123"},"prompt":"x"}"#)),
-        )),
-        None,
+        videos::CreateVideoEditParams {
+            body: Some(videos::CreateVideoEditBody::CreateVideoEditJsonBody(
+                decode(fixture(r#"{"video":{"id":"video_123"},"prompt":"x"}"#)),
+            )),
+            content_type: None,
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -6108,10 +6414,12 @@ fn create_video_edit_create_video_edit_multipart_form_data_reaches_mock_and_deco
     let _ = &config;
     let actual = videos::create_video_edit(
         &config,
-        Some(videos::CreateVideoEditBody::CreateVideoEditMultipartBody(
-            decode(fixture(r#"{"video":{"id":"video_123"},"prompt":"x"}"#)),
-        )),
-        Some(decode(fixture(r#""multipart/form-data""#))),
+        videos::CreateVideoEditParams {
+            body: Some(videos::CreateVideoEditBody::CreateVideoEditMultipartBody(
+                decode(fixture(r#"{"video":{"id":"video_123"},"prompt":"x"}"#)),
+            )),
+            content_type: Some(decode(fixture(r#""multipart/form-data""#))),
+        },
         None,
     )
     .expect("create_video_edit request failed");
@@ -6133,12 +6441,14 @@ fn create_video_extend_create_video_extend_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = videos::create_video_extend(
         &config,
-        Some(videos::CreateVideoExtendBody::CreateVideoExtendJsonBody(
-            decode(fixture(
-                r#"{"video":{"id":"video_123"},"prompt":"x","seconds":"4"}"#,
+        videos::CreateVideoExtendParams {
+            body: Some(videos::CreateVideoExtendBody::CreateVideoExtendJsonBody(
+                decode(fixture(
+                    r#"{"video":{"id":"video_123"},"prompt":"x","seconds":"4"}"#,
+                )),
             )),
-        )),
-        None,
+            content_type: None,
+        },
         None,
     )
     .expect("create_video_extend request failed");
@@ -6165,12 +6475,14 @@ fn create_video_extend_create_video_extend_400_decodes_declared_error() {
     };
     let result = videos::create_video_extend(
         &config,
-        Some(videos::CreateVideoExtendBody::CreateVideoExtendJsonBody(
-            decode(fixture(
-                r#"{"video":{"id":"video_123"},"prompt":"x","seconds":"4"}"#,
+        videos::CreateVideoExtendParams {
+            body: Some(videos::CreateVideoExtendBody::CreateVideoExtendJsonBody(
+                decode(fixture(
+                    r#"{"video":{"id":"video_123"},"prompt":"x","seconds":"4"}"#,
+                )),
             )),
-        )),
-        None,
+            content_type: None,
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -6195,12 +6507,14 @@ fn create_video_extend_create_video_extend_multipart_form_data_reaches_mock_and_
     let _ = &config;
     let actual = videos::create_video_extend(
         &config,
-        Some(
-            videos::CreateVideoExtendBody::CreateVideoExtendMultipartBody(decode(fixture(
-                r#"{"video":{"id":"video_123"},"prompt":"x","seconds":"4"}"#,
-            ))),
-        ),
-        Some(decode(fixture(r#""multipart/form-data""#))),
+        videos::CreateVideoExtendParams {
+            body: Some(
+                videos::CreateVideoExtendBody::CreateVideoExtendMultipartBody(decode(fixture(
+                    r#"{"video":{"id":"video_123"},"prompt":"x","seconds":"4"}"#,
+                ))),
+            ),
+            content_type: Some(decode(fixture(r#""multipart/form-data""#))),
+        },
         None,
     )
     .expect("create_video_extend request failed");
@@ -6222,9 +6536,11 @@ fn create_video_remix_create_video_remix_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = videos::create_video_remix(
         &config,
-        decode(fixture(r#""video_123""#)),
-        decode(fixture(r#""x""#)),
-        None,
+        videos::CreateVideoRemixParams {
+            video_id: decode(fixture(r#""video_123""#)),
+            prompt: decode(fixture(r#""x""#)),
+            content_type: None,
+        },
         None,
     )
     .expect("create_video_remix request failed");
@@ -6251,9 +6567,11 @@ fn create_video_remix_create_video_remix_400_decodes_declared_error() {
     };
     let result = videos::create_video_remix(
         &config,
-        decode(fixture(r#""video_123""#)),
-        decode(fixture(r#""x""#)),
-        None,
+        videos::CreateVideoRemixParams {
+            video_id: decode(fixture(r#""video_123""#)),
+            prompt: decode(fixture(r#""x""#)),
+            content_type: None,
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -6278,9 +6596,11 @@ fn create_video_remix_create_video_remix_multipart_form_data_reaches_mock_and_de
     let _ = &config;
     let actual = videos::create_video_remix(
         &config,
-        decode(fixture(r#""video_123""#)),
-        decode(fixture(r#""x""#)),
-        Some(decode(fixture(r#""multipart/form-data""#))),
+        videos::CreateVideoRemixParams {
+            video_id: decode(fixture(r#""video_123""#)),
+            prompt: decode(fixture(r#""x""#)),
+            content_type: Some(decode(fixture(r#""multipart/form-data""#))),
+        },
         None,
     )
     .expect("create_video_remix request failed");
@@ -6302,7 +6622,9 @@ fn create_voice_create_voice_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = audio::create_voice(
         &config,
-        decode(fixture(r#"{"type":"audio_sample","name":"Example Name","audio_sample":"ZXhhbXBsZQ==","consent":"consent"}"#)),
+        audio::CreateVoiceParams {
+            body: decode(fixture(r#"{"type":"audio_sample","name":"Example Name","audio_sample":"ZXhhbXBsZQ==","consent":"consent"}"#)),
+        },
         None,
     )
     .expect("create_voice request failed");
@@ -6329,9 +6651,11 @@ fn create_voice_create_voice_400_decodes_declared_error() {
     };
     let result = audio::create_voice(
         &config,
-        decode(fixture(
-            r#"{"type":"audio_sample","name":"Example Name","audio_sample":"ZXhhbXBsZQ==","consent":"consent"}"#,
-        )),
+        audio::CreateVoiceParams {
+            body: decode(fixture(
+                r#"{"type":"audio_sample","name":"Example Name","audio_sample":"ZXhhbXBsZQ==","consent":"consent"}"#,
+            )),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -6356,13 +6680,15 @@ fn create_voice_consent_create_voice_consent_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = audio::create_voice_consent(
         &config,
-        decode(fixture(r#""Example Name""#)),
-        ::octridev_openai::client::UploadFile::new(
-            b"mock upload".to_vec(),
-            "mock.bin",
-            "application/octet-stream",
-        ),
-        decode(fixture(r#""language""#)),
+        audio::CreateVoiceConsentParams {
+            name: decode(fixture(r#""Example Name""#)),
+            recording: ::octridev_openai::client::UploadFile::new(
+                b"mock upload".to_vec(),
+                "mock.bin",
+                "application/octet-stream",
+            ),
+            language: decode(fixture(r#""language""#)),
+        },
         None,
     )
     .expect("create_voice_consent request failed");
@@ -6389,13 +6715,15 @@ fn create_voice_consent_create_voice_consent_400_decodes_declared_error() {
     };
     let result = audio::create_voice_consent(
         &config,
-        decode(fixture(r#""Example Name""#)),
-        ::octridev_openai::client::UploadFile::new(
-            b"mock upload".to_vec(),
-            "mock.bin",
-            "application/octet-stream",
-        ),
-        decode(fixture(r#""language""#)),
+        audio::CreateVoiceConsentParams {
+            name: decode(fixture(r#""Example Name""#)),
+            recording: ::octridev_openai::client::UploadFile::new(
+                b"mock upload".to_vec(),
+                "mock.bin",
+                "application/octet-stream",
+            ),
+            language: decode(fixture(r#""language""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -6420,9 +6748,11 @@ fn create_webhook_endpoint_create_webhook_endpoint_reaches_mock_and_decodes_resp
     let _ = &config;
     let actual = webhook_endpoints::create_webhook_endpoint(
         &config,
-        decode(fixture(r#""Example Name""#)),
-        decode(fixture(r#""https://""#)),
-        decode(fixture(r#"["batch.completed"]"#)),
+        webhook_endpoints::CreateWebhookEndpointParams {
+            name: decode(fixture(r#""Example Name""#)),
+            url: decode(fixture(r#""https://""#)),
+            event_types: decode(fixture(r#"["batch.completed"]"#)),
+        },
         None,
     )
     .expect("create_webhook_endpoint request failed");
@@ -6449,9 +6779,11 @@ fn create_webhook_endpoint_create_webhook_endpoint_400_decodes_declared_error() 
     };
     let result = webhook_endpoints::create_webhook_endpoint(
         &config,
-        decode(fixture(r#""Example Name""#)),
-        decode(fixture(r#""https://""#)),
-        decode(fixture(r#"["batch.completed"]"#)),
+        webhook_endpoints::CreateWebhookEndpointParams {
+            name: decode(fixture(r#""Example Name""#)),
+            url: decode(fixture(r#""https://""#)),
+            event_types: decode(fixture(r#"["batch.completed"]"#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -6477,7 +6809,9 @@ fn deactivate_certificates_for_organization_deactivate_certificates_for_organiza
     let _ = &config;
     let actual = certificates::deactivate_certificates_for_organization(
         &config,
-        decode(fixture(r#"["cert_abc"]"#)),
+        certificates::DeactivateCertificatesForOrganizationParams {
+            certificate_ids: decode(fixture(r#"["cert_abc"]"#)),
+        },
         None,
     )
     .expect("deactivate_certificates_for_organization request failed");
@@ -6505,7 +6839,9 @@ fn deactivate_certificates_for_organization_deactivate_certificates_for_organiza
     };
     let result = certificates::deactivate_certificates_for_organization(
         &config,
-        decode(fixture(r#"["cert_abc"]"#)),
+        certificates::DeactivateCertificatesForOrganizationParams {
+            certificate_ids: decode(fixture(r#"["cert_abc"]"#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -6531,8 +6867,10 @@ fn deactivate_certificates_for_project_deactivate_certificates_for_project_reach
     let _ = &config;
     let actual = certificates::deactivate_certificates_for_project(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#"["cert_abc"]"#)),
+        certificates::DeactivateCertificatesForProjectParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            certificate_ids: decode(fixture(r#"["cert_abc"]"#)),
+        },
         None,
     )
     .expect("deactivate_certificates_for_project request failed");
@@ -6560,8 +6898,10 @@ fn deactivate_certificates_for_project_deactivate_certificates_for_project_400_d
     };
     let result = certificates::deactivate_certificates_for_project(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#"["cert_abc"]"#)),
+        certificates::DeactivateCertificatesForProjectParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            certificate_ids: decode(fixture(r#"["cert_abc"]"#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -6660,9 +7000,14 @@ fn delete_admin_api_keys_delete_admin_api_keys_reaches_mock_and_decodes_response
         return;
     };
     let _ = &config;
-    let actual =
-        admin_api_keys::delete_admin_api_keys(&config, decode(fixture(r#""key-1""#)), None)
-            .expect("delete_admin_api_keys request failed");
+    let actual = admin_api_keys::delete_admin_api_keys(
+        &config,
+        admin_api_keys::DeleteAdminApiKeysParams {
+            key_id: decode(fixture(r#""key-1""#)),
+        },
+        None,
+    )
+    .expect("delete_admin_api_keys request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected =
         fixture(r#"{"id":"key_abc","object":"organization.admin_api_key.deleted","deleted":true}"#);
@@ -6683,8 +7028,13 @@ fn delete_admin_api_keys_delete_admin_api_keys_403_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/403")),
         ..config
     };
-    let result =
-        admin_api_keys::delete_admin_api_keys(&config, decode(fixture(r#""key-1""#)), None);
+    let result = admin_api_keys::delete_admin_api_keys(
+        &config,
+        admin_api_keys::DeleteAdminApiKeysParams {
+            key_id: decode(fixture(r#""key-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_admin_api_keys did not fail with SdkError::Http on 403");
     };
@@ -6705,8 +7055,14 @@ fn delete_agent_delete_agent_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = agents::delete_agent(&config, decode(fixture(r#""agent-1""#)), None)
-        .expect("delete_agent request failed");
+    let actual = agents::delete_agent(
+        &config,
+        agents::DeleteAgentParams {
+            agent_id: decode(fixture(r#""agent-1""#)),
+        },
+        None,
+    )
+    .expect("delete_agent request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"id":"id-1","object":"agent.deleted","deleted":false}"#);
     assert!(
@@ -6726,7 +7082,13 @@ fn delete_agent_delete_agent_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = agents::delete_agent(&config, decode(fixture(r#""agent-1""#)), None);
+    let result = agents::delete_agent(
+        &config,
+        agents::DeleteAgentParams {
+            agent_id: decode(fixture(r#""agent-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_agent did not fail with SdkError::Http on 400");
     };
@@ -6750,7 +7112,9 @@ fn delete_agent_environment_template_delete_agent_environment_template_reaches_m
     let _ = &config;
     let actual = agents::delete_agent_environment_template(
         &config,
-        decode(fixture(r#""environment_template-1""#)),
+        agents::DeleteAgentEnvironmentTemplateParams {
+            environment_template_id: decode(fixture(r#""environment_template-1""#)),
+        },
         None,
     )
     .expect("delete_agent_environment_template request failed");
@@ -6777,7 +7141,9 @@ fn delete_agent_environment_template_delete_agent_environment_template_400_decod
     };
     let result = agents::delete_agent_environment_template(
         &config,
-        decode(fixture(r#""environment_template-1""#)),
+        agents::DeleteAgentEnvironmentTemplateParams {
+            environment_template_id: decode(fixture(r#""environment_template-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -6800,8 +7166,14 @@ fn delete_agent_session_delete_agent_session_reaches_mock_and_decodes_response()
         return;
     };
     let _ = &config;
-    let actual = agents::delete_agent_session(&config, decode(fixture(r#""session-1""#)), None)
-        .expect("delete_agent_session request failed");
+    let actual = agents::delete_agent_session(
+        &config,
+        agents::DeleteAgentSessionParams {
+            session_id: decode(fixture(r#""session-1""#)),
+        },
+        None,
+    )
+    .expect("delete_agent_session request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"id":"id-1","object":"agent.session.deleted","deleted":false}"#);
     assert!(
@@ -6821,7 +7193,13 @@ fn delete_agent_session_delete_agent_session_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = agents::delete_agent_session(&config, decode(fixture(r#""session-1""#)), None);
+    let result = agents::delete_agent_session(
+        &config,
+        agents::DeleteAgentSessionParams {
+            session_id: decode(fixture(r#""session-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_agent_session did not fail with SdkError::Http on 400");
     };
@@ -6844,8 +7222,10 @@ fn delete_agent_session_artifact_delete_agent_session_artifact_reaches_mock_and_
     let _ = &config;
     let actual = agents::delete_agent_session_artifact(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#""artifact-1""#)),
+        agents::DeleteAgentSessionArtifactParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            artifact_id: decode(fixture(r#""artifact-1""#)),
+        },
         None,
     )
     .expect("delete_agent_session_artifact request failed");
@@ -6871,8 +7251,10 @@ fn delete_agent_session_artifact_delete_agent_session_artifact_400_decodes_decla
     };
     let result = agents::delete_agent_session_artifact(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#""artifact-1""#)),
+        agents::DeleteAgentSessionArtifactParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            artifact_id: decode(fixture(r#""artifact-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -6895,8 +7277,14 @@ fn delete_assistant_delete_assistant_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = assistants::delete_assistant(&config, decode(fixture(r#""assistant-1""#)), None)
-        .expect("delete_assistant request failed");
+    let actual = assistants::delete_assistant(
+        &config,
+        assistants::DeleteAssistantParams {
+            assistant_id: decode(fixture(r#""assistant-1""#)),
+        },
+        None,
+    )
+    .expect("delete_assistant request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"id":"id-1","deleted":false,"object":"assistant.deleted"}"#);
     assert!(
@@ -6911,9 +7299,14 @@ fn delete_certificate_delete_certificate_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual =
-        certificates::delete_certificate(&config, decode(fixture(r#""certificate-1""#)), None)
-            .expect("delete_certificate request failed");
+    let actual = certificates::delete_certificate(
+        &config,
+        certificates::DeleteCertificateParams {
+            certificate_id: decode(fixture(r#""certificate-1""#)),
+        },
+        None,
+    )
+    .expect("delete_certificate request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"object":"certificate.deleted","id":"id-1"}"#);
     assert!(
@@ -6933,8 +7326,13 @@ fn delete_certificate_delete_certificate_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result =
-        certificates::delete_certificate(&config, decode(fixture(r#""certificate-1""#)), None);
+    let result = certificates::delete_certificate(
+        &config,
+        certificates::DeleteCertificateParams {
+            certificate_id: decode(fixture(r#""certificate-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_certificate did not fail with SdkError::Http on 400");
     };
@@ -6955,8 +7353,14 @@ fn delete_chat_completion_delete_chat_completion_reaches_mock_and_decodes_respon
         return;
     };
     let _ = &config;
-    let actual = chat::delete_chat_completion(&config, decode(fixture(r#""completion-1""#)), None)
-        .expect("delete_chat_completion request failed");
+    let actual = chat::delete_chat_completion(
+        &config,
+        chat::DeleteChatCompletionParams {
+            completion_id: decode(fixture(r#""completion-1""#)),
+        },
+        None,
+    )
+    .expect("delete_chat_completion request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"object":"chat.completion.deleted","id":"id-1","deleted":false}"#);
     assert!(
@@ -6976,7 +7380,13 @@ fn delete_chat_completion_delete_chat_completion_404_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/404")),
         ..config
     };
-    let result = chat::delete_chat_completion(&config, decode(fixture(r#""completion-1""#)), None);
+    let result = chat::delete_chat_completion(
+        &config,
+        chat::DeleteChatCompletionParams {
+            completion_id: decode(fixture(r#""completion-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_chat_completion did not fail with SdkError::Http on 404");
     };
@@ -6997,8 +7407,14 @@ fn delete_chatkit_thread_delete_chatkit_thread_reaches_mock_and_decodes_response
         return;
     };
     let _ = &config;
-    let actual = chatkit::delete_chatkit_thread(&config, decode(fixture(r#""cthr_123""#)), None)
-        .expect("delete_chatkit_thread request failed");
+    let actual = chatkit::delete_chatkit_thread(
+        &config,
+        chatkit::DeleteChatkitThreadParams {
+            thread_id: decode(fixture(r#""cthr_123""#)),
+        },
+        None,
+    )
+    .expect("delete_chatkit_thread request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"id":"id-1","object":"chatkit.thread.deleted","deleted":false}"#);
     assert!(
@@ -7018,7 +7434,13 @@ fn delete_chatkit_thread_delete_chatkit_thread_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = chatkit::delete_chatkit_thread(&config, decode(fixture(r#""cthr_123""#)), None);
+    let result = chatkit::delete_chatkit_thread(
+        &config,
+        chatkit::DeleteChatkitThreadParams {
+            thread_id: decode(fixture(r#""cthr_123""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_chatkit_thread did not fail with SdkError::Http on 400");
     };
@@ -7039,8 +7461,14 @@ fn delete_container_delete_container_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = containers::delete_container(&config, decode(fixture(r#""container-1""#)), None)
-        .expect("delete_container request failed");
+    let actual = containers::delete_container(
+        &config,
+        containers::DeleteContainerParams {
+            container_id: decode(fixture(r#""container-1""#)),
+        },
+        None,
+    )
+    .expect("delete_container request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"object":"container.deleted","deleted":false,"id":"id-1"}"#);
     assert!(
@@ -7060,7 +7488,13 @@ fn delete_container_delete_container_404_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/404")),
         ..config
     };
-    let result = containers::delete_container(&config, decode(fixture(r#""container-1""#)), None);
+    let result = containers::delete_container(
+        &config,
+        containers::DeleteContainerParams {
+            container_id: decode(fixture(r#""container-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_container did not fail with SdkError::Http on 404");
     };
@@ -7083,8 +7517,10 @@ fn delete_container_file_delete_container_file_reaches_mock_and_decodes_response
     let _ = &config;
     let actual = containers::delete_container_file(
         &config,
-        decode(fixture(r#""container-1""#)),
-        decode(fixture(r#""file-1""#)),
+        containers::DeleteContainerFileParams {
+            container_id: decode(fixture(r#""container-1""#)),
+            file_id: decode(fixture(r#""file-1""#)),
+        },
         None,
     )
     .expect("delete_container_file request failed");
@@ -7109,8 +7545,10 @@ fn delete_container_file_delete_container_file_404_decodes_declared_error() {
     };
     let result = containers::delete_container_file(
         &config,
-        decode(fixture(r#""container-1""#)),
-        decode(fixture(r#""file-1""#)),
+        containers::DeleteContainerFileParams {
+            container_id: decode(fixture(r#""container-1""#)),
+            file_id: decode(fixture(r#""file-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -7133,9 +7571,14 @@ fn delete_conversation_delete_conversation_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual =
-        conversations::delete_conversation(&config, decode(fixture(r#""conv_123""#)), None)
-            .expect("delete_conversation request failed");
+    let actual = conversations::delete_conversation(
+        &config,
+        conversations::DeleteConversationParams {
+            conversation_id: decode(fixture(r#""conv_123""#)),
+        },
+        None,
+    )
+    .expect("delete_conversation request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"object":"conversation.deleted","deleted":false,"id":"id-1"}"#);
     assert!(
@@ -7155,8 +7598,13 @@ fn delete_conversation_delete_conversation_404_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/404")),
         ..config
     };
-    let result =
-        conversations::delete_conversation(&config, decode(fixture(r#""conv_123""#)), None);
+    let result = conversations::delete_conversation(
+        &config,
+        conversations::DeleteConversationParams {
+            conversation_id: decode(fixture(r#""conv_123""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_conversation did not fail with SdkError::Http on 404");
     };
@@ -7179,8 +7627,10 @@ fn delete_conversation_item_delete_conversation_item_reaches_mock_and_decodes_re
     let _ = &config;
     let actual = conversations::delete_conversation_item(
         &config,
-        decode(fixture(r#""conv_123""#)),
-        decode(fixture(r#""msg_abc""#)),
+        conversations::DeleteConversationItemParams {
+            conversation_id: decode(fixture(r#""conv_123""#)),
+            item_id: decode(fixture(r#""msg_abc""#)),
+        },
         None,
     )
     .expect("delete_conversation_item request failed");
@@ -7206,8 +7656,10 @@ fn delete_conversation_item_delete_conversation_item_400_decodes_declared_error(
     };
     let result = conversations::delete_conversation_item(
         &config,
-        decode(fixture(r#""conv_123""#)),
-        decode(fixture(r#""msg_abc""#)),
+        conversations::DeleteConversationItemParams {
+            conversation_id: decode(fixture(r#""conv_123""#)),
+            item_id: decode(fixture(r#""msg_abc""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -7230,8 +7682,14 @@ fn delete_eval_delete_eval_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = evals::delete_eval(&config, decode(fixture(r#""eval-1""#)), None)
-        .expect("delete_eval request failed");
+    let actual = evals::delete_eval(
+        &config,
+        evals::DeleteEvalParams {
+            eval_id: decode(fixture(r#""eval-1""#)),
+        },
+        None,
+    )
+    .expect("delete_eval request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"object":"eval.deleted","deleted":true,"eval_id":"eval-1"}"#);
     assert!(
@@ -7251,7 +7709,13 @@ fn delete_eval_delete_eval_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = evals::delete_eval(&config, decode(fixture(r#""eval-1""#)), None);
+    let result = evals::delete_eval(
+        &config,
+        evals::DeleteEvalParams {
+            eval_id: decode(fixture(r#""eval-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_eval did not fail with SdkError::Http on 400");
     };
@@ -7274,8 +7738,10 @@ fn delete_eval_run_delete_eval_run_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = evals::delete_eval_run(
         &config,
-        decode(fixture(r#""eval-1""#)),
-        decode(fixture(r#""run-1""#)),
+        evals::DeleteEvalRunParams {
+            eval_id: decode(fixture(r#""eval-1""#)),
+            run_id: decode(fixture(r#""run-1""#)),
+        },
         None,
     )
     .expect("delete_eval_run request failed");
@@ -7300,8 +7766,10 @@ fn delete_eval_run_delete_eval_run_400_decodes_declared_error() {
     };
     let result = evals::delete_eval_run(
         &config,
-        decode(fixture(r#""eval-1""#)),
-        decode(fixture(r#""run-1""#)),
+        evals::DeleteEvalRunParams {
+            eval_id: decode(fixture(r#""eval-1""#)),
+            run_id: decode(fixture(r#""run-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -7326,7 +7794,9 @@ fn delete_external_storage_delete_external_storage_reaches_mock_and_decodes_resp
     let _ = &config;
     let actual = external_storage::delete_external_storage(
         &config,
-        decode(fixture(r#""extstorage_123""#)),
+        external_storage::DeleteExternalStorageParams {
+            external_storage_id: decode(fixture(r#""extstorage_123""#)),
+        },
         None,
     )
     .expect("delete_external_storage request failed");
@@ -7353,7 +7823,9 @@ fn delete_external_storage_delete_external_storage_400_decodes_declared_error() 
     };
     let result = external_storage::delete_external_storage(
         &config,
-        decode(fixture(r#""extstorage_123""#)),
+        external_storage::DeleteExternalStorageParams {
+            external_storage_id: decode(fixture(r#""extstorage_123""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -7376,8 +7848,14 @@ fn delete_file_delete_file_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = files::delete_file(&config, decode(fixture(r#""file-1""#)), None)
-        .expect("delete_file request failed");
+    let actual = files::delete_file(
+        &config,
+        files::DeleteFileParams {
+            file_id: decode(fixture(r#""file-1""#)),
+        },
+        None,
+    )
+    .expect("delete_file request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"id":"id-1","object":"file","deleted":false}"#);
     assert!(
@@ -7397,7 +7875,13 @@ fn delete_file_delete_file_404_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/404")),
         ..config
     };
-    let result = files::delete_file(&config, decode(fixture(r#""file-1""#)), None);
+    let result = files::delete_file(
+        &config,
+        files::DeleteFileParams {
+            file_id: decode(fixture(r#""file-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_file did not fail with SdkError::Http on 404");
     };
@@ -7421,10 +7905,12 @@ fn delete_fine_tuning_checkpoint_permission_delete_fine_tuning_checkpoint_permis
     let _ = &config;
     let actual = fine_tuning::delete_fine_tuning_checkpoint_permission(
         &config,
-        decode(fixture(
-            r#""ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd""#,
-        )),
-        decode(fixture(r#""cp_zc4Q7MP6XxulcVzj4MZdwsAB""#)),
+        fine_tuning::DeleteFineTuningCheckpointPermissionParams {
+            fine_tuned_model_checkpoint: decode(fixture(
+                r#""ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd""#,
+            )),
+            permission_id: decode(fixture(r#""cp_zc4Q7MP6XxulcVzj4MZdwsAB""#)),
+        },
         None,
     )
     .expect("delete_fine_tuning_checkpoint_permission request failed");
@@ -7450,10 +7936,12 @@ fn delete_fine_tuning_checkpoint_permission_delete_fine_tuning_checkpoint_permis
     };
     let result = fine_tuning::delete_fine_tuning_checkpoint_permission(
         &config,
-        decode(fixture(
-            r#""ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd""#,
-        )),
-        decode(fixture(r#""cp_zc4Q7MP6XxulcVzj4MZdwsAB""#)),
+        fine_tuning::DeleteFineTuningCheckpointPermissionParams {
+            fine_tuned_model_checkpoint: decode(fixture(
+                r#""ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd""#,
+            )),
+            permission_id: decode(fixture(r#""cp_zc4Q7MP6XxulcVzj4MZdwsAB""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -7476,8 +7964,14 @@ fn delete_group_delete_group_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = groups::delete_group(&config, decode(fixture(r#""group-1""#)), None)
-        .expect("delete_group request failed");
+    let actual = groups::delete_group(
+        &config,
+        groups::DeleteGroupParams {
+            group_id: decode(fixture(r#""group-1""#)),
+        },
+        None,
+    )
+    .expect("delete_group request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"object":"group.deleted","id":"id-1","deleted":false}"#);
     assert!(
@@ -7497,7 +7991,13 @@ fn delete_group_delete_group_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = groups::delete_group(&config, decode(fixture(r#""group-1""#)), None);
+    let result = groups::delete_group(
+        &config,
+        groups::DeleteGroupParams {
+            group_id: decode(fixture(r#""group-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_group did not fail with SdkError::Http on 400");
     };
@@ -7518,8 +8018,14 @@ fn delete_invite_delete_invite_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = invites::delete_invite(&config, decode(fixture(r#""invite-1""#)), None)
-        .expect("delete_invite request failed");
+    let actual = invites::delete_invite(
+        &config,
+        invites::DeleteInviteParams {
+            invite_id: decode(fixture(r#""invite-1""#)),
+        },
+        None,
+    )
+    .expect("delete_invite request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected =
         fixture(r#"{"object":"organization.invite.deleted","id":"id-1","deleted":false}"#);
@@ -7540,7 +8046,13 @@ fn delete_invite_delete_invite_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = invites::delete_invite(&config, decode(fixture(r#""invite-1""#)), None);
+    let result = invites::delete_invite(
+        &config,
+        invites::DeleteInviteParams {
+            invite_id: decode(fixture(r#""invite-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_invite did not fail with SdkError::Http on 400");
     };
@@ -7563,8 +8075,10 @@ fn delete_message_delete_message_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = assistants::delete_message(
         &config,
-        decode(fixture(r#""thread-1""#)),
-        decode(fixture(r#""message-1""#)),
+        assistants::DeleteMessageParams {
+            thread_id: decode(fixture(r#""thread-1""#)),
+            message_id: decode(fixture(r#""message-1""#)),
+        },
         None,
     )
     .expect("delete_message request failed");
@@ -7584,7 +8098,9 @@ fn delete_model_delete_model_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = models::delete_model(
         &config,
-        decode(fixture(r#""ft:gpt-4o-mini:acemeco:suffix:abc123""#)),
+        models::DeleteModelParams {
+            model: decode(fixture(r#""ft:gpt-4o-mini:acemeco:suffix:abc123""#)),
+        },
         None,
     )
     .expect("delete_model request failed");
@@ -7609,7 +8125,9 @@ fn delete_model_delete_model_403_decodes_declared_error() {
     };
     let result = models::delete_model(
         &config,
-        decode(fixture(r#""ft:gpt-4o-mini:acemeco:suffix:abc123""#)),
+        models::DeleteModelParams {
+            model: decode(fixture(r#""ft:gpt-4o-mini:acemeco:suffix:abc123""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -7635,7 +8153,9 @@ fn delete_organization_spend_alert_delete_organization_spend_alert_reaches_mock_
     let _ = &config;
     let actual = spend_alerts::delete_organization_spend_alert(
         &config,
-        decode(fixture(r#""alert-1""#)),
+        spend_alerts::DeleteOrganizationSpendAlertParams {
+            alert_id: decode(fixture(r#""alert-1""#)),
+        },
         None,
     )
     .expect("delete_organization_spend_alert request failed");
@@ -7661,7 +8181,9 @@ fn delete_organization_spend_alert_delete_organization_spend_alert_403_decodes_d
     };
     let result = spend_alerts::delete_organization_spend_alert(
         &config,
-        decode(fixture(r#""alert-1""#)),
+        spend_alerts::DeleteOrganizationSpendAlertParams {
+            alert_id: decode(fixture(r#""alert-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -7686,8 +8208,10 @@ fn delete_project_api_key_delete_project_api_key_reaches_mock_and_decodes_respon
     let _ = &config;
     let actual = projects::delete_project_api_key(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""api_key-1""#)),
+        projects::DeleteProjectApiKeyParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            api_key_id: decode(fixture(r#""api_key-1""#)),
+        },
         None,
     )
     .expect("delete_project_api_key request failed");
@@ -7713,8 +8237,10 @@ fn delete_project_api_key_delete_project_api_key_400_decodes_declared_error() {
     };
     let result = projects::delete_project_api_key(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""api_key-1""#)),
+        projects::DeleteProjectApiKeyParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            api_key_id: decode(fixture(r#""api_key-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -7740,7 +8266,9 @@ fn delete_project_model_permissions_delete_project_model_permissions_reaches_moc
     let _ = &config;
     let actual = projects::delete_project_model_permissions(
         &config,
-        decode(fixture(r#""project-1""#)),
+        projects::DeleteProjectModelPermissionsParams {
+            project_id: decode(fixture(r#""project-1""#)),
+        },
         None,
     )
     .expect("delete_project_model_permissions request failed");
@@ -7765,7 +8293,9 @@ fn delete_project_model_permissions_delete_project_model_permissions_400_decodes
     };
     let result = projects::delete_project_model_permissions(
         &config,
-        decode(fixture(r#""project-1""#)),
+        projects::DeleteProjectModelPermissionsParams {
+            project_id: decode(fixture(r#""project-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -7791,8 +8321,10 @@ fn delete_project_service_account_delete_project_service_account_reaches_mock_an
     let _ = &config;
     let actual = projects::delete_project_service_account(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""service_account-1""#)),
+        projects::DeleteProjectServiceAccountParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            service_account_id: decode(fixture(r#""service_account-1""#)),
+        },
         None,
     )
     .expect("delete_project_service_account request failed");
@@ -7819,8 +8351,10 @@ fn delete_project_service_account_delete_project_service_account_400_decodes_dec
     };
     let result = projects::delete_project_service_account(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""service_account-1""#)),
+        projects::DeleteProjectServiceAccountParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            service_account_id: decode(fixture(r#""service_account-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -7845,8 +8379,10 @@ fn delete_project_spend_alert_delete_project_spend_alert_reaches_mock_and_decode
     let _ = &config;
     let actual = spend_alerts::delete_project_spend_alert(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""alert-1""#)),
+        spend_alerts::DeleteProjectSpendAlertParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            alert_id: decode(fixture(r#""alert-1""#)),
+        },
         None,
     )
     .expect("delete_project_spend_alert request failed");
@@ -7872,8 +8408,10 @@ fn delete_project_spend_alert_delete_project_spend_alert_400_decodes_declared_er
     };
     let result = spend_alerts::delete_project_spend_alert(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""alert-1""#)),
+        spend_alerts::DeleteProjectSpendAlertParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            alert_id: decode(fixture(r#""alert-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -7898,8 +8436,10 @@ fn delete_project_user_delete_project_user_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = projects::delete_project_user(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""user-1""#)),
+        projects::DeleteProjectUserParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            user_id: decode(fixture(r#""user-1""#)),
+        },
         None,
     )
     .expect("delete_project_user request failed");
@@ -7925,8 +8465,10 @@ fn delete_project_user_delete_project_user_400_decodes_declared_error() {
     };
     let result = projects::delete_project_user(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""user-1""#)),
+        projects::DeleteProjectUserParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            user_id: decode(fixture(r#""user-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -7951,7 +8493,9 @@ fn delete_response_delete_response_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = responses::delete_response(
         &config,
-        decode(fixture(r#""resp_677efb5139a88190b512bc3fef8e535d""#)),
+        responses::DeleteResponseParams {
+            response_id: decode(fixture(r#""resp_677efb5139a88190b512bc3fef8e535d""#)),
+        },
         None,
     )
     .expect("delete_response request failed");
@@ -7976,7 +8520,9 @@ fn delete_response_delete_response_404_decodes_declared_error() {
     };
     let result = responses::delete_response(
         &config,
-        decode(fixture(r#""resp_677efb5139a88190b512bc3fef8e535d""#)),
+        responses::DeleteResponseParams {
+            response_id: decode(fixture(r#""resp_677efb5139a88190b512bc3fef8e535d""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -7999,8 +8545,14 @@ fn delete_role_delete_role_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = roles::delete_role(&config, decode(fixture(r#""role-1""#)), None)
-        .expect("delete_role request failed");
+    let actual = roles::delete_role(
+        &config,
+        roles::DeleteRoleParams {
+            role_id: decode(fixture(r#""role-1""#)),
+        },
+        None,
+    )
+    .expect("delete_role request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"object":"role.deleted","id":"id-1","deleted":false}"#);
     assert!(
@@ -8020,7 +8572,13 @@ fn delete_role_delete_role_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = roles::delete_role(&config, decode(fixture(r#""role-1""#)), None);
+    let result = roles::delete_role(
+        &config,
+        roles::DeleteRoleParams {
+            role_id: decode(fixture(r#""role-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_role did not fail with SdkError::Http on 400");
     };
@@ -8043,8 +8601,10 @@ fn delete_roles_project_role_delete_roles_project_role_reaches_mock_and_decodes_
     let _ = &config;
     let actual = roles::delete_roles_project_role(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""role-1""#)),
+        roles::DeleteRolesProjectRoleParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     )
     .expect("delete_roles_project_role request failed");
@@ -8069,8 +8629,10 @@ fn delete_roles_project_role_delete_roles_project_role_400_decodes_declared_erro
     };
     let result = roles::delete_roles_project_role(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""role-1""#)),
+        roles::DeleteRolesProjectRoleParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -8093,8 +8655,14 @@ fn delete_skill_delete_skill_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = skills::delete_skill(&config, decode(fixture(r#""skill_123""#)), None)
-        .expect("delete_skill request failed");
+    let actual = skills::delete_skill(
+        &config,
+        skills::DeleteSkillParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+        },
+        None,
+    )
+    .expect("delete_skill request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"object":"skill.deleted","deleted":false,"id":"id-1"}"#);
     assert!(
@@ -8114,7 +8682,13 @@ fn delete_skill_delete_skill_404_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/404")),
         ..config
     };
-    let result = skills::delete_skill(&config, decode(fixture(r#""skill_123""#)), None);
+    let result = skills::delete_skill(
+        &config,
+        skills::DeleteSkillParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_skill did not fail with SdkError::Http on 404");
     };
@@ -8137,8 +8711,10 @@ fn delete_skill_version_delete_skill_version_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = skills::delete_skill_version(
         &config,
-        decode(fixture(r#""skill_123""#)),
-        decode(fixture(r#""version""#)),
+        skills::DeleteSkillVersionParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+            version: decode(fixture(r#""version""#)),
+        },
         None,
     )
     .expect("delete_skill_version request failed");
@@ -8165,8 +8741,10 @@ fn delete_skill_version_delete_skill_version_400_decodes_declared_error() {
     };
     let result = skills::delete_skill_version(
         &config,
-        decode(fixture(r#""skill_123""#)),
-        decode(fixture(r#""version""#)),
+        skills::DeleteSkillVersionParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+            version: decode(fixture(r#""version""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -8232,9 +8810,14 @@ fn delete_spend_limits_project_delete_spend_limits_project_reaches_mock_and_deco
         return;
     };
     let _ = &config;
-    let actual =
-        spend_limits::delete_spend_limits_project(&config, decode(fixture(r#""proj_123""#)), None)
-            .expect("delete_spend_limits_project request failed");
+    let actual = spend_limits::delete_spend_limits_project(
+        &config,
+        spend_limits::DeleteSpendLimitsProjectParams {
+            project_id: decode(fixture(r#""proj_123""#)),
+        },
+        None,
+    )
+    .expect("delete_spend_limits_project request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"object":"project.spend_limit.deleted","deleted":false}"#);
     assert!(
@@ -8254,8 +8837,13 @@ fn delete_spend_limits_project_delete_spend_limits_project_400_decodes_declared_
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result =
-        spend_limits::delete_spend_limits_project(&config, decode(fixture(r#""proj_123""#)), None);
+    let result = spend_limits::delete_spend_limits_project(
+        &config,
+        spend_limits::DeleteSpendLimitsProjectParams {
+            project_id: decode(fixture(r#""proj_123""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_spend_limits_project did not fail with SdkError::Http on 400");
     };
@@ -8276,8 +8864,14 @@ fn delete_thread_delete_thread_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = assistants::delete_thread(&config, decode(fixture(r#""thread-1""#)), None)
-        .expect("delete_thread request failed");
+    let actual = assistants::delete_thread(
+        &config,
+        assistants::DeleteThreadParams {
+            thread_id: decode(fixture(r#""thread-1""#)),
+        },
+        None,
+    )
+    .expect("delete_thread request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"id":"id-1","deleted":false,"object":"thread.deleted"}"#);
     assert!(
@@ -8292,8 +8886,14 @@ fn delete_user_delete_user_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = users::delete_user(&config, decode(fixture(r#""user-1""#)), None)
-        .expect("delete_user request failed");
+    let actual = users::delete_user(
+        &config,
+        users::DeleteUserParams {
+            user_id: decode(fixture(r#""user-1""#)),
+        },
+        None,
+    )
+    .expect("delete_user request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"object":"organization.user.deleted","id":"id-1","deleted":false}"#);
     assert!(
@@ -8313,7 +8913,13 @@ fn delete_user_delete_user_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = users::delete_user(&config, decode(fixture(r#""user-1""#)), None);
+    let result = users::delete_user(
+        &config,
+        users::DeleteUserParams {
+            user_id: decode(fixture(r#""user-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_user did not fail with SdkError::Http on 400");
     };
@@ -8334,8 +8940,14 @@ fn delete_vault_delete_vault_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = vaults::delete_vault(&config, decode(fixture(r#""vault-1""#)), None)
-        .expect("delete_vault request failed");
+    let actual = vaults::delete_vault(
+        &config,
+        vaults::DeleteVaultParams {
+            vault_id: decode(fixture(r#""vault-1""#)),
+        },
+        None,
+    )
+    .expect("delete_vault request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"id":"id-1","object":"vault.deleted","deleted":false}"#);
     assert!(
@@ -8355,7 +8967,13 @@ fn delete_vault_delete_vault_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = vaults::delete_vault(&config, decode(fixture(r#""vault-1""#)), None);
+    let result = vaults::delete_vault(
+        &config,
+        vaults::DeleteVaultParams {
+            vault_id: decode(fixture(r#""vault-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_vault did not fail with SdkError::Http on 400");
     };
@@ -8378,8 +8996,10 @@ fn delete_vault_credential_delete_vault_credential_reaches_mock_and_decodes_resp
     let _ = &config;
     let actual = vaults::delete_vault_credential(
         &config,
-        decode(fixture(r#""vault-1""#)),
-        decode(fixture(r#""credential-1""#)),
+        vaults::DeleteVaultCredentialParams {
+            vault_id: decode(fixture(r#""vault-1""#)),
+            credential_id: decode(fixture(r#""credential-1""#)),
+        },
         None,
     )
     .expect("delete_vault_credential request failed");
@@ -8404,8 +9024,10 @@ fn delete_vault_credential_delete_vault_credential_400_decodes_declared_error() 
     };
     let result = vaults::delete_vault_credential(
         &config,
-        decode(fixture(r#""vault-1""#)),
-        decode(fixture(r#""credential-1""#)),
+        vaults::DeleteVaultCredentialParams {
+            vault_id: decode(fixture(r#""vault-1""#)),
+            credential_id: decode(fixture(r#""credential-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -8428,9 +9050,14 @@ fn delete_vector_store_delete_vector_store_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual =
-        vector_stores::delete_vector_store(&config, decode(fixture(r#""vector_store-1""#)), None)
-            .expect("delete_vector_store request failed");
+    let actual = vector_stores::delete_vector_store(
+        &config,
+        vector_stores::DeleteVectorStoreParams {
+            vector_store_id: decode(fixture(r#""vector_store-1""#)),
+        },
+        None,
+    )
+    .expect("delete_vector_store request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"id":"id-1","deleted":false,"object":"vector_store.deleted"}"#);
     assert!(
@@ -8450,8 +9077,13 @@ fn delete_vector_store_delete_vector_store_404_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/404")),
         ..config
     };
-    let result =
-        vector_stores::delete_vector_store(&config, decode(fixture(r#""vector_store-1""#)), None);
+    let result = vector_stores::delete_vector_store(
+        &config,
+        vector_stores::DeleteVectorStoreParams {
+            vector_store_id: decode(fixture(r#""vector_store-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_vector_store did not fail with SdkError::Http on 404");
     };
@@ -8474,8 +9106,10 @@ fn delete_vector_store_file_delete_vector_store_file_reaches_mock_and_decodes_re
     let _ = &config;
     let actual = vector_stores::delete_vector_store_file(
         &config,
-        decode(fixture(r#""vector_store-1""#)),
-        decode(fixture(r#""file-1""#)),
+        vector_stores::DeleteVectorStoreFileParams {
+            vector_store_id: decode(fixture(r#""vector_store-1""#)),
+            file_id: decode(fixture(r#""file-1""#)),
+        },
         None,
     )
     .expect("delete_vector_store_file request failed");
@@ -8500,8 +9134,10 @@ fn delete_vector_store_file_delete_vector_store_file_400_decodes_declared_error(
     };
     let result = vector_stores::delete_vector_store_file(
         &config,
-        decode(fixture(r#""vector_store-1""#)),
-        decode(fixture(r#""file-1""#)),
+        vector_stores::DeleteVectorStoreFileParams {
+            vector_store_id: decode(fixture(r#""vector_store-1""#)),
+            file_id: decode(fixture(r#""file-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -8524,8 +9160,14 @@ fn delete_video_delete_video_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = videos::delete_video(&config, decode(fixture(r#""video_123""#)), None)
-        .expect("delete_video request failed");
+    let actual = videos::delete_video(
+        &config,
+        videos::DeleteVideoParams {
+            video_id: decode(fixture(r#""video_123""#)),
+        },
+        None,
+    )
+    .expect("delete_video request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"object":"video.deleted","deleted":false,"id":"id-1"}"#);
     assert!(
@@ -8545,7 +9187,13 @@ fn delete_video_delete_video_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = videos::delete_video(&config, decode(fixture(r#""video_123""#)), None);
+    let result = videos::delete_video(
+        &config,
+        videos::DeleteVideoParams {
+            video_id: decode(fixture(r#""video_123""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_video did not fail with SdkError::Http on 400");
     };
@@ -8566,8 +9214,14 @@ fn delete_voice_consent_delete_voice_consent_reaches_mock_and_decodes_response()
         return;
     };
     let _ = &config;
-    let actual = audio::delete_voice_consent(&config, decode(fixture(r#""consent-1""#)), None)
-        .expect("delete_voice_consent request failed");
+    let actual = audio::delete_voice_consent(
+        &config,
+        audio::DeleteVoiceConsentParams {
+            consent_id: decode(fixture(r#""consent-1""#)),
+        },
+        None,
+    )
+    .expect("delete_voice_consent request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"id":"cons_1234","object":"audio.voice_consent","deleted":false}"#);
     assert!(
@@ -8587,7 +9241,13 @@ fn delete_voice_consent_delete_voice_consent_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = audio::delete_voice_consent(&config, decode(fixture(r#""consent-1""#)), None);
+    let result = audio::delete_voice_consent(
+        &config,
+        audio::DeleteVoiceConsentParams {
+            consent_id: decode(fixture(r#""consent-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_voice_consent did not fail with SdkError::Http on 400");
     };
@@ -8608,9 +9268,14 @@ fn delete_webhook_endpoint_delete_webhook_endpoint_reaches_mock_and_decodes_resp
         return;
     };
     let _ = &config;
-    let actual =
-        webhook_endpoints::delete_webhook_endpoint(&config, decode(fixture(r#""whe_123""#)), None)
-            .expect("delete_webhook_endpoint request failed");
+    let actual = webhook_endpoints::delete_webhook_endpoint(
+        &config,
+        webhook_endpoints::DeleteWebhookEndpointParams {
+            webhook_endpoint_id: decode(fixture(r#""whe_123""#)),
+        },
+        None,
+    )
+    .expect("delete_webhook_endpoint request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"id":"id-1","object":"webhook_endpoint.deleted","deleted":false}"#);
     assert!(
@@ -8630,8 +9295,13 @@ fn delete_webhook_endpoint_delete_webhook_endpoint_400_decodes_declared_error() 
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result =
-        webhook_endpoints::delete_webhook_endpoint(&config, decode(fixture(r#""whe_123""#)), None);
+    let result = webhook_endpoints::delete_webhook_endpoint(
+        &config,
+        webhook_endpoints::DeleteWebhookEndpointParams {
+            webhook_endpoint_id: decode(fixture(r#""whe_123""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("delete_webhook_endpoint did not fail with SdkError::Http on 400");
     };
@@ -8652,8 +9322,14 @@ fn download_file_download_file_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = files::download_file(&config, decode(fixture(r#""file-1""#)), None)
-        .expect("download_file request failed");
+    let actual = files::download_file(
+        &config,
+        files::DownloadFileParams {
+            file_id: decode(fixture(r#""file-1""#)),
+        },
+        None,
+    )
+    .expect("download_file request failed");
     assert_eq!(actual.len(), 12);
 }
 
@@ -8668,7 +9344,13 @@ fn download_file_download_file_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = files::download_file(&config, decode(fixture(r#""file-1""#)), None);
+    let result = files::download_file(
+        &config,
+        files::DownloadFileParams {
+            file_id: decode(fixture(r#""file-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("download_file did not fail with SdkError::Http on 400");
     };
@@ -8689,8 +9371,14 @@ fn download_live_recording_download_live_recording_reaches_mock_and_decodes_resp
         return;
     };
     let _ = &config;
-    let actual = live::download_live_recording(&config, decode(fixture(r#""live_a""#)), None)
-        .expect("download_live_recording request failed");
+    let actual = live::download_live_recording(
+        &config,
+        live::DownloadLiveRecordingParams {
+            session_id: decode(fixture(r#""live_a""#)),
+        },
+        None,
+    )
+    .expect("download_live_recording request failed");
     assert_eq!(actual.len(), 12);
 }
 
@@ -8705,7 +9393,13 @@ fn download_live_recording_download_live_recording_400_decodes_declared_error() 
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = live::download_live_recording(&config, decode(fixture(r#""live_a""#)), None);
+    let result = live::download_live_recording(
+        &config,
+        live::DownloadLiveRecordingParams {
+            session_id: decode(fixture(r#""live_a""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("download_live_recording did not fail with SdkError::Http on 400");
     };
@@ -8728,9 +9422,11 @@ fn fork_live_session_fork_live_session_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = live::fork_live_session(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#"{"type":"webrtc","sdp":"x"}"#)),
-        Some(decode(fixture(r#"{"store":false,"delegation":{"type":"responses","responses":{"model":"model","instructions":"instructions","max_output_tokens":16,"service_tier":"auto","reasoning":{"effort":"none","summary":"concise"},"text":{"verbosity":"low"},"tools":[{"type":"function","name":"Example Name","description":"example text","parameters":{"key":null},"strict":false}],"tool_choice":"auto","parallel_tool_calls":false}},"client":{"data_channel":{"allowed_client_events":"all","allowed_server_events":"all"}}}"#))),
+        live::ForkLiveSessionParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            transport: decode(fixture(r#"{"type":"webrtc","sdp":"x"}"#)),
+            session: Some(decode(fixture(r#"{"store":false,"delegation":{"type":"responses","responses":{"model":"model","instructions":"instructions","max_output_tokens":16,"service_tier":"auto","reasoning":{"effort":"none","summary":"concise"},"text":{"verbosity":"low"},"tools":[{"type":"function","name":"Example Name","description":"example text","parameters":{"key":null},"strict":false}],"tool_choice":"auto","parallel_tool_calls":false}},"client":{"data_channel":{"allowed_client_events":"all","allowed_server_events":"all"}}}"#))),
+        },
         None,
     )
     .expect("fork_live_session request failed");
@@ -8755,11 +9451,13 @@ fn fork_live_session_fork_live_session_400_decodes_declared_error() {
     };
     let result = live::fork_live_session(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#"{"type":"webrtc","sdp":"x"}"#)),
-        Some(decode(fixture(
-            r#"{"store":false,"delegation":{"type":"responses","responses":{"model":"model","instructions":"instructions","max_output_tokens":16,"service_tier":"auto","reasoning":{"effort":"none","summary":"concise"},"text":{"verbosity":"low"},"tools":[{"type":"function","name":"Example Name","description":"example text","parameters":{"key":null},"strict":false}],"tool_choice":"auto","parallel_tool_calls":false}},"client":{"data_channel":{"allowed_client_events":"all","allowed_server_events":"all"}}}"#,
-        ))),
+        live::ForkLiveSessionParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            transport: decode(fixture(r#"{"type":"webrtc","sdp":"x"}"#)),
+            session: Some(decode(fixture(
+                r#"{"store":false,"delegation":{"type":"responses","responses":{"model":"model","instructions":"instructions","max_output_tokens":16,"service_tier":"auto","reasoning":{"effort":"none","summary":"concise"},"text":{"verbosity":"low"},"tools":[{"type":"function","name":"Example Name","description":"example text","parameters":{"key":null},"strict":false}],"tool_choice":"auto","parallel_tool_calls":false}},"client":{"data_channel":{"allowed_client_events":"all","allowed_server_events":"all"}}}"#,
+            ))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -8782,8 +9480,14 @@ fn get_assistant_get_assistant_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = assistants::get_assistant(&config, decode(fixture(r#""assistant-1""#)), None)
-        .expect("get_assistant request failed");
+    let actual = assistants::get_assistant(
+        &config,
+        assistants::GetAssistantParams {
+            assistant_id: decode(fixture(r#""assistant-1""#)),
+        },
+        None,
+    )
+    .expect("get_assistant request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","object":"assistant","created_at":1,"name":"Example Name","description":"example text","model":"model","instructions":"instructions","tools":[],"tool_resources":{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"]}},"metadata":{"key":"key"},"temperature":1,"top_p":1,"response_format":{"type":"text"}}"#,
@@ -8802,8 +9506,10 @@ fn get_certificate_get_certificate_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = certificates::get_certificate(
         &config,
-        decode(fixture(r#""certificate-1""#)),
-        Some(decode(fixture(r#"["content"]"#))),
+        certificates::GetCertificateParams {
+            certificate_id: decode(fixture(r#""certificate-1""#)),
+            include: Some(decode(fixture(r#"["content"]"#))),
+        },
         None,
     )
     .expect("get_certificate request failed");
@@ -8830,8 +9536,10 @@ fn get_certificate_get_certificate_400_decodes_declared_error() {
     };
     let result = certificates::get_certificate(
         &config,
-        decode(fixture(r#""certificate-1""#)),
-        Some(decode(fixture(r#"["content"]"#))),
+        certificates::GetCertificateParams {
+            certificate_id: decode(fixture(r#""certificate-1""#)),
+            include: Some(decode(fixture(r#"["content"]"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -8854,8 +9562,14 @@ fn get_chat_completion_get_chat_completion_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = chat::get_chat_completion(&config, decode(fixture(r#""completion-1""#)), None)
-        .expect("get_chat_completion request failed");
+    let actual = chat::get_chat_completion(
+        &config,
+        chat::GetChatCompletionParams {
+            completion_id: decode(fixture(r#""completion-1""#)),
+        },
+        None,
+    )
+    .expect("get_chat_completion request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","choices":[{"finish_reason":"stop","index":1,"message":{"content":"content","refusal":"refusal","tool_calls":[{"id":"id-1","type":"function","function":{"name":"Example Name","arguments":"arguments"}}],"annotations":[{"type":"url_citation","url_citation":{"end_index":1,"start_index":1,"url":"https://example.com","title":"title"}}],"role":"assistant","function_call":{"arguments":"arguments","name":"Example Name"},"audio":{"id":"id-1","expires_at":1,"data":"data","transcript":"transcript"}},"logprobs":{"content":[{"token":"token","logprob":1,"bytes":[1],"top_logprobs":[{"token":"token","logprob":1,"bytes":[1]}]}],"refusal":[{"token":"token","logprob":1,"bytes":[1],"top_logprobs":[{"token":"token","logprob":1,"bytes":[1]}]}]}}],"created":1,"model":"model","metadata":{"key":"key"},"service_tier":"auto","system_fingerprint":"system_fingerprint","object":"chat.completion","usage":{"completion_tokens":0,"prompt_tokens":0,"total_tokens":0,"completion_tokens_details":{"accepted_prediction_tokens":0,"audio_tokens":0,"reasoning_tokens":0,"text_tokens":1,"rejected_prediction_tokens":0},"prompt_tokens_details":{"audio_tokens":0,"cached_tokens":0,"text_tokens":1,"image_tokens":30,"cache_write_tokens":0}},"moderation":{"input":{"type":"moderation_results","model":"model","results":[{"type":"moderation_result","model":"model","flagged":false,"categories":{"key":false},"category_scores":{"key":1},"category_applied_input_types":{"key":["text"]}}]},"output":{"type":"moderation_results","model":"model","results":[{"type":"moderation_result","model":"model","flagged":false,"categories":{"key":false},"category_scores":{"key":1},"category_applied_input_types":{"key":["text"]}}]}}}"#,
@@ -8877,7 +9591,13 @@ fn get_chat_completion_get_chat_completion_404_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/404")),
         ..config
     };
-    let result = chat::get_chat_completion(&config, decode(fixture(r#""completion-1""#)), None);
+    let result = chat::get_chat_completion(
+        &config,
+        chat::GetChatCompletionParams {
+            completion_id: decode(fixture(r#""completion-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("get_chat_completion did not fail with SdkError::Http on 404");
     };
@@ -8900,10 +9620,12 @@ fn get_chat_completion_messages_get_chat_completion_messages_reaches_mock_and_de
     let _ = &config;
     let actual = chat::get_chat_completion_messages(
         &config,
-        decode(fixture(r#""completion-1""#)),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""asc""#))),
+        chat::GetChatCompletionMessagesParams {
+            completion_id: decode(fixture(r#""completion-1""#)),
+            after: Some(decode(fixture(r#""after""#))),
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""asc""#))),
+        },
         None,
     )
     .expect("get_chat_completion_messages request failed");
@@ -8930,10 +9652,12 @@ fn get_chat_completion_messages_get_chat_completion_messages_400_decodes_declare
     };
     let result = chat::get_chat_completion_messages(
         &config,
-        decode(fixture(r#""completion-1""#)),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""asc""#))),
+        chat::GetChatCompletionMessagesParams {
+            completion_id: decode(fixture(r#""completion-1""#)),
+            after: Some(decode(fixture(r#""after""#))),
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""asc""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -8956,8 +9680,14 @@ fn get_conversation_get_conversation_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = conversations::get_conversation(&config, decode(fixture(r#""conv_123""#)), None)
-        .expect("get_conversation request failed");
+    let actual = conversations::get_conversation(
+        &config,
+        conversations::GetConversationParams {
+            conversation_id: decode(fixture(r#""conv_123""#)),
+        },
+        None,
+    )
+    .expect("get_conversation request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected =
         fixture(r#"{"id":"id-1","object":"conversation","metadata":{"key":"key"},"created_at":1}"#);
@@ -8978,7 +9708,13 @@ fn get_conversation_get_conversation_404_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/404")),
         ..config
     };
-    let result = conversations::get_conversation(&config, decode(fixture(r#""conv_123""#)), None);
+    let result = conversations::get_conversation(
+        &config,
+        conversations::GetConversationParams {
+            conversation_id: decode(fixture(r#""conv_123""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("get_conversation did not fail with SdkError::Http on 404");
     };
@@ -9001,9 +9737,11 @@ fn get_conversation_item_get_conversation_item_reaches_mock_and_decodes_response
     let _ = &config;
     let actual = conversations::get_conversation_item(
         &config,
-        decode(fixture(r#""conv_123""#)),
-        decode(fixture(r#""msg_abc""#)),
-        Some(decode(fixture(r#"["file_search_call.results"]"#))),
+        conversations::GetConversationItemParams {
+            conversation_id: decode(fixture(r#""conv_123""#)),
+            item_id: decode(fixture(r#""msg_abc""#)),
+            include: Some(decode(fixture(r#"["file_search_call.results"]"#))),
+        },
         None,
     )
     .expect("get_conversation_item request failed");
@@ -9030,9 +9768,11 @@ fn get_conversation_item_get_conversation_item_404_decodes_declared_error() {
     };
     let result = conversations::get_conversation_item(
         &config,
-        decode(fixture(r#""conv_123""#)),
-        decode(fixture(r#""msg_abc""#)),
-        Some(decode(fixture(r#"["file_search_call.results"]"#))),
+        conversations::GetConversationItemParams {
+            conversation_id: decode(fixture(r#""conv_123""#)),
+            item_id: decode(fixture(r#""msg_abc""#)),
+            include: Some(decode(fixture(r#"["file_search_call.results"]"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -9055,8 +9795,14 @@ fn get_eval_get_eval_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = evals::get_eval(&config, decode(fixture(r#""eval-1""#)), None)
-        .expect("get_eval request failed");
+    let actual = evals::get_eval(
+        &config,
+        evals::GetEvalParams {
+            eval_id: decode(fixture(r#""eval-1""#)),
+        },
+        None,
+    )
+    .expect("get_eval request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"eval","id":"id-1","name":"Chatbot effectiveness Evaluation","data_source_config":{"type":"custom","schema":{"type":"object","properties":{"item":{"type":"object","properties":{"label":{"type":"string"}},"required":["label"]}},"required":["item"]}},"testing_criteria":[{"type":"label_model","name":"Example Name","model":"model","input":[{"role":"user","content":"content","type":"message"}],"labels":["labels"],"passing_labels":["passing_labels"]}],"created_at":1,"metadata":{"key":"key"}}"#,
@@ -9078,7 +9824,13 @@ fn get_eval_get_eval_404_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/404")),
         ..config
     };
-    let result = evals::get_eval(&config, decode(fixture(r#""eval-1""#)), None);
+    let result = evals::get_eval(
+        &config,
+        evals::GetEvalParams {
+            eval_id: decode(fixture(r#""eval-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("get_eval did not fail with SdkError::Http on 404");
     };
@@ -9101,8 +9853,10 @@ fn get_eval_run_get_eval_run_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = evals::get_eval_run(
         &config,
-        decode(fixture(r#""eval-1""#)),
-        decode(fixture(r#""run-1""#)),
+        evals::GetEvalRunParams {
+            eval_id: decode(fixture(r#""eval-1""#)),
+            run_id: decode(fixture(r#""run-1""#)),
+        },
         None,
     )
     .expect("get_eval_run request failed");
@@ -9129,8 +9883,10 @@ fn get_eval_run_get_eval_run_400_decodes_declared_error() {
     };
     let result = evals::get_eval_run(
         &config,
-        decode(fixture(r#""eval-1""#)),
-        decode(fixture(r#""run-1""#)),
+        evals::GetEvalRunParams {
+            eval_id: decode(fixture(r#""eval-1""#)),
+            run_id: decode(fixture(r#""run-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -9155,9 +9911,11 @@ fn get_eval_run_output_item_get_eval_run_output_item_reaches_mock_and_decodes_re
     let _ = &config;
     let actual = evals::get_eval_run_output_item(
         &config,
-        decode(fixture(r#""eval-1""#)),
-        decode(fixture(r#""run-1""#)),
-        decode(fixture(r#""output_item-1""#)),
+        evals::GetEvalRunOutputItemParams {
+            eval_id: decode(fixture(r#""eval-1""#)),
+            run_id: decode(fixture(r#""run-1""#)),
+            output_item_id: decode(fixture(r#""output_item-1""#)),
+        },
         None,
     )
     .expect("get_eval_run_output_item request failed");
@@ -9184,9 +9942,11 @@ fn get_eval_run_output_item_get_eval_run_output_item_400_decodes_declared_error(
     };
     let result = evals::get_eval_run_output_item(
         &config,
-        decode(fixture(r#""eval-1""#)),
-        decode(fixture(r#""run-1""#)),
-        decode(fixture(r#""output_item-1""#)),
+        evals::GetEvalRunOutputItemParams {
+            eval_id: decode(fixture(r#""eval-1""#)),
+            run_id: decode(fixture(r#""run-1""#)),
+            output_item_id: decode(fixture(r#""output_item-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -9341,8 +10101,10 @@ fn get_message_get_message_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = assistants::get_message(
         &config,
-        decode(fixture(r#""thread-1""#)),
-        decode(fixture(r#""message-1""#)),
+        assistants::GetMessageParams {
+            thread_id: decode(fixture(r#""thread-1""#)),
+            message_id: decode(fixture(r#""message-1""#)),
+        },
         None,
     )
     .expect("get_message request failed");
@@ -9459,8 +10221,10 @@ fn get_run_get_run_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = assistants::get_run(
         &config,
-        decode(fixture(r#""thread-1""#)),
-        decode(fixture(r#""run-1""#)),
+        assistants::GetRunParams {
+            thread_id: decode(fixture(r#""thread-1""#)),
+            run_id: decode(fixture(r#""run-1""#)),
+        },
         None,
     )
     .expect("get_run request failed");
@@ -9482,12 +10246,14 @@ fn get_run_step_get_run_step_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = assistants::get_run_step(
         &config,
-        decode(fixture(r#""thread-1""#)),
-        decode(fixture(r#""run-1""#)),
-        decode(fixture(r#""step-1""#)),
-        Some(decode(fixture(
-            r#"["step_details.tool_calls[*].file_search.results[*].content"]"#,
-        ))),
+        assistants::GetRunStepParams {
+            thread_id: decode(fixture(r#""thread-1""#)),
+            run_id: decode(fixture(r#""run-1""#)),
+            step_id: decode(fixture(r#""step-1""#)),
+            include: Some(decode(fixture(
+                r#"["step_details.tool_calls[*].file_search.results[*].content"]"#,
+            ))),
+        },
         None,
     )
     .expect("get_run_step request failed");
@@ -9507,8 +10273,14 @@ fn get_skill_get_skill_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = skills::get_skill(&config, decode(fixture(r#""skill_123""#)), None)
-        .expect("get_skill request failed");
+    let actual = skills::get_skill(
+        &config,
+        skills::GetSkillParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+        },
+        None,
+    )
+    .expect("get_skill request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","object":"skill","name":"Example Name","description":"example text","created_at":1,"default_version":"default_version","latest_version":"latest_version"}"#,
@@ -9530,7 +10302,13 @@ fn get_skill_get_skill_404_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/404")),
         ..config
     };
-    let result = skills::get_skill(&config, decode(fixture(r#""skill_123""#)), None);
+    let result = skills::get_skill(
+        &config,
+        skills::GetSkillParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("get_skill did not fail with SdkError::Http on 404");
     };
@@ -9551,8 +10329,14 @@ fn get_skill_content_get_skill_content_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = skills::get_skill_content(&config, decode(fixture(r#""skill_123""#)), None)
-        .expect("get_skill_content request failed");
+    let actual = skills::get_skill_content(
+        &config,
+        skills::GetSkillContentParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+        },
+        None,
+    )
+    .expect("get_skill_content request failed");
     assert_eq!(actual.len(), 12);
 }
 
@@ -9567,7 +10351,13 @@ fn get_skill_content_get_skill_content_404_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/404")),
         ..config
     };
-    let result = skills::get_skill_content(&config, decode(fixture(r#""skill_123""#)), None);
+    let result = skills::get_skill_content(
+        &config,
+        skills::GetSkillContentParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("get_skill_content did not fail with SdkError::Http on 404");
     };
@@ -9590,8 +10380,10 @@ fn get_skill_version_get_skill_version_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = skills::get_skill_version(
         &config,
-        decode(fixture(r#""skill_123""#)),
-        decode(fixture(r#""version""#)),
+        skills::GetSkillVersionParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+            version: decode(fixture(r#""version""#)),
+        },
         None,
     )
     .expect("get_skill_version request failed");
@@ -9618,8 +10410,10 @@ fn get_skill_version_get_skill_version_400_decodes_declared_error() {
     };
     let result = skills::get_skill_version(
         &config,
-        decode(fixture(r#""skill_123""#)),
-        decode(fixture(r#""version""#)),
+        skills::GetSkillVersionParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+            version: decode(fixture(r#""version""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -9644,8 +10438,10 @@ fn get_skill_version_content_get_skill_version_content_reaches_mock_and_decodes_
     let _ = &config;
     let actual = skills::get_skill_version_content(
         &config,
-        decode(fixture(r#""skill_123""#)),
-        decode(fixture(r#""version""#)),
+        skills::GetSkillVersionContentParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+            version: decode(fixture(r#""version""#)),
+        },
         None,
     )
     .expect("get_skill_version_content request failed");
@@ -9665,8 +10461,10 @@ fn get_skill_version_content_get_skill_version_content_400_decodes_declared_erro
     };
     let result = skills::get_skill_version_content(
         &config,
-        decode(fixture(r#""skill_123""#)),
-        decode(fixture(r#""version""#)),
+        skills::GetSkillVersionContentParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+            version: decode(fixture(r#""version""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -9689,8 +10487,14 @@ fn get_thread_get_thread_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = assistants::get_thread(&config, decode(fixture(r#""thread-1""#)), None)
-        .expect("get_thread request failed");
+    let actual = assistants::get_thread(
+        &config,
+        assistants::GetThreadParams {
+            thread_id: decode(fixture(r#""thread-1""#)),
+        },
+        None,
+    )
+    .expect("get_thread request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","object":"thread","created_at":1,"tool_resources":{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"]}},"metadata":{"key":"key"}}"#,
@@ -9707,9 +10511,14 @@ fn get_vector_store_get_vector_store_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual =
-        vector_stores::get_vector_store(&config, decode(fixture(r#""vector_store-1""#)), None)
-            .expect("get_vector_store request failed");
+    let actual = vector_stores::get_vector_store(
+        &config,
+        vector_stores::GetVectorStoreParams {
+            vector_store_id: decode(fixture(r#""vector_store-1""#)),
+        },
+        None,
+    )
+    .expect("get_vector_store request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","object":"vector_store","created_at":1,"name":"Example Name","usage_bytes":30,"file_counts":{"in_progress":1,"completed":1,"failed":1,"cancelled":1,"total":100},"status":"expired","expires_after":{"anchor":"last_active_at","days":1},"expires_at":1,"last_active_at":1,"metadata":{"key":"key"}}"#,
@@ -9731,8 +10540,13 @@ fn get_vector_store_get_vector_store_404_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/404")),
         ..config
     };
-    let result =
-        vector_stores::get_vector_store(&config, decode(fixture(r#""vector_store-1""#)), None);
+    let result = vector_stores::get_vector_store(
+        &config,
+        vector_stores::GetVectorStoreParams {
+            vector_store_id: decode(fixture(r#""vector_store-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("get_vector_store did not fail with SdkError::Http on 404");
     };
@@ -9755,8 +10569,10 @@ fn get_vector_store_file_get_vector_store_file_reaches_mock_and_decodes_response
     let _ = &config;
     let actual = vector_stores::get_vector_store_file(
         &config,
-        decode(fixture(r#""vs_abc123""#)),
-        decode(fixture(r#""file-abc123""#)),
+        vector_stores::GetVectorStoreFileParams {
+            vector_store_id: decode(fixture(r#""vs_abc123""#)),
+            file_id: decode(fixture(r#""file-abc123""#)),
+        },
         None,
     )
     .expect("get_vector_store_file request failed");
@@ -9783,8 +10599,10 @@ fn get_vector_store_file_get_vector_store_file_404_decodes_declared_error() {
     };
     let result = vector_stores::get_vector_store_file(
         &config,
-        decode(fixture(r#""vs_abc123""#)),
-        decode(fixture(r#""file-abc123""#)),
+        vector_stores::GetVectorStoreFileParams {
+            vector_store_id: decode(fixture(r#""vs_abc123""#)),
+            file_id: decode(fixture(r#""file-abc123""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -9809,8 +10627,10 @@ fn get_vector_store_file_batch_get_vector_store_file_batch_reaches_mock_and_deco
     let _ = &config;
     let actual = vector_stores::get_vector_store_file_batch(
         &config,
-        decode(fixture(r#""vs_abc123""#)),
-        decode(fixture(r#""vsfb_abc123""#)),
+        vector_stores::GetVectorStoreFileBatchParams {
+            vector_store_id: decode(fixture(r#""vs_abc123""#)),
+            batch_id: decode(fixture(r#""vsfb_abc123""#)),
+        },
         None,
     )
     .expect("get_vector_store_file_batch request failed");
@@ -9837,8 +10657,10 @@ fn get_vector_store_file_batch_get_vector_store_file_batch_400_decodes_declared_
     };
     let result = vector_stores::get_vector_store_file_batch(
         &config,
-        decode(fixture(r#""vs_abc123""#)),
-        decode(fixture(r#""vsfb_abc123""#)),
+        vector_stores::GetVectorStoreFileBatchParams {
+            vector_store_id: decode(fixture(r#""vs_abc123""#)),
+            batch_id: decode(fixture(r#""vsfb_abc123""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -9861,8 +10683,14 @@ fn get_video_get_video_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = videos::get_video(&config, decode(fixture(r#""video_123""#)), None)
-        .expect("get_video request failed");
+    let actual = videos::get_video(
+        &config,
+        videos::GetVideoParams {
+            video_id: decode(fixture(r#""video_123""#)),
+        },
+        None,
+    )
+    .expect("get_video request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","object":"video","model":"model","status":"queued","progress":1,"created_at":1,"completed_at":1,"expires_at":1,"prompt":"prompt","size":"720x1280","seconds":"seconds","remixed_from_video_id":"remixed_from_video-1","error":{"code":"code","type":"type","param":"param","message":"example text","headers":{"key":"key"},"misalignment":{"review_target":"a","error_type":"error_type","detailed_explanation":"detailed_explanation","steer":{"message":"example text"}}}}"#,
@@ -9884,7 +10712,13 @@ fn get_video_get_video_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = videos::get_video(&config, decode(fixture(r#""video_123""#)), None);
+    let result = videos::get_video(
+        &config,
+        videos::GetVideoParams {
+            video_id: decode(fixture(r#""video_123""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("get_video did not fail with SdkError::Http on 400");
     };
@@ -9905,8 +10739,14 @@ fn get_video_character_get_video_character_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = videos::get_video_character(&config, decode(fixture(r#""char_123""#)), None)
-        .expect("get_video_character request failed");
+    let actual = videos::get_video_character(
+        &config,
+        videos::GetVideoCharacterParams {
+            character_id: decode(fixture(r#""char_123""#)),
+        },
+        None,
+    )
+    .expect("get_video_character request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(r#"{"id":"id-1","name":"Example Name","created_at":1}"#);
     assert!(
@@ -9926,7 +10766,13 @@ fn get_video_character_get_video_character_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = videos::get_video_character(&config, decode(fixture(r#""char_123""#)), None);
+    let result = videos::get_video_character(
+        &config,
+        videos::GetVideoCharacterParams {
+            character_id: decode(fixture(r#""char_123""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("get_video_character did not fail with SdkError::Http on 400");
     };
@@ -9947,8 +10793,14 @@ fn get_voice_consent_get_voice_consent_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = audio::get_voice_consent(&config, decode(fixture(r#""consent-1""#)), None)
-        .expect("get_voice_consent request failed");
+    let actual = audio::get_voice_consent(
+        &config,
+        audio::GetVoiceConsentParams {
+            consent_id: decode(fixture(r#""consent-1""#)),
+        },
+        None,
+    )
+    .expect("get_voice_consent request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"audio.voice_consent","id":"cons_1234","name":"Example Name","language":"language","created_at":1}"#,
@@ -9970,7 +10822,13 @@ fn get_voice_consent_get_voice_consent_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = audio::get_voice_consent(&config, decode(fixture(r#""consent-1""#)), None);
+    let result = audio::get_voice_consent(
+        &config,
+        audio::GetVoiceConsentParams {
+            consent_id: decode(fixture(r#""consent-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("get_voice_consent did not fail with SdkError::Http on 400");
     };
@@ -9991,8 +10849,14 @@ fn hangup_live_session_hangup_live_session_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    live::hangup_live_session(&config, decode(fixture(r#""session-1""#)), None)
-        .expect("hangup_live_session request failed");
+    live::hangup_live_session(
+        &config,
+        live::HangupLiveSessionParams {
+            session_id: decode(fixture(r#""session-1""#)),
+        },
+        None,
+    )
+    .expect("hangup_live_session request failed");
 }
 
 #[test]
@@ -10006,7 +10870,13 @@ fn hangup_live_session_hangup_live_session_404_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/404")),
         ..config
     };
-    let result = live::hangup_live_session(&config, decode(fixture(r#""session-1""#)), None);
+    let result = live::hangup_live_session(
+        &config,
+        live::HangupLiveSessionParams {
+            session_id: decode(fixture(r#""session-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("hangup_live_session did not fail with SdkError::Http on 404");
     };
@@ -10027,8 +10897,14 @@ fn hangup_realtime_call_hangup_realtime_call_reaches_mock_and_decodes_response()
         return;
     };
     let _ = &config;
-    realtime::hangup_realtime_call(&config, decode(fixture(r#""call-1""#)), None)
-        .expect("hangup_realtime_call request failed");
+    realtime::hangup_realtime_call(
+        &config,
+        realtime::HangupRealtimeCallParams {
+            call_id: decode(fixture(r#""call-1""#)),
+        },
+        None,
+    )
+    .expect("hangup_realtime_call request failed");
 }
 
 #[test]
@@ -10042,7 +10918,13 @@ fn hangup_realtime_call_hangup_realtime_call_404_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/404")),
         ..config
     };
-    let result = realtime::hangup_realtime_call(&config, decode(fixture(r#""call-1""#)), None);
+    let result = realtime::hangup_realtime_call(
+        &config,
+        realtime::HangupRealtimeCallParams {
+            call_id: decode(fixture(r#""call-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("hangup_realtime_call did not fail with SdkError::Http on 404");
     };
@@ -10065,9 +10947,11 @@ fn list_admin_api_keys_list_admin_api_keys_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = admin_api_keys::list_admin_api_keys(
         &config,
-        Some(Some(decode(fixture(r#""after""#)))),
-        Some(decode(fixture(r#""asc""#))),
-        Some(decode(fixture(r#"20"#))),
+        admin_api_keys::ListAdminApiKeysParams {
+            after: Some(Some(decode(fixture(r#""after""#)))),
+            order: Some(decode(fixture(r#""asc""#))),
+            limit: Some(decode(fixture(r#"20"#))),
+        },
         None,
     )
     .expect("list_admin_api_keys request failed");
@@ -10094,9 +10978,11 @@ fn list_admin_api_keys_list_admin_api_keys_400_decodes_declared_error() {
     };
     let result = admin_api_keys::list_admin_api_keys(
         &config,
-        Some(Some(decode(fixture(r#""after""#)))),
-        Some(decode(fixture(r#""asc""#))),
-        Some(decode(fixture(r#"20"#))),
+        admin_api_keys::ListAdminApiKeysParams {
+            after: Some(Some(decode(fixture(r#""after""#)))),
+            order: Some(decode(fixture(r#""asc""#))),
+            limit: Some(decode(fixture(r#"20"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -10185,10 +11071,12 @@ fn list_agent_environments_list_agent_environments_reaches_mock_and_decodes_resp
     let _ = &config;
     let actual = agents::list_agent_environments(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""openai_hosted""#))),
+        agents::ListAgentEnvironmentsParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+            type_: Some(decode(fixture(r#""openai_hosted""#))),
+        },
         None,
     )
     .expect("list_agent_environments request failed");
@@ -10215,10 +11103,12 @@ fn list_agent_environments_list_agent_environments_400_decodes_declared_error() 
     };
     let result = agents::list_agent_environments(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""openai_hosted""#))),
+        agents::ListAgentEnvironmentsParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+            type_: Some(decode(fixture(r#""openai_hosted""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -10244,9 +11134,11 @@ fn list_agent_environment_templates_list_agent_environment_templates_reaches_moc
     let _ = &config;
     let actual = agents::list_agent_environment_templates(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
+        agents::ListAgentEnvironmentTemplatesParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     )
     .expect("list_agent_environment_templates request failed");
@@ -10273,9 +11165,11 @@ fn list_agent_environment_templates_list_agent_environment_templates_400_decodes
     };
     let result = agents::list_agent_environment_templates(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
+        agents::ListAgentEnvironmentTemplatesParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -10300,9 +11194,11 @@ fn list_agents_list_agents_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = agents::list_agents(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
+        agents::ListAgentsParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     )
     .expect("list_agents request failed");
@@ -10329,9 +11225,11 @@ fn list_agents_list_agents_400_decodes_declared_error() {
     };
     let result = agents::list_agents(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
+        agents::ListAgentsParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -10418,9 +11316,14 @@ fn list_agent_session_events_list_agent_session_events_reaches_mock_and_decodes_
         return;
     };
     let _ = &config;
-    let mut events =
-        agents::list_agent_session_events(&config, decode(fixture(r#""session-1""#)), None)
-            .expect("list_agent_session_events request failed");
+    let mut events = agents::list_agent_session_events(
+        &config,
+        agents::ListAgentSessionEventsParams {
+            session_id: decode(fixture(r#""session-1""#)),
+        },
+        None,
+    )
+    .expect("list_agent_session_events request failed");
     let actual = events
         .next()
         .expect("list_agent_session_events stream returned no events")
@@ -10443,10 +11346,12 @@ fn list_agent_session_items_list_agent_session_items_reaches_mock_and_decodes_re
     let _ = &config;
     let actual = agents::list_agent_session_items(
         &config,
-        decode(fixture(r#""session-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
+        agents::ListAgentSessionItemsParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     )
     .expect("list_agent_session_items request failed");
@@ -10473,10 +11378,12 @@ fn list_agent_session_items_list_agent_session_items_400_decodes_declared_error(
     };
     let result = agents::list_agent_session_items(
         &config,
-        decode(fixture(r#""session-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
+        agents::ListAgentSessionItemsParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -10501,10 +11408,12 @@ fn list_agent_sessions_list_agent_sessions_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = agents::list_agent_sessions(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""agent-1""#))),
+        agents::ListAgentSessionsParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+            agent_id: Some(decode(fixture(r#""agent-1""#))),
+        },
         None,
     )
     .expect("list_agent_sessions request failed");
@@ -10531,10 +11440,12 @@ fn list_agent_sessions_list_agent_sessions_400_decodes_declared_error() {
     };
     let result = agents::list_agent_sessions(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""agent-1""#))),
+        agents::ListAgentSessionsParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+            agent_id: Some(decode(fixture(r#""agent-1""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -10625,10 +11536,12 @@ fn list_agent_session_subagents_list_agent_session_subagents_reaches_mock_and_de
     let _ = &config;
     let actual = agents::list_agent_session_subagents(
         &config,
-        decode(fixture(r#""session-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
+        agents::ListAgentSessionSubagentsParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     )
     .expect("list_agent_session_subagents request failed");
@@ -10655,10 +11568,12 @@ fn list_agent_session_subagents_list_agent_session_subagents_400_decodes_declare
     };
     let result = agents::list_agent_session_subagents(
         &config,
-        decode(fixture(r#""session-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
+        agents::ListAgentSessionSubagentsParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -10817,10 +11732,12 @@ fn list_agent_session_traces_list_agent_session_traces_reaches_mock_and_decodes_
     let _ = &config;
     let actual = agents::list_agent_session_traces(
         &config,
-        decode(fixture(r#""session-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
+        agents::ListAgentSessionTracesParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     )
     .expect("list_agent_session_traces request failed");
@@ -10847,10 +11764,12 @@ fn list_agent_session_traces_list_agent_session_traces_400_decodes_declared_erro
     };
     let result = agents::list_agent_session_traces(
         &config,
-        decode(fixture(r#""session-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
+        agents::ListAgentSessionTracesParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -10939,10 +11858,12 @@ fn list_agent_session_turns_list_agent_session_turns_reaches_mock_and_decodes_re
     let _ = &config;
     let actual = agents::list_agent_session_turns(
         &config,
-        decode(fixture(r#""session-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
+        agents::ListAgentSessionTurnsParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     )
     .expect("list_agent_session_turns request failed");
@@ -10969,10 +11890,12 @@ fn list_agent_session_turns_list_agent_session_turns_400_decodes_declared_error(
     };
     let result = agents::list_agent_session_turns(
         &config,
-        decode(fixture(r#""session-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
+        agents::ListAgentSessionTurnsParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -10997,10 +11920,12 @@ fn list_assistants_list_assistants_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = assistants::list_assistants(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        assistants::ListAssistantsParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("list_assistants request failed");
@@ -11096,8 +12021,10 @@ fn list_batch_list_batch_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = batch::list_batch(
         &config,
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#"20"#))),
+        batch::ListBatchParams {
+            after: Some(decode(fixture(r#""after""#))),
+            limit: Some(decode(fixture(r#"20"#))),
+        },
         None,
     )
     .expect("list_batch request failed");
@@ -11124,8 +12051,10 @@ fn list_batch_list_batch_400_decodes_declared_error() {
     };
     let result = batch::list_batch(
         &config,
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#"20"#))),
+        batch::ListBatchParams {
+            after: Some(decode(fixture(r#""after""#))),
+            limit: Some(decode(fixture(r#"20"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -11151,9 +12080,11 @@ fn list_certificates_for_organization_list_certificates_for_organization_reaches
     let _ = &config;
     let actual = certificates::list_certificates_for_organization(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""desc""#))),
+        certificates::ListCertificatesForOrganizationParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            order: Some(decode(fixture(r#""desc""#))),
+        },
         None,
     )
     .expect("list_certificates_for_organization request failed");
@@ -11181,9 +12112,11 @@ fn list_certificates_for_organization_list_certificates_for_organization_400_dec
     };
     let result = certificates::list_certificates_for_organization(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""desc""#))),
+        certificates::ListCertificatesForOrganizationParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            order: Some(decode(fixture(r#""desc""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -11208,10 +12141,12 @@ fn list_certificates_for_project_list_certificates_for_project_reaches_mock_and_
     let _ = &config;
     let actual = certificates::list_certificates_for_project(
         &config,
-        decode(fixture(r#""project-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""desc""#))),
+        certificates::ListCertificatesForProjectParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            order: Some(decode(fixture(r#""desc""#))),
+        },
         None,
     )
     .expect("list_certificates_for_project request failed");
@@ -11238,10 +12173,12 @@ fn list_certificates_for_project_list_certificates_for_project_400_decodes_decla
     };
     let result = certificates::list_certificates_for_project(
         &config,
-        decode(fixture(r#""project-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""desc""#))),
+        certificates::ListCertificatesForProjectParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            order: Some(decode(fixture(r#""desc""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -11458,10 +12395,12 @@ fn list_container_files_list_container_files_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = containers::list_container_files(
         &config,
-        decode(fixture(r#""container-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
+        containers::ListContainerFilesParams {
+            container_id: decode(fixture(r#""container-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     )
     .expect("list_container_files request failed");
@@ -11488,10 +12427,12 @@ fn list_container_files_list_container_files_404_decodes_declared_error() {
     };
     let result = containers::list_container_files(
         &config,
-        decode(fixture(r#""container-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
+        containers::ListContainerFilesParams {
+            container_id: decode(fixture(r#""container-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -11516,10 +12457,12 @@ fn list_containers_list_containers_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = containers::list_containers(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""Example Name""#))),
+        containers::ListContainersParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+            name: Some(decode(fixture(r#""Example Name""#))),
+        },
         None,
     )
     .expect("list_containers request failed");
@@ -11546,10 +12489,12 @@ fn list_containers_list_containers_404_decodes_declared_error() {
     };
     let result = containers::list_containers(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""Example Name""#))),
+        containers::ListContainersParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+            name: Some(decode(fixture(r#""Example Name""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -11638,10 +12583,12 @@ fn list_evals_list_evals_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = evals::list_evals(
         &config,
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""asc""#))),
-        Some(decode(fixture(r#""created_at""#))),
+        evals::ListEvalsParams {
+            after: Some(decode(fixture(r#""after""#))),
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""asc""#))),
+            order_by: Some(decode(fixture(r#""created_at""#))),
+        },
         None,
     )
     .expect("list_evals request failed");
@@ -11663,10 +12610,12 @@ fn list_external_storage_list_external_storage_reaches_mock_and_decodes_response
     let _ = &config;
     let actual = external_storage::list_external_storage(
         &config,
-        Some(Some(decode(fixture(r#""project-1""#)))),
-        Some(Some(decode(fixture(r#""after""#)))),
-        Some(decode(fixture(r#""asc""#))),
-        Some(decode(fixture(r#"1"#))),
+        external_storage::ListExternalStorageParams {
+            project_id: Some(Some(decode(fixture(r#""project-1""#)))),
+            after: Some(Some(decode(fixture(r#""after""#)))),
+            order: Some(decode(fixture(r#""asc""#))),
+            limit: Some(decode(fixture(r#"1"#))),
+        },
         None,
     )
     .expect("list_external_storage request failed");
@@ -11693,10 +12642,12 @@ fn list_external_storage_list_external_storage_400_decodes_declared_error() {
     };
     let result = external_storage::list_external_storage(
         &config,
-        Some(Some(decode(fixture(r#""project-1""#)))),
-        Some(Some(decode(fixture(r#""after""#)))),
-        Some(decode(fixture(r#""asc""#))),
-        Some(decode(fixture(r#"1"#))),
+        external_storage::ListExternalStorageParams {
+            project_id: Some(Some(decode(fixture(r#""project-1""#)))),
+            after: Some(Some(decode(fixture(r#""after""#)))),
+            order: Some(decode(fixture(r#""asc""#))),
+            limit: Some(decode(fixture(r#"1"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -11721,10 +12672,12 @@ fn list_files_list_files_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = files::list_files(
         &config,
-        Some(decode(fixture(r#""purpose""#))),
-        Some(decode(fixture(r#"10000"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
+        files::ListFilesParams {
+            purpose: Some(decode(fixture(r#""purpose""#))),
+            limit: Some(decode(fixture(r#"10000"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     )
     .expect("list_files request failed");
@@ -11751,10 +12704,12 @@ fn list_files_list_files_400_decodes_declared_error() {
     };
     let result = files::list_files(
         &config,
-        Some(decode(fixture(r#""purpose""#))),
-        Some(decode(fixture(r#"10000"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
+        files::ListFilesParams {
+            purpose: Some(decode(fixture(r#""purpose""#))),
+            limit: Some(decode(fixture(r#"10000"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -11914,9 +12869,11 @@ fn list_fine_tuning_events_list_fine_tuning_events_reaches_mock_and_decodes_resp
     let _ = &config;
     let actual = fine_tuning::list_fine_tuning_events(
         &config,
-        decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#"20"#))),
+        fine_tuning::ListFineTuningEventsParams {
+            fine_tuning_job_id: decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+            after: Some(decode(fixture(r#""after""#))),
+            limit: Some(decode(fixture(r#"20"#))),
+        },
         None,
     )
     .expect("list_fine_tuning_events request failed");
@@ -11943,9 +12900,11 @@ fn list_fine_tuning_events_list_fine_tuning_events_400_decodes_declared_error() 
     };
     let result = fine_tuning::list_fine_tuning_events(
         &config,
-        decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#"20"#))),
+        fine_tuning::ListFineTuningEventsParams {
+            fine_tuning_job_id: decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+            after: Some(decode(fixture(r#""after""#))),
+            limit: Some(decode(fixture(r#"20"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -11971,9 +12930,11 @@ fn list_fine_tuning_job_checkpoints_list_fine_tuning_job_checkpoints_reaches_moc
     let _ = &config;
     let actual = fine_tuning::list_fine_tuning_job_checkpoints(
         &config,
-        decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#"10"#))),
+        fine_tuning::ListFineTuningJobCheckpointsParams {
+            fine_tuning_job_id: decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+            after: Some(decode(fixture(r#""after""#))),
+            limit: Some(decode(fixture(r#"10"#))),
+        },
         None,
     )
     .expect("list_fine_tuning_job_checkpoints request failed");
@@ -12000,9 +12961,11 @@ fn list_fine_tuning_job_checkpoints_list_fine_tuning_job_checkpoints_400_decodes
     };
     let result = fine_tuning::list_fine_tuning_job_checkpoints(
         &config,
-        decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#"10"#))),
+        fine_tuning::ListFineTuningJobCheckpointsParams {
+            fine_tuning_job_id: decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+            after: Some(decode(fixture(r#""after""#))),
+            limit: Some(decode(fixture(r#"10"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -12027,9 +12990,11 @@ fn list_fine_tuning_jobs_list_fine_tuning_jobs_reaches_mock_and_decodes_response
     let _ = &config;
     let actual = fine_tuning::list_fine_tuning_jobs(
         &config,
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#"20"#))),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        fine_tuning::ListFineTuningJobsParams {
+            after: Some(decode(fixture(r#""after""#))),
+            limit: Some(decode(fixture(r#"20"#))),
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     )
     .expect("list_fine_tuning_jobs request failed");
@@ -12056,9 +13021,11 @@ fn list_fine_tuning_jobs_list_fine_tuning_jobs_400_decodes_declared_error() {
     };
     let result = fine_tuning::list_fine_tuning_jobs(
         &config,
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#"20"#))),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        fine_tuning::ListFineTuningJobsParams {
+            after: Some(decode(fixture(r#""after""#))),
+            limit: Some(decode(fixture(r#"20"#))),
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -12083,10 +13050,12 @@ fn list_group_role_assignments_list_group_role_assignments_reaches_mock_and_deco
     let _ = &config;
     let actual = group_organization_role_assignments::list_group_role_assignments(
         &config,
-        decode(fixture(r#""group-1""#)),
-        Some(decode(fixture(r#"0"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""asc""#))),
+        group_organization_role_assignments::ListGroupRoleAssignmentsParams {
+            group_id: decode(fixture(r#""group-1""#)),
+            limit: Some(decode(fixture(r#"0"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            order: Some(decode(fixture(r#""asc""#))),
+        },
         None,
     )
     .expect("list_group_role_assignments request failed");
@@ -12113,10 +13082,12 @@ fn list_group_role_assignments_list_group_role_assignments_400_decodes_declared_
     };
     let result = group_organization_role_assignments::list_group_role_assignments(
         &config,
-        decode(fixture(r#""group-1""#)),
-        Some(decode(fixture(r#"0"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""asc""#))),
+        group_organization_role_assignments::ListGroupRoleAssignmentsParams {
+            group_id: decode(fixture(r#""group-1""#)),
+            limit: Some(decode(fixture(r#"0"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            order: Some(decode(fixture(r#""asc""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -12141,9 +13112,11 @@ fn list_groups_list_groups_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = groups::list_groups(
         &config,
-        Some(decode(fixture(r#"100"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""asc""#))),
+        groups::ListGroupsParams {
+            limit: Some(decode(fixture(r#"100"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            order: Some(decode(fixture(r#""asc""#))),
+        },
         None,
     )
     .expect("list_groups request failed");
@@ -12170,9 +13143,11 @@ fn list_groups_list_groups_400_decodes_declared_error() {
     };
     let result = groups::list_groups(
         &config,
-        Some(decode(fixture(r#"100"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""asc""#))),
+        groups::ListGroupsParams {
+            limit: Some(decode(fixture(r#"100"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            order: Some(decode(fixture(r#""asc""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -12197,10 +13172,12 @@ fn list_group_users_list_group_users_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = group_users::list_group_users(
         &config,
-        decode(fixture(r#""group-1""#)),
-        Some(decode(fixture(r#"100"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""desc""#))),
+        group_users::ListGroupUsersParams {
+            group_id: decode(fixture(r#""group-1""#)),
+            limit: Some(decode(fixture(r#"100"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            order: Some(decode(fixture(r#""desc""#))),
+        },
         None,
     )
     .expect("list_group_users request failed");
@@ -12227,10 +13204,12 @@ fn list_group_users_list_group_users_400_decodes_declared_error() {
     };
     let result = group_users::list_group_users(
         &config,
-        decode(fixture(r#""group-1""#)),
-        Some(decode(fixture(r#"100"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""desc""#))),
+        group_users::ListGroupUsersParams {
+            group_id: decode(fixture(r#""group-1""#)),
+            limit: Some(decode(fixture(r#"100"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            order: Some(decode(fixture(r#""desc""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -12319,8 +13298,10 @@ fn list_invites_list_invites_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = invites::list_invites(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""after""#))),
+        invites::ListInvitesParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     )
     .expect("list_invites request failed");
@@ -12347,8 +13328,10 @@ fn list_invites_list_invites_400_decodes_declared_error() {
     };
     let result = invites::list_invites(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""after""#))),
+        invites::ListInvitesParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -12446,10 +13429,12 @@ fn list_organization_spend_alerts_list_organization_spend_alerts_reaches_mock_an
     let _ = &config;
     let actual = spend_alerts::list_organization_spend_alerts(
         &config,
-        Some(decode(fixture(r#"0"#))),
-        Some(decode(fixture(r#""asc""#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        spend_alerts::ListOrganizationSpendAlertsParams {
+            limit: Some(decode(fixture(r#"0"#))),
+            order: Some(decode(fixture(r#""asc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("list_organization_spend_alerts request failed");
@@ -12476,10 +13461,12 @@ fn list_organization_spend_alerts_list_organization_spend_alerts_400_decodes_dec
     };
     let result = spend_alerts::list_organization_spend_alerts(
         &config,
-        Some(decode(fixture(r#"0"#))),
-        Some(decode(fixture(r#""asc""#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        spend_alerts::ListOrganizationSpendAlertsParams {
+            limit: Some(decode(fixture(r#"0"#))),
+            order: Some(decode(fixture(r#""asc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -12504,10 +13491,12 @@ fn list_project_api_keys_list_project_api_keys_reaches_mock_and_decodes_response
     let _ = &config;
     let actual = projects::list_project_api_keys(
         &config,
-        decode(fixture(r#""project-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""active""#))),
+        projects::ListProjectApiKeysParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            owner_project_access: Some(decode(fixture(r#""active""#))),
+        },
         None,
     )
     .expect("list_project_api_keys request failed");
@@ -12534,10 +13523,12 @@ fn list_project_api_keys_list_project_api_keys_400_decodes_declared_error() {
     };
     let result = projects::list_project_api_keys(
         &config,
-        decode(fixture(r#""project-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""active""#))),
+        projects::ListProjectApiKeysParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            owner_project_access: Some(decode(fixture(r#""active""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -12628,10 +13619,12 @@ fn list_project_groups_list_project_groups_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = project_groups::list_project_groups(
         &config,
-        decode(fixture(r#""project-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""asc""#))),
+        project_groups::ListProjectGroupsParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            order: Some(decode(fixture(r#""asc""#))),
+        },
         None,
     )
     .expect("list_project_groups request failed");
@@ -12658,10 +13651,12 @@ fn list_project_groups_list_project_groups_400_decodes_declared_error() {
     };
     let result = project_groups::list_project_groups(
         &config,
-        decode(fixture(r#""project-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""asc""#))),
+        project_groups::ListProjectGroupsParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            order: Some(decode(fixture(r#""asc""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -12686,10 +13681,12 @@ fn list_project_rate_limits_list_project_rate_limits_reaches_mock_and_decodes_re
     let _ = &config;
     let actual = projects::list_project_rate_limits(
         &config,
-        decode(fixture(r#""project-1""#)),
-        Some(decode(fixture(r#"100"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        projects::ListProjectRateLimitsParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            limit: Some(decode(fixture(r#"100"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("list_project_rate_limits request failed");
@@ -12716,10 +13713,12 @@ fn list_project_rate_limits_list_project_rate_limits_400_decodes_declared_error(
     };
     let result = projects::list_project_rate_limits(
         &config,
-        decode(fixture(r#""project-1""#)),
-        Some(decode(fixture(r#"100"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        projects::ListProjectRateLimitsParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            limit: Some(decode(fixture(r#"100"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -12744,9 +13743,11 @@ fn list_projects_list_projects_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = projects::list_projects(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#"false"#))),
+        projects::ListProjectsParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            include_archived: Some(decode(fixture(r#"false"#))),
+        },
         None,
     )
     .expect("list_projects request failed");
@@ -12773,9 +13774,11 @@ fn list_projects_list_projects_400_decodes_declared_error() {
     };
     let result = projects::list_projects(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#"false"#))),
+        projects::ListProjectsParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            include_archived: Some(decode(fixture(r#"false"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -12800,9 +13803,11 @@ fn list_project_service_accounts_list_project_service_accounts_reaches_mock_and_
     let _ = &config;
     let actual = projects::list_project_service_accounts(
         &config,
-        decode(fixture(r#""project-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""after""#))),
+        projects::ListProjectServiceAccountsParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     )
     .expect("list_project_service_accounts request failed");
@@ -12829,9 +13834,11 @@ fn list_project_service_accounts_list_project_service_accounts_400_decodes_decla
     };
     let result = projects::list_project_service_accounts(
         &config,
-        decode(fixture(r#""project-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""after""#))),
+        projects::ListProjectServiceAccountsParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -12986,9 +13993,11 @@ fn list_project_users_list_project_users_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = projects::list_project_users(
         &config,
-        decode(fixture(r#""project-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""after""#))),
+        projects::ListProjectUsersParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     )
     .expect("list_project_users request failed");
@@ -13015,9 +14024,11 @@ fn list_project_users_list_project_users_400_decodes_declared_error() {
     };
     let result = projects::list_project_users(
         &config,
-        decode(fixture(r#""project-1""#)),
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""after""#))),
+        projects::ListProjectUsersParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            limit: Some(decode(fixture(r#"20"#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -13042,9 +14053,11 @@ fn list_roles_list_roles_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = roles::list_roles(
         &config,
-        Some(decode(fixture(r#"1000"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""asc""#))),
+        roles::ListRolesParams {
+            limit: Some(decode(fixture(r#"1000"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            order: Some(decode(fixture(r#""asc""#))),
+        },
         None,
     )
     .expect("list_roles request failed");
@@ -13071,9 +14084,11 @@ fn list_roles_list_roles_400_decodes_declared_error() {
     };
     let result = roles::list_roles(
         &config,
-        Some(decode(fixture(r#"1000"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""asc""#))),
+        roles::ListRolesParams {
+            limit: Some(decode(fixture(r#"1000"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            order: Some(decode(fixture(r#""asc""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -13098,10 +14113,12 @@ fn list_roles_project_roles_list_roles_project_roles_reaches_mock_and_decodes_re
     let _ = &config;
     let actual = roles::list_roles_project_roles(
         &config,
-        decode(fixture(r#""project-1""#)),
-        Some(decode(fixture(r#"1000"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""asc""#))),
+        roles::ListRolesProjectRolesParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            limit: Some(decode(fixture(r#"1000"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            order: Some(decode(fixture(r#""asc""#))),
+        },
         None,
     )
     .expect("list_roles_project_roles request failed");
@@ -13128,10 +14145,12 @@ fn list_roles_project_roles_list_roles_project_roles_400_decodes_declared_error(
     };
     let result = roles::list_roles_project_roles(
         &config,
-        decode(fixture(r#""project-1""#)),
-        Some(decode(fixture(r#"1000"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""asc""#))),
+        roles::ListRolesProjectRolesParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            limit: Some(decode(fixture(r#"1000"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            order: Some(decode(fixture(r#""asc""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -13216,9 +14235,11 @@ fn list_skills_list_skills_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = skills::list_skills(
         &config,
-        Some(decode(fixture(r#"0"#))),
-        Some(decode(fixture(r#""asc""#))),
-        Some(decode(fixture(r#""after""#))),
+        skills::ListSkillsParams {
+            limit: Some(decode(fixture(r#"0"#))),
+            order: Some(decode(fixture(r#""asc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     )
     .expect("list_skills request failed");
@@ -13245,9 +14266,11 @@ fn list_skills_list_skills_404_decodes_declared_error() {
     };
     let result = skills::list_skills(
         &config,
-        Some(decode(fixture(r#"0"#))),
-        Some(decode(fixture(r#""asc""#))),
-        Some(decode(fixture(r#""after""#))),
+        skills::ListSkillsParams {
+            limit: Some(decode(fixture(r#"0"#))),
+            order: Some(decode(fixture(r#""asc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -13272,10 +14295,12 @@ fn list_skill_versions_list_skill_versions_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = skills::list_skill_versions(
         &config,
-        decode(fixture(r#""skill_123""#)),
-        Some(decode(fixture(r#"0"#))),
-        Some(decode(fixture(r#""asc""#))),
-        Some(decode(fixture(r#""skillver_123""#))),
+        skills::ListSkillVersionsParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+            limit: Some(decode(fixture(r#"0"#))),
+            order: Some(decode(fixture(r#""asc""#))),
+            after: Some(decode(fixture(r#""skillver_123""#))),
+        },
         None,
     )
     .expect("list_skill_versions request failed");
@@ -13302,10 +14327,12 @@ fn list_skill_versions_list_skill_versions_400_decodes_declared_error() {
     };
     let result = skills::list_skill_versions(
         &config,
-        decode(fixture(r#""skill_123""#)),
-        Some(decode(fixture(r#"0"#))),
-        Some(decode(fixture(r#""asc""#))),
-        Some(decode(fixture(r#""skillver_123""#))),
+        skills::ListSkillVersionsParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+            limit: Some(decode(fixture(r#"0"#))),
+            order: Some(decode(fixture(r#""asc""#))),
+            after: Some(decode(fixture(r#""skillver_123""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -13330,10 +14357,12 @@ fn list_user_role_assignments_list_user_role_assignments_reaches_mock_and_decode
     let _ = &config;
     let actual = user_organization_role_assignments::list_user_role_assignments(
         &config,
-        decode(fixture(r#""user-1""#)),
-        Some(decode(fixture(r#"0"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""asc""#))),
+        user_organization_role_assignments::ListUserRoleAssignmentsParams {
+            user_id: decode(fixture(r#""user-1""#)),
+            limit: Some(decode(fixture(r#"0"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            order: Some(decode(fixture(r#""asc""#))),
+        },
         None,
     )
     .expect("list_user_role_assignments request failed");
@@ -13360,10 +14389,12 @@ fn list_user_role_assignments_list_user_role_assignments_400_decodes_declared_er
     };
     let result = user_organization_role_assignments::list_user_role_assignments(
         &config,
-        decode(fixture(r#""user-1""#)),
-        Some(decode(fixture(r#"0"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""asc""#))),
+        user_organization_role_assignments::ListUserRoleAssignmentsParams {
+            user_id: decode(fixture(r#""user-1""#)),
+            limit: Some(decode(fixture(r#"0"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            order: Some(decode(fixture(r#""asc""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -13388,9 +14419,11 @@ fn list_users_list_users_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = users::list_users(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#"["user@example.com"]"#))),
+        users::ListUsersParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            emails: Some(decode(fixture(r#"["user@example.com"]"#))),
+        },
         None,
     )
     .expect("list_users request failed");
@@ -13417,9 +14450,11 @@ fn list_users_list_users_400_decodes_declared_error() {
     };
     let result = users::list_users(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#"["user@example.com"]"#))),
+        users::ListUsersParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            after: Some(decode(fixture(r#""after""#))),
+            emails: Some(decode(fixture(r#"["user@example.com"]"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -13640,10 +14675,12 @@ fn list_vector_stores_list_vector_stores_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = vector_stores::list_vector_stores(
         &config,
-        Some(decode(fixture(r#"20"#))),
-        Some(decode(fixture(r#""desc""#))),
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#""before""#))),
+        vector_stores::ListVectorStoresParams {
+            limit: Some(decode(fixture(r#"20"#))),
+            order: Some(decode(fixture(r#""desc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+            before: Some(decode(fixture(r#""before""#))),
+        },
         None,
     )
     .expect("list_vector_stores request failed");
@@ -13665,9 +14702,11 @@ fn list_videos_list_videos_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = videos::list_videos(
         &config,
-        Some(decode(fixture(r#"0"#))),
-        Some(decode(fixture(r#""asc""#))),
-        Some(decode(fixture(r#""after""#))),
+        videos::ListVideosParams {
+            limit: Some(decode(fixture(r#"0"#))),
+            order: Some(decode(fixture(r#""asc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     )
     .expect("list_videos request failed");
@@ -13694,9 +14733,11 @@ fn list_videos_list_videos_400_decodes_declared_error() {
     };
     let result = videos::list_videos(
         &config,
-        Some(decode(fixture(r#"0"#))),
-        Some(decode(fixture(r#""asc""#))),
-        Some(decode(fixture(r#""after""#))),
+        videos::ListVideosParams {
+            limit: Some(decode(fixture(r#"0"#))),
+            order: Some(decode(fixture(r#""asc""#))),
+            after: Some(decode(fixture(r#""after""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -13721,8 +14762,10 @@ fn list_voice_consents_list_voice_consents_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = audio::list_voice_consents(
         &config,
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#"20"#))),
+        audio::ListVoiceConsentsParams {
+            after: Some(decode(fixture(r#""after""#))),
+            limit: Some(decode(fixture(r#"20"#))),
+        },
         None,
     )
     .expect("list_voice_consents request failed");
@@ -13749,8 +14792,10 @@ fn list_voice_consents_list_voice_consents_400_decodes_declared_error() {
     };
     let result = audio::list_voice_consents(
         &config,
-        Some(decode(fixture(r#""after""#))),
-        Some(decode(fixture(r#"20"#))),
+        audio::ListVoiceConsentsParams {
+            after: Some(decode(fixture(r#""after""#))),
+            limit: Some(decode(fixture(r#"20"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -13775,8 +14820,10 @@ fn list_webhook_endpoints_list_webhook_endpoints_reaches_mock_and_decodes_respon
     let _ = &config;
     let actual = webhook_endpoints::list_webhook_endpoints(
         &config,
-        Some(decode(fixture(r#"1"#))),
-        Some(Some(decode(fixture(r#""after""#)))),
+        webhook_endpoints::ListWebhookEndpointsParams {
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(Some(decode(fixture(r#""after""#)))),
+        },
         None,
     )
     .expect("list_webhook_endpoints request failed");
@@ -13803,8 +14850,10 @@ fn list_webhook_endpoints_list_webhook_endpoints_400_decodes_declared_error() {
     };
     let result = webhook_endpoints::list_webhook_endpoints(
         &config,
-        Some(decode(fixture(r#"1"#))),
-        Some(Some(decode(fixture(r#""after""#)))),
+        webhook_endpoints::ListWebhookEndpointsParams {
+            limit: Some(decode(fixture(r#"1"#))),
+            after: Some(Some(decode(fixture(r#""after""#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -13906,8 +14955,10 @@ fn modify_certificate_modify_certificate_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = certificates::modify_certificate(
         &config,
-        decode(fixture(r#""certificate-1""#)),
-        Some(decode(fixture(r#""Example Name""#))),
+        certificates::ModifyCertificateParams {
+            certificate_id: decode(fixture(r#""certificate-1""#)),
+            name: Some(decode(fixture(r#""Example Name""#))),
+        },
         None,
     )
     .expect("modify_certificate request failed");
@@ -13934,8 +14985,10 @@ fn modify_certificate_modify_certificate_400_decodes_declared_error() {
     };
     let result = certificates::modify_certificate(
         &config,
-        decode(fixture(r#""certificate-1""#)),
-        Some(decode(fixture(r#""Example Name""#))),
+        certificates::ModifyCertificateParams {
+            certificate_id: decode(fixture(r#""certificate-1""#)),
+            name: Some(decode(fixture(r#""Example Name""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -13960,9 +15013,11 @@ fn modify_message_modify_message_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = assistants::modify_message(
         &config,
-        decode(fixture(r#""thread-1""#)),
-        decode(fixture(r#""message-1""#)),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        assistants::ModifyMessageParams {
+            thread_id: decode(fixture(r#""thread-1""#)),
+            message_id: decode(fixture(r#""message-1""#)),
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     )
     .expect("modify_message request failed");
@@ -13984,10 +15039,12 @@ fn modify_project_modify_project_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = projects::modify_project(
         &config,
-        decode(fixture(r#""project-1""#)),
-        Some(Some(decode(fixture(r#""Example Name""#)))),
-        Some(Some(decode(fixture(r#""external_key-1""#)))),
-        Some(Some(decode(fixture(r#""geography""#)))),
+        projects::ModifyProjectParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            name: Some(Some(decode(fixture(r#""Example Name""#)))),
+            external_key_id: Some(Some(decode(fixture(r#""external_key-1""#)))),
+            geography: Some(Some(decode(fixture(r#""geography""#)))),
+        },
         None,
     )
     .expect("modify_project request failed");
@@ -14014,10 +15071,12 @@ fn modify_project_modify_project_400_decodes_declared_error() {
     };
     let result = projects::modify_project(
         &config,
-        decode(fixture(r#""project-1""#)),
-        Some(Some(decode(fixture(r#""Example Name""#)))),
-        Some(Some(decode(fixture(r#""external_key-1""#)))),
-        Some(Some(decode(fixture(r#""geography""#)))),
+        projects::ModifyProjectParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            name: Some(Some(decode(fixture(r#""Example Name""#)))),
+            external_key_id: Some(Some(decode(fixture(r#""external_key-1""#)))),
+            geography: Some(Some(decode(fixture(r#""geography""#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -14042,9 +15101,11 @@ fn modify_project_user_modify_project_user_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = projects::modify_project_user(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""user-1""#)),
-        Some(Some(decode(fixture(r#""role""#)))),
+        projects::ModifyProjectUserParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            user_id: decode(fixture(r#""user-1""#)),
+            role: Some(Some(decode(fixture(r#""role""#)))),
+        },
         None,
     )
     .expect("modify_project_user request failed");
@@ -14071,9 +15132,11 @@ fn modify_project_user_modify_project_user_400_decodes_declared_error() {
     };
     let result = projects::modify_project_user(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""user-1""#)),
-        Some(Some(decode(fixture(r#""role""#)))),
+        projects::ModifyProjectUserParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            user_id: decode(fixture(r#""user-1""#)),
+            role: Some(Some(decode(fixture(r#""role""#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -14098,9 +15161,11 @@ fn modify_run_modify_run_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = assistants::modify_run(
         &config,
-        decode(fixture(r#""thread-1""#)),
-        decode(fixture(r#""run-1""#)),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        assistants::ModifyRunParams {
+            thread_id: decode(fixture(r#""thread-1""#)),
+            run_id: decode(fixture(r#""run-1""#)),
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     )
     .expect("modify_run request failed");
@@ -14122,9 +15187,11 @@ fn modify_thread_modify_thread_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = assistants::modify_thread(
         &config,
-        decode(fixture(r#""thread-1""#)),
-        Some(Some(decode(fixture(r#"{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"]}}"#)))),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        assistants::ModifyThreadParams {
+            thread_id: decode(fixture(r#""thread-1""#)),
+            tool_resources: Some(Some(decode(fixture(r#"{"code_interpreter":{"file_ids":[]},"file_search":{"vector_store_ids":["vector_store_ids"]}}"#)))),
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     )
     .expect("modify_thread request failed");
@@ -14210,10 +15277,12 @@ fn modify_vector_store_modify_vector_store_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = vector_stores::modify_vector_store(
         &config,
-        decode(fixture(r#""vector_store-1""#)),
-        Some(Some(decode(fixture(r#""Example Name""#)))),
-        Some(decode(fixture(r#"{"anchor":"last_active_at","days":1}"#))),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        vector_stores::ModifyVectorStoreParams {
+            vector_store_id: decode(fixture(r#""vector_store-1""#)),
+            name: Some(Some(decode(fixture(r#""Example Name""#)))),
+            expires_after: Some(decode(fixture(r#"{"anchor":"last_active_at","days":1}"#))),
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     )
     .expect("modify_vector_store request failed");
@@ -14240,10 +15309,12 @@ fn modify_vector_store_modify_vector_store_400_decodes_declared_error() {
     };
     let result = vector_stores::modify_vector_store(
         &config,
-        decode(fixture(r#""vector_store-1""#)),
-        Some(Some(decode(fixture(r#""Example Name""#)))),
-        Some(decode(fixture(r#"{"anchor":"last_active_at","days":1}"#))),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        vector_stores::ModifyVectorStoreParams {
+            vector_store_id: decode(fixture(r#""vector_store-1""#)),
+            name: Some(Some(decode(fixture(r#""Example Name""#)))),
+            expires_after: Some(decode(fixture(r#"{"anchor":"last_active_at","days":1}"#))),
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -14268,7 +15339,9 @@ fn pause_fine_tuning_job_pause_fine_tuning_job_reaches_mock_and_decodes_response
     let _ = &config;
     let actual = fine_tuning::pause_fine_tuning_job(
         &config,
-        decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+        fine_tuning::PauseFineTuningJobParams {
+            fine_tuning_job_id: decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+        },
         None,
     )
     .expect("pause_fine_tuning_job request failed");
@@ -14295,7 +15368,9 @@ fn pause_fine_tuning_job_pause_fine_tuning_job_400_decodes_declared_error() {
     };
     let result = fine_tuning::pause_fine_tuning_job(
         &config,
-        decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+        fine_tuning::PauseFineTuningJobParams {
+            fine_tuning_job_id: decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -14320,8 +15395,10 @@ fn refer_live_session_refer_live_session_reaches_mock_and_decodes_response() {
     let _ = &config;
     live::refer_live_session(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#""tel:+14155550123""#)),
+        live::ReferLiveSessionParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            target_uri: decode(fixture(r#""tel:+14155550123""#)),
+        },
         None,
     )
     .expect("refer_live_session request failed");
@@ -14340,8 +15417,10 @@ fn refer_live_session_refer_live_session_400_decodes_declared_error() {
     };
     let result = live::refer_live_session(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#""tel:+14155550123""#)),
+        live::ReferLiveSessionParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            target_uri: decode(fixture(r#""tel:+14155550123""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -14366,8 +15445,10 @@ fn refer_realtime_call_refer_realtime_call_reaches_mock_and_decodes_response() {
     let _ = &config;
     realtime::refer_realtime_call(
         &config,
-        decode(fixture(r#""call-1""#)),
-        decode(fixture(r#""tel:+14155550123""#)),
+        realtime::ReferRealtimeCallParams {
+            call_id: decode(fixture(r#""call-1""#)),
+            target_uri: decode(fixture(r#""tel:+14155550123""#)),
+        },
         None,
     )
     .expect("refer_realtime_call request failed");
@@ -14386,8 +15467,10 @@ fn refer_realtime_call_refer_realtime_call_404_decodes_declared_error() {
     };
     let result = realtime::refer_realtime_call(
         &config,
-        decode(fixture(r#""call-1""#)),
-        decode(fixture(r#""tel:+14155550123""#)),
+        realtime::ReferRealtimeCallParams {
+            call_id: decode(fixture(r#""call-1""#)),
+            target_uri: decode(fixture(r#""tel:+14155550123""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -14412,8 +15495,10 @@ fn reject_live_session_reject_live_session_reaches_mock_and_decodes_response() {
     let _ = &config;
     live::reject_live_session(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#"486"#)),
+        live::RejectLiveSessionParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            status_code: decode(fixture(r#"486"#)),
+        },
         None,
     )
     .expect("reject_live_session request failed");
@@ -14432,8 +15517,10 @@ fn reject_live_session_reject_live_session_400_decodes_declared_error() {
     };
     let result = live::reject_live_session(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#"486"#)),
+        live::RejectLiveSessionParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            status_code: decode(fixture(r#"486"#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -14458,8 +15545,10 @@ fn reject_realtime_call_reject_realtime_call_reaches_mock_and_decodes_response()
     let _ = &config;
     realtime::reject_realtime_call(
         &config,
-        decode(fixture(r#""call-1""#)),
-        Some(decode(fixture(r#"486"#))),
+        realtime::RejectRealtimeCallParams {
+            call_id: decode(fixture(r#""call-1""#)),
+            status_code: Some(decode(fixture(r#"486"#))),
+        },
         None,
     )
     .expect("reject_realtime_call request failed");
@@ -14478,8 +15567,10 @@ fn reject_realtime_call_reject_realtime_call_404_decodes_declared_error() {
     };
     let result = realtime::reject_realtime_call(
         &config,
-        decode(fixture(r#""call-1""#)),
-        Some(decode(fixture(r#"486"#))),
+        realtime::RejectRealtimeCallParams {
+            call_id: decode(fixture(r#""call-1""#)),
+            status_code: Some(decode(fixture(r#"486"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -14504,8 +15595,10 @@ fn remove_group_user_remove_group_user_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = group_users::remove_group_user(
         &config,
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""user-1""#)),
+        group_users::RemoveGroupUserParams {
+            group_id: decode(fixture(r#""group-1""#)),
+            user_id: decode(fixture(r#""user-1""#)),
+        },
         None,
     )
     .expect("remove_group_user request failed");
@@ -14530,8 +15623,10 @@ fn remove_group_user_remove_group_user_400_decodes_declared_error() {
     };
     let result = group_users::remove_group_user(
         &config,
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""user-1""#)),
+        group_users::RemoveGroupUserParams {
+            group_id: decode(fixture(r#""group-1""#)),
+            user_id: decode(fixture(r#""user-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -14556,8 +15651,10 @@ fn remove_project_group_remove_project_group_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = project_groups::remove_project_group(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""group-1""#)),
+        project_groups::RemoveProjectGroupParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            group_id: decode(fixture(r#""group-1""#)),
+        },
         None,
     )
     .expect("remove_project_group request failed");
@@ -14582,8 +15679,10 @@ fn remove_project_group_remove_project_group_400_decodes_declared_error() {
     };
     let result = project_groups::remove_project_group(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""group-1""#)),
+        project_groups::RemoveProjectGroupParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            group_id: decode(fixture(r#""group-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -14608,7 +15707,9 @@ fn resume_fine_tuning_job_resume_fine_tuning_job_reaches_mock_and_decodes_respon
     let _ = &config;
     let actual = fine_tuning::resume_fine_tuning_job(
         &config,
-        decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+        fine_tuning::ResumeFineTuningJobParams {
+            fine_tuning_job_id: decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+        },
         None,
     )
     .expect("resume_fine_tuning_job request failed");
@@ -14635,7 +15736,9 @@ fn resume_fine_tuning_job_resume_fine_tuning_job_400_decodes_declared_error() {
     };
     let result = fine_tuning::resume_fine_tuning_job(
         &config,
-        decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+        fine_tuning::ResumeFineTuningJobParams {
+            fine_tuning_job_id: decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -14658,9 +15761,14 @@ fn retrieve_admin_api_keys_retrieve_admin_api_keys_reaches_mock_and_decodes_resp
         return;
     };
     let _ = &config;
-    let actual =
-        admin_api_keys::retrieve_admin_api_keys(&config, decode(fixture(r#""key-1""#)), None)
-            .expect("retrieve_admin_api_keys request failed");
+    let actual = admin_api_keys::retrieve_admin_api_keys(
+        &config,
+        admin_api_keys::RetrieveAdminApiKeysParams {
+            key_id: decode(fixture(r#""key-1""#)),
+        },
+        None,
+    )
+    .expect("retrieve_admin_api_keys request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"organization.admin_api_key","id":"key_abc","name":"Administration Key","redacted_value":"sk-admin...def","created_at":1711471533,"expires_at":1714063533,"last_used_at":1711471534,"owner":{"type":"user","object":"organization.user","id":"sa_456","name":"My Service Account","created_at":1711471533,"role":"owner"}}"#,
@@ -14682,8 +15790,13 @@ fn retrieve_admin_api_keys_retrieve_admin_api_keys_403_decodes_declared_error() 
             .map(|base_url| format!("{base_url}/__mockStatus/403")),
         ..config
     };
-    let result =
-        admin_api_keys::retrieve_admin_api_keys(&config, decode(fixture(r#""key-1""#)), None);
+    let result = admin_api_keys::retrieve_admin_api_keys(
+        &config,
+        admin_api_keys::RetrieveAdminApiKeysParams {
+            key_id: decode(fixture(r#""key-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("retrieve_admin_api_keys did not fail with SdkError::Http on 403");
     };
@@ -14704,8 +15817,14 @@ fn retrieve_agent_retrieve_agent_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = agents::retrieve_agent(&config, decode(fixture(r#""agent-1""#)), None)
-        .expect("retrieve_agent request failed");
+    let actual = agents::retrieve_agent(
+        &config,
+        agents::RetrieveAgentParams {
+            agent_id: decode(fixture(r#""agent-1""#)),
+        },
+        None,
+    )
+    .expect("retrieve_agent request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","object":"agent","created_at":1,"updated_at":1,"name":"Example Name","metadata":{"key":"key"},"model":"model","reasoning":{"effort":"none","summary":"concise"},"text":{"format":{"type":"text"},"verbosity":"low"},"service_tier":"auto","instructions":"instructions","tools":[{"type":"function","name":"Example Name","description":"example text","parameters":{"key":null},"defer_loading":false}],"multi_agent":{"enabled":false,"max_concurrent_subagents":1}}"#,
@@ -14727,7 +15846,13 @@ fn retrieve_agent_retrieve_agent_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = agents::retrieve_agent(&config, decode(fixture(r#""agent-1""#)), None);
+    let result = agents::retrieve_agent(
+        &config,
+        agents::RetrieveAgentParams {
+            agent_id: decode(fixture(r#""agent-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("retrieve_agent did not fail with SdkError::Http on 400");
     };
@@ -14748,9 +15873,14 @@ fn retrieve_agent_environment_retrieve_agent_environment_reaches_mock_and_decode
         return;
     };
     let _ = &config;
-    let actual =
-        agents::retrieve_agent_environment(&config, decode(fixture(r#""environment-1""#)), None)
-            .expect("retrieve_agent_environment request failed");
+    let actual = agents::retrieve_agent_environment(
+        &config,
+        agents::RetrieveAgentEnvironmentParams {
+            environment_id: decode(fixture(r#""environment-1""#)),
+        },
+        None,
+    )
+    .expect("retrieve_agent_environment request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"type":"openai_hosted","id":"id-1","object":"agent.environment","status":"pending","files":[{"type":"file_id","id":"id-1","file_id":"file-1","path":"path","size_bytes":0}],"skills":[{"type":"skill_reference","skill_id":"skill-1","version":"version","name":"Example Name","description":"example text"}],"plugins":[{"type":"inline","name":"Example Name","description":"example text"}]}"#,
@@ -14772,8 +15902,13 @@ fn retrieve_agent_environment_retrieve_agent_environment_400_decodes_declared_er
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result =
-        agents::retrieve_agent_environment(&config, decode(fixture(r#""environment-1""#)), None);
+    let result = agents::retrieve_agent_environment(
+        &config,
+        agents::RetrieveAgentEnvironmentParams {
+            environment_id: decode(fixture(r#""environment-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("retrieve_agent_environment did not fail with SdkError::Http on 400");
     };
@@ -14797,7 +15932,9 @@ fn retrieve_agent_environment_template_retrieve_agent_environment_template_reach
     let _ = &config;
     let actual = agents::retrieve_agent_environment_template(
         &config,
-        decode(fixture(r#""environment_template-1""#)),
+        agents::RetrieveAgentEnvironmentTemplateParams {
+            environment_template_id: decode(fixture(r#""environment_template-1""#)),
+        },
         None,
     )
     .expect("retrieve_agent_environment_template request failed");
@@ -14825,7 +15962,9 @@ fn retrieve_agent_environment_template_retrieve_agent_environment_template_400_d
     };
     let result = agents::retrieve_agent_environment_template(
         &config,
-        decode(fixture(r#""environment_template-1""#)),
+        agents::RetrieveAgentEnvironmentTemplateParams {
+            environment_template_id: decode(fixture(r#""environment_template-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -14848,8 +15987,14 @@ fn retrieve_agent_session_retrieve_agent_session_reaches_mock_and_decodes_respon
         return;
     };
     let _ = &config;
-    let actual = agents::retrieve_agent_session(&config, decode(fixture(r#""session-1""#)), None)
-        .expect("retrieve_agent_session request failed");
+    let actual = agents::retrieve_agent_session(
+        &config,
+        agents::RetrieveAgentSessionParams {
+            session_id: decode(fixture(r#""session-1""#)),
+        },
+        None,
+    )
+    .expect("retrieve_agent_session request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"spend_control":{"limit":1,"consumed":0},"metadata":{"key":"key"},"id":"id-1","object":"agent.session","created_at":1,"last_active_at":1,"status":"idle","required_actions":[{"type":"computer_use_approval_request","turn_id":"turn-1","request_id":"request-1","request":{"type":"browser_authentication","reason":"reason","credential_origin":"credential_origin","fields":[{"id":"id-1","label":"label","type":"type","required":false}],"options":[{"id":"id-1","label":"label","field_ids":["field_ids"]}]}}],"error":"error","agent":{"id":"id-1","name":"Example Name","model":"model","reasoning":{"effort":"none","summary":"concise"},"text":{"format":{"type":"text"},"verbosity":"low"},"service_tier":"auto","instructions":"instructions","tools":[{"type":"function","name":"Example Name","description":"example text","parameters":{"key":null},"defer_loading":false}],"multi_agent":{"enabled":false,"max_concurrent_subagents":1}},"environment":{"type":"none"},"vault_ids":["vault_ids"],"usage":{"input_tokens":1,"input_tokens_details":{"cached_tokens":1},"output_tokens":1,"output_tokens_details":{"reasoning_tokens":1},"total_tokens":100}}"#,
@@ -14871,7 +16016,13 @@ fn retrieve_agent_session_retrieve_agent_session_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = agents::retrieve_agent_session(&config, decode(fixture(r#""session-1""#)), None);
+    let result = agents::retrieve_agent_session(
+        &config,
+        agents::RetrieveAgentSessionParams {
+            session_id: decode(fixture(r#""session-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("retrieve_agent_session did not fail with SdkError::Http on 400");
     };
@@ -14895,8 +16046,10 @@ fn retrieve_agent_session_artifact_retrieve_agent_session_artifact_reaches_mock_
     let _ = &config;
     let actual = agents::retrieve_agent_session_artifact(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#""artifact-1""#)),
+        agents::RetrieveAgentSessionArtifactParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            artifact_id: decode(fixture(r#""artifact-1""#)),
+        },
         None,
     )
     .expect("retrieve_agent_session_artifact request failed");
@@ -14923,8 +16076,10 @@ fn retrieve_agent_session_artifact_retrieve_agent_session_artifact_400_decodes_d
     };
     let result = agents::retrieve_agent_session_artifact(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#""artifact-1""#)),
+        agents::RetrieveAgentSessionArtifactParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            artifact_id: decode(fixture(r#""artifact-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -14950,8 +16105,10 @@ fn retrieve_agent_session_artifact_content_retrieve_agent_session_artifact_conte
     let _ = &config;
     let actual = agents::retrieve_agent_session_artifact_content(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#""artifact-1""#)),
+        agents::RetrieveAgentSessionArtifactContentParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            artifact_id: decode(fixture(r#""artifact-1""#)),
+        },
         None,
     )
     .expect("retrieve_agent_session_artifact_content request failed");
@@ -14972,8 +16129,10 @@ fn retrieve_agent_session_artifact_content_retrieve_agent_session_artifact_conte
     };
     let result = agents::retrieve_agent_session_artifact_content(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#""artifact-1""#)),
+        agents::RetrieveAgentSessionArtifactContentParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            artifact_id: decode(fixture(r#""artifact-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -14999,8 +16158,10 @@ fn retrieve_agent_session_subagent_retrieve_agent_session_subagent_reaches_mock_
     let _ = &config;
     let actual = agents::retrieve_agent_session_subagent(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#""subagent-1""#)),
+        agents::RetrieveAgentSessionSubagentParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            subagent_id: decode(fixture(r#""subagent-1""#)),
+        },
         None,
     )
     .expect("retrieve_agent_session_subagent request failed");
@@ -15027,8 +16188,10 @@ fn retrieve_agent_session_subagent_retrieve_agent_session_subagent_400_decodes_d
     };
     let result = agents::retrieve_agent_session_subagent(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#""subagent-1""#)),
+        agents::RetrieveAgentSessionSubagentParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            subagent_id: decode(fixture(r#""subagent-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -15054,9 +16217,11 @@ fn retrieve_agent_session_subagent_turn_retrieve_agent_session_subagent_turn_rea
     let _ = &config;
     let actual = agents::retrieve_agent_session_subagent_turn(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#""subagent-1""#)),
-        decode(fixture(r#""turn-1""#)),
+        agents::RetrieveAgentSessionSubagentTurnParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            subagent_id: decode(fixture(r#""subagent-1""#)),
+            turn_id: decode(fixture(r#""turn-1""#)),
+        },
         None,
     )
     .expect("retrieve_agent_session_subagent_turn request failed");
@@ -15084,9 +16249,11 @@ fn retrieve_agent_session_subagent_turn_retrieve_agent_session_subagent_turn_400
     };
     let result = agents::retrieve_agent_session_subagent_turn(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#""subagent-1""#)),
-        decode(fixture(r#""turn-1""#)),
+        agents::RetrieveAgentSessionSubagentTurnParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            subagent_id: decode(fixture(r#""subagent-1""#)),
+            turn_id: decode(fixture(r#""turn-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -15111,8 +16278,10 @@ fn retrieve_agent_session_turn_retrieve_agent_session_turn_reaches_mock_and_deco
     let _ = &config;
     let actual = agents::retrieve_agent_session_turn(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#""turn-1""#)),
+        agents::RetrieveAgentSessionTurnParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            turn_id: decode(fixture(r#""turn-1""#)),
+        },
         None,
     )
     .expect("retrieve_agent_session_turn request failed");
@@ -15139,8 +16308,10 @@ fn retrieve_agent_session_turn_retrieve_agent_session_turn_400_decodes_declared_
     };
     let result = agents::retrieve_agent_session_turn(
         &config,
-        decode(fixture(r#""session-1""#)),
-        decode(fixture(r#""turn-1""#)),
+        agents::RetrieveAgentSessionTurnParams {
+            session_id: decode(fixture(r#""session-1""#)),
+            turn_id: decode(fixture(r#""turn-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -15163,8 +16334,14 @@ fn retrieve_batch_retrieve_batch_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = batch::retrieve_batch(&config, decode(fixture(r#""batch-1""#)), None)
-        .expect("retrieve_batch request failed");
+    let actual = batch::retrieve_batch(
+        &config,
+        batch::RetrieveBatchParams {
+            batch_id: decode(fixture(r#""batch-1""#)),
+        },
+        None,
+    )
+    .expect("retrieve_batch request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","object":"batch","endpoint":"endpoint","model":"model","errors":{"object":"object","data":[{"code":"code","message":"example text","param":"param","line":1}]},"input_file_id":"input_file-1","completion_window":"completion_window","status":"validating","output_file_id":"output_file-1","error_file_id":"error_file-1","created_at":1,"in_progress_at":1,"expires_at":1,"finalizing_at":1,"completed_at":1,"failed_at":1,"expired_at":1,"cancelling_at":1,"cancelled_at":1,"request_counts":{"total":100,"completed":1,"failed":1},"usage":{"input_tokens":1,"input_tokens_details":{"cached_tokens":1},"output_tokens":1,"output_tokens_details":{"reasoning_tokens":1},"total_tokens":100},"metadata":{"key":"key"}}"#,
@@ -15186,7 +16363,13 @@ fn retrieve_batch_retrieve_batch_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = batch::retrieve_batch(&config, decode(fixture(r#""batch-1""#)), None);
+    let result = batch::retrieve_batch(
+        &config,
+        batch::RetrieveBatchParams {
+            batch_id: decode(fixture(r#""batch-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("retrieve_batch did not fail with SdkError::Http on 400");
     };
@@ -15207,8 +16390,14 @@ fn retrieve_chatkit_thread_retrieve_chatkit_thread_reaches_mock_and_decodes_resp
         return;
     };
     let _ = &config;
-    let actual = chatkit::retrieve_chatkit_thread(&config, decode(fixture(r#""cthr_123""#)), None)
-        .expect("retrieve_chatkit_thread request failed");
+    let actual = chatkit::retrieve_chatkit_thread(
+        &config,
+        chatkit::RetrieveChatkitThreadParams {
+            thread_id: decode(fixture(r#""cthr_123""#)),
+        },
+        None,
+    )
+    .expect("retrieve_chatkit_thread request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"cthr_def456","object":"chatkit.thread","created_at":1712345600,"title":"Demo feedback","status":{"type":"active"},"user":"user_456"}"#,
@@ -15230,7 +16419,13 @@ fn retrieve_chatkit_thread_retrieve_chatkit_thread_400_decodes_declared_error() 
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = chatkit::retrieve_chatkit_thread(&config, decode(fixture(r#""cthr_123""#)), None);
+    let result = chatkit::retrieve_chatkit_thread(
+        &config,
+        chatkit::RetrieveChatkitThreadParams {
+            thread_id: decode(fixture(r#""cthr_123""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("retrieve_chatkit_thread did not fail with SdkError::Http on 400");
     };
@@ -15251,8 +16446,14 @@ fn retrieve_container_retrieve_container_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = containers::retrieve_container(&config, decode(fixture(r#""container-1""#)), None)
-        .expect("retrieve_container request failed");
+    let actual = containers::retrieve_container(
+        &config,
+        containers::RetrieveContainerParams {
+            container_id: decode(fixture(r#""container-1""#)),
+        },
+        None,
+    )
+    .expect("retrieve_container request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","object":"object","name":"Example Name","created_at":1,"status":"active","last_active_at":1,"expires_after":{"anchor":"last_active_at","minutes":1},"memory_limit":"1g","network_policy":{"type":"allowlist","allowed_domains":["allowed_domains"]}}"#,
@@ -15274,7 +16475,13 @@ fn retrieve_container_retrieve_container_404_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/404")),
         ..config
     };
-    let result = containers::retrieve_container(&config, decode(fixture(r#""container-1""#)), None);
+    let result = containers::retrieve_container(
+        &config,
+        containers::RetrieveContainerParams {
+            container_id: decode(fixture(r#""container-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("retrieve_container did not fail with SdkError::Http on 404");
     };
@@ -15297,8 +16504,10 @@ fn retrieve_container_file_retrieve_container_file_reaches_mock_and_decodes_resp
     let _ = &config;
     let actual = containers::retrieve_container_file(
         &config,
-        decode(fixture(r#""container-1""#)),
-        decode(fixture(r#""file-1""#)),
+        containers::RetrieveContainerFileParams {
+            container_id: decode(fixture(r#""container-1""#)),
+            file_id: decode(fixture(r#""file-1""#)),
+        },
         None,
     )
     .expect("retrieve_container_file request failed");
@@ -15325,8 +16534,10 @@ fn retrieve_container_file_retrieve_container_file_404_decodes_declared_error() 
     };
     let result = containers::retrieve_container_file(
         &config,
-        decode(fixture(r#""container-1""#)),
-        decode(fixture(r#""file-1""#)),
+        containers::RetrieveContainerFileParams {
+            container_id: decode(fixture(r#""container-1""#)),
+            file_id: decode(fixture(r#""file-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -15352,8 +16563,10 @@ fn retrieve_container_file_content_retrieve_container_file_content_reaches_mock_
     let _ = &config;
     let actual = containers::retrieve_container_file_content(
         &config,
-        decode(fixture(r#""container-1""#)),
-        decode(fixture(r#""file-1""#)),
+        containers::RetrieveContainerFileContentParams {
+            container_id: decode(fixture(r#""container-1""#)),
+            file_id: decode(fixture(r#""file-1""#)),
+        },
         None,
     )
     .expect("retrieve_container_file_content request failed");
@@ -15373,8 +16586,10 @@ fn retrieve_container_file_content_retrieve_container_file_content_404_decodes_d
     };
     let result = containers::retrieve_container_file_content(
         &config,
-        decode(fixture(r#""container-1""#)),
-        decode(fixture(r#""file-1""#)),
+        containers::RetrieveContainerFileContentParams {
+            container_id: decode(fixture(r#""container-1""#)),
+            file_id: decode(fixture(r#""file-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -15399,7 +16614,9 @@ fn retrieve_external_storage_retrieve_external_storage_reaches_mock_and_decodes_
     let _ = &config;
     let actual = external_storage::retrieve_external_storage(
         &config,
-        decode(fixture(r#""extstorage_123""#)),
+        external_storage::RetrieveExternalStorageParams {
+            external_storage_id: decode(fixture(r#""extstorage_123""#)),
+        },
         None,
     )
     .expect("retrieve_external_storage request failed");
@@ -15426,7 +16643,9 @@ fn retrieve_external_storage_retrieve_external_storage_400_decodes_declared_erro
     };
     let result = external_storage::retrieve_external_storage(
         &config,
-        decode(fixture(r#""extstorage_123""#)),
+        external_storage::RetrieveExternalStorageParams {
+            external_storage_id: decode(fixture(r#""extstorage_123""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -15449,8 +16668,14 @@ fn retrieve_file_retrieve_file_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = files::retrieve_file(&config, decode(fixture(r#""file-1""#)), None)
-        .expect("retrieve_file request failed");
+    let actual = files::retrieve_file(
+        &config,
+        files::RetrieveFileParams {
+            file_id: decode(fixture(r#""file-1""#)),
+        },
+        None,
+    )
+    .expect("retrieve_file request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","bytes":1,"created_at":1,"expires_at":1,"filename":"Example Name","object":"file","purpose":"assistants","status":"uploaded","status_details":"active"}"#,
@@ -15472,7 +16697,13 @@ fn retrieve_file_retrieve_file_404_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/404")),
         ..config
     };
-    let result = files::retrieve_file(&config, decode(fixture(r#""file-1""#)), None);
+    let result = files::retrieve_file(
+        &config,
+        files::RetrieveFileParams {
+            file_id: decode(fixture(r#""file-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("retrieve_file did not fail with SdkError::Http on 404");
     };
@@ -15495,7 +16726,9 @@ fn retrieve_fine_tuning_job_retrieve_fine_tuning_job_reaches_mock_and_decodes_re
     let _ = &config;
     let actual = fine_tuning::retrieve_fine_tuning_job(
         &config,
-        decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+        fine_tuning::RetrieveFineTuningJobParams {
+            fine_tuning_job_id: decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+        },
         None,
     )
     .expect("retrieve_fine_tuning_job request failed");
@@ -15522,7 +16755,9 @@ fn retrieve_fine_tuning_job_retrieve_fine_tuning_job_404_decodes_declared_error(
     };
     let result = fine_tuning::retrieve_fine_tuning_job(
         &config,
-        decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+        fine_tuning::RetrieveFineTuningJobParams {
+            fine_tuning_job_id: decode(fixture(r#""ft-AF1WoRqd3aJAHsqc9NY7iL8F""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -15545,8 +16780,14 @@ fn retrieve_group_retrieve_group_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = groups::retrieve_group(&config, decode(fixture(r#""group-1""#)), None)
-        .expect("retrieve_group request failed");
+    let actual = groups::retrieve_group(
+        &config,
+        groups::RetrieveGroupParams {
+            group_id: decode(fixture(r#""group-1""#)),
+        },
+        None,
+    )
+    .expect("retrieve_group request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","name":"Example Name","created_at":1,"is_scim_managed":false,"group_type":"group"}"#,
@@ -15568,7 +16809,13 @@ fn retrieve_group_retrieve_group_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = groups::retrieve_group(&config, decode(fixture(r#""group-1""#)), None);
+    let result = groups::retrieve_group(
+        &config,
+        groups::RetrieveGroupParams {
+            group_id: decode(fixture(r#""group-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("retrieve_group did not fail with SdkError::Http on 400");
     };
@@ -15591,8 +16838,10 @@ fn retrieve_group_role_retrieve_group_role_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = group_organization_role_assignments::retrieve_group_role(
         &config,
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""role-1""#)),
+        group_organization_role_assignments::RetrieveGroupRoleParams {
+            group_id: decode(fixture(r#""group-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     )
     .expect("retrieve_group_role request failed");
@@ -15619,8 +16868,10 @@ fn retrieve_group_role_retrieve_group_role_400_decodes_declared_error() {
     };
     let result = group_organization_role_assignments::retrieve_group_role(
         &config,
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""role-1""#)),
+        group_organization_role_assignments::RetrieveGroupRoleParams {
+            group_id: decode(fixture(r#""group-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -15645,8 +16896,10 @@ fn retrieve_group_user_retrieve_group_user_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = group_users::retrieve_group_user(
         &config,
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""user-1""#)),
+        group_users::RetrieveGroupUserParams {
+            group_id: decode(fixture(r#""group-1""#)),
+            user_id: decode(fixture(r#""user-1""#)),
+        },
         None,
     )
     .expect("retrieve_group_user request failed");
@@ -15673,8 +16926,10 @@ fn retrieve_group_user_retrieve_group_user_400_decodes_declared_error() {
     };
     let result = group_users::retrieve_group_user(
         &config,
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""user-1""#)),
+        group_users::RetrieveGroupUserParams {
+            group_id: decode(fixture(r#""group-1""#)),
+            user_id: decode(fixture(r#""user-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -15697,8 +16952,14 @@ fn retrieve_invite_retrieve_invite_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = invites::retrieve_invite(&config, decode(fixture(r#""invite-1""#)), None)
-        .expect("retrieve_invite request failed");
+    let actual = invites::retrieve_invite(
+        &config,
+        invites::RetrieveInviteParams {
+            invite_id: decode(fixture(r#""invite-1""#)),
+        },
+        None,
+    )
+    .expect("retrieve_invite request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"organization.invite","id":"id-1","email":"user@example.com","role":"owner","status":"accepted","created_at":1,"expires_at":1,"accepted_at":1,"projects":[{"id":"id-1","role":"member"}]}"#,
@@ -15720,7 +16981,13 @@ fn retrieve_invite_retrieve_invite_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = invites::retrieve_invite(&config, decode(fixture(r#""invite-1""#)), None);
+    let result = invites::retrieve_invite(
+        &config,
+        invites::RetrieveInviteParams {
+            invite_id: decode(fixture(r#""invite-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("retrieve_invite did not fail with SdkError::Http on 400");
     };
@@ -15741,8 +17008,14 @@ fn retrieve_model_retrieve_model_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = models::retrieve_model(&config, decode(fixture(r#""gpt-6-astra""#)), None)
-        .expect("retrieve_model request failed");
+    let actual = models::retrieve_model(
+        &config,
+        models::RetrieveModelParams {
+            model: decode(fixture(r#""gpt-6-astra""#)),
+        },
+        None,
+    )
+    .expect("retrieve_model request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","created":1,"object":"model","owned_by":"owned_by","shutdown_date":"2024-01-01"}"#,
@@ -15764,7 +17037,13 @@ fn retrieve_model_retrieve_model_403_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/403")),
         ..config
     };
-    let result = models::retrieve_model(&config, decode(fixture(r#""gpt-6-astra""#)), None);
+    let result = models::retrieve_model(
+        &config,
+        models::RetrieveModelParams {
+            model: decode(fixture(r#""gpt-6-astra""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("retrieve_model did not fail with SdkError::Http on 403");
     };
@@ -15833,7 +17112,9 @@ fn retrieve_organization_spend_alert_retrieve_organization_spend_alert_reaches_m
     let _ = &config;
     let actual = spend_alerts::retrieve_organization_spend_alert(
         &config,
-        decode(fixture(r#""alert-1""#)),
+        spend_alerts::RetrieveOrganizationSpendAlertParams {
+            alert_id: decode(fixture(r#""alert-1""#)),
+        },
         None,
     )
     .expect("retrieve_organization_spend_alert request failed");
@@ -15861,7 +17142,9 @@ fn retrieve_organization_spend_alert_retrieve_organization_spend_alert_403_decod
     };
     let result = spend_alerts::retrieve_organization_spend_alert(
         &config,
-        decode(fixture(r#""alert-1""#)),
+        spend_alerts::RetrieveOrganizationSpendAlertParams {
+            alert_id: decode(fixture(r#""alert-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -15884,8 +17167,14 @@ fn retrieve_project_retrieve_project_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = projects::retrieve_project(&config, decode(fixture(r#""project-1""#)), None)
-        .expect("retrieve_project request failed");
+    let actual = projects::retrieve_project(
+        &config,
+        projects::RetrieveProjectParams {
+            project_id: decode(fixture(r#""project-1""#)),
+        },
+        None,
+    )
+    .expect("retrieve_project request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","object":"organization.project","name":"Example Name","created_at":1,"archived_at":1,"status":"active","external_key_id":"external_key-1","residency":"GLOBAL"}"#,
@@ -15907,7 +17196,13 @@ fn retrieve_project_retrieve_project_403_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/403")),
         ..config
     };
-    let result = projects::retrieve_project(&config, decode(fixture(r#""project-1""#)), None);
+    let result = projects::retrieve_project(
+        &config,
+        projects::RetrieveProjectParams {
+            project_id: decode(fixture(r#""project-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("retrieve_project did not fail with SdkError::Http on 403");
     };
@@ -15930,8 +17225,10 @@ fn retrieve_project_api_key_retrieve_project_api_key_reaches_mock_and_decodes_re
     let _ = &config;
     let actual = projects::retrieve_project_api_key(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""api_key-1""#)),
+        projects::RetrieveProjectApiKeyParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            api_key_id: decode(fixture(r#""api_key-1""#)),
+        },
         None,
     )
     .expect("retrieve_project_api_key request failed");
@@ -15958,8 +17255,10 @@ fn retrieve_project_api_key_retrieve_project_api_key_400_decodes_declared_error(
     };
     let result = projects::retrieve_project_api_key(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""api_key-1""#)),
+        projects::RetrieveProjectApiKeyParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            api_key_id: decode(fixture(r#""api_key-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -15985,7 +17284,9 @@ fn retrieve_project_data_retention_retrieve_project_data_retention_reaches_mock_
     let _ = &config;
     let actual = data_retention::retrieve_project_data_retention(
         &config,
-        decode(fixture(r#""project-1""#)),
+        data_retention::RetrieveProjectDataRetentionParams {
+            project_id: decode(fixture(r#""project-1""#)),
+        },
         None,
     )
     .expect("retrieve_project_data_retention request failed");
@@ -16010,7 +17311,9 @@ fn retrieve_project_data_retention_retrieve_project_data_retention_400_decodes_d
     };
     let result = data_retention::retrieve_project_data_retention(
         &config,
-        decode(fixture(r#""project-1""#)),
+        data_retention::RetrieveProjectDataRetentionParams {
+            project_id: decode(fixture(r#""project-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -16035,9 +17338,11 @@ fn retrieve_project_group_retrieve_project_group_reaches_mock_and_decodes_respon
     let _ = &config;
     let actual = project_groups::retrieve_project_group(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""group-1""#)),
-        Some(decode(fixture(r#""group""#))),
+        project_groups::RetrieveProjectGroupParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            group_id: decode(fixture(r#""group-1""#)),
+            group_type: Some(decode(fixture(r#""group""#))),
+        },
         None,
     )
     .expect("retrieve_project_group request failed");
@@ -16064,9 +17369,11 @@ fn retrieve_project_group_retrieve_project_group_400_decodes_declared_error() {
     };
     let result = project_groups::retrieve_project_group(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""group-1""#)),
-        Some(decode(fixture(r#""group""#))),
+        project_groups::RetrieveProjectGroupParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            group_id: decode(fixture(r#""group-1""#)),
+            group_type: Some(decode(fixture(r#""group""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -16091,9 +17398,11 @@ fn retrieve_project_group_role_retrieve_project_group_role_reaches_mock_and_deco
     let _ = &config;
     let actual = project_group_role_assignments::retrieve_project_group_role(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""role-1""#)),
+        project_group_role_assignments::RetrieveProjectGroupRoleParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            group_id: decode(fixture(r#""group-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     )
     .expect("retrieve_project_group_role request failed");
@@ -16120,9 +17429,11 @@ fn retrieve_project_group_role_retrieve_project_group_role_400_decodes_declared_
     };
     let result = project_group_role_assignments::retrieve_project_group_role(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""role-1""#)),
+        project_group_role_assignments::RetrieveProjectGroupRoleParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            group_id: decode(fixture(r#""group-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -16148,7 +17459,9 @@ fn retrieve_project_hosted_tool_permissions_retrieve_project_hosted_tool_permiss
     let _ = &config;
     let actual = hosted_tools::retrieve_project_hosted_tool_permissions(
         &config,
-        decode(fixture(r#""project-1""#)),
+        hosted_tools::RetrieveProjectHostedToolPermissionsParams {
+            project_id: decode(fixture(r#""project-1""#)),
+        },
         None,
     )
     .expect("retrieve_project_hosted_tool_permissions request failed");
@@ -16176,7 +17489,9 @@ fn retrieve_project_hosted_tool_permissions_retrieve_project_hosted_tool_permiss
     };
     let result = hosted_tools::retrieve_project_hosted_tool_permissions(
         &config,
-        decode(fixture(r#""project-1""#)),
+        hosted_tools::RetrieveProjectHostedToolPermissionsParams {
+            project_id: decode(fixture(r#""project-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -16202,7 +17517,9 @@ fn retrieve_project_model_permissions_retrieve_project_model_permissions_reaches
     let _ = &config;
     let actual = projects::retrieve_project_model_permissions(
         &config,
-        decode(fixture(r#""project-1""#)),
+        projects::RetrieveProjectModelPermissionsParams {
+            project_id: decode(fixture(r#""project-1""#)),
+        },
         None,
     )
     .expect("retrieve_project_model_permissions request failed");
@@ -16230,7 +17547,9 @@ fn retrieve_project_model_permissions_retrieve_project_model_permissions_400_dec
     };
     let result = projects::retrieve_project_model_permissions(
         &config,
-        decode(fixture(r#""project-1""#)),
+        projects::RetrieveProjectModelPermissionsParams {
+            project_id: decode(fixture(r#""project-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -16256,8 +17575,10 @@ fn retrieve_project_service_account_retrieve_project_service_account_reaches_moc
     let _ = &config;
     let actual = projects::retrieve_project_service_account(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""service_account-1""#)),
+        projects::RetrieveProjectServiceAccountParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            service_account_id: decode(fixture(r#""service_account-1""#)),
+        },
         None,
     )
     .expect("retrieve_project_service_account request failed");
@@ -16284,8 +17605,10 @@ fn retrieve_project_service_account_retrieve_project_service_account_400_decodes
     };
     let result = projects::retrieve_project_service_account(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""service_account-1""#)),
+        projects::RetrieveProjectServiceAccountParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            service_account_id: decode(fixture(r#""service_account-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -16310,8 +17633,10 @@ fn retrieve_project_spend_alert_retrieve_project_spend_alert_reaches_mock_and_de
     let _ = &config;
     let actual = spend_alerts::retrieve_project_spend_alert(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""alert-1""#)),
+        spend_alerts::RetrieveProjectSpendAlertParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            alert_id: decode(fixture(r#""alert-1""#)),
+        },
         None,
     )
     .expect("retrieve_project_spend_alert request failed");
@@ -16338,8 +17663,10 @@ fn retrieve_project_spend_alert_retrieve_project_spend_alert_400_decodes_declare
     };
     let result = spend_alerts::retrieve_project_spend_alert(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""alert-1""#)),
+        spend_alerts::RetrieveProjectSpendAlertParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            alert_id: decode(fixture(r#""alert-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -16364,8 +17691,10 @@ fn retrieve_project_user_retrieve_project_user_reaches_mock_and_decodes_response
     let _ = &config;
     let actual = projects::retrieve_project_user(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""user-1""#)),
+        projects::RetrieveProjectUserParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            user_id: decode(fixture(r#""user-1""#)),
+        },
         None,
     )
     .expect("retrieve_project_user request failed");
@@ -16392,8 +17721,10 @@ fn retrieve_project_user_retrieve_project_user_400_decodes_declared_error() {
     };
     let result = projects::retrieve_project_user(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""user-1""#)),
+        projects::RetrieveProjectUserParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            user_id: decode(fixture(r#""user-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -16418,9 +17749,11 @@ fn retrieve_project_user_role_retrieve_project_user_role_reaches_mock_and_decode
     let _ = &config;
     let actual = project_user_role_assignments::retrieve_project_user_role(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""user-1""#)),
-        decode(fixture(r#""role-1""#)),
+        project_user_role_assignments::RetrieveProjectUserRoleParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            user_id: decode(fixture(r#""user-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     )
     .expect("retrieve_project_user_role request failed");
@@ -16447,9 +17780,11 @@ fn retrieve_project_user_role_retrieve_project_user_role_400_decodes_declared_er
     };
     let result = project_user_role_assignments::retrieve_project_user_role(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""user-1""#)),
-        decode(fixture(r#""role-1""#)),
+        project_user_role_assignments::RetrieveProjectUserRoleParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            user_id: decode(fixture(r#""user-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -16472,8 +17807,14 @@ fn retrieve_role_retrieve_role_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = roles::retrieve_role(&config, decode(fixture(r#""role-1""#)), None)
-        .expect("retrieve_role request failed");
+    let actual = roles::retrieve_role(
+        &config,
+        roles::RetrieveRoleParams {
+            role_id: decode(fixture(r#""role-1""#)),
+        },
+        None,
+    )
+    .expect("retrieve_role request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"role","id":"id-1","name":"Example Name","description":"example text","permissions":["permissions"],"resource_type":"resource_type","predefined_role":false}"#,
@@ -16495,7 +17836,13 @@ fn retrieve_role_retrieve_role_403_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/403")),
         ..config
     };
-    let result = roles::retrieve_role(&config, decode(fixture(r#""role-1""#)), None);
+    let result = roles::retrieve_role(
+        &config,
+        roles::RetrieveRoleParams {
+            role_id: decode(fixture(r#""role-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("retrieve_role did not fail with SdkError::Http on 403");
     };
@@ -16518,8 +17865,10 @@ fn retrieve_roles_project_role_retrieve_roles_project_role_reaches_mock_and_deco
     let _ = &config;
     let actual = roles::retrieve_roles_project_role(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""role-1""#)),
+        roles::RetrieveRolesProjectRoleParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     )
     .expect("retrieve_roles_project_role request failed");
@@ -16546,8 +17895,10 @@ fn retrieve_roles_project_role_retrieve_roles_project_role_403_decodes_declared_
     };
     let result = roles::retrieve_roles_project_role(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""role-1""#)),
+        roles::RetrieveRolesProjectRoleParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -16570,8 +17921,14 @@ fn retrieve_safety_alert_retrieve_safety_alert_reaches_mock_and_decodes_response
         return;
     };
     let _ = &config;
-    let actual = safety::retrieve_safety_alert(&config, decode(fixture(r#""id-1""#)), None)
-        .expect("retrieve_safety_alert request failed");
+    let actual = safety::retrieve_safety_alert(
+        &config,
+        safety::RetrieveSafetyAlertParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    )
+    .expect("retrieve_safety_alert request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","object":"safety.alert","created_at":1,"request_id":"request-1","response_id":"response-1","model":"model","request_paused":false,"error_type":"potentially_unintended_data_transfer","reason":"reason","detailed_explanation":"detailed_explanation"}"#,
@@ -16593,7 +17950,13 @@ fn retrieve_safety_alert_retrieve_safety_alert_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = safety::retrieve_safety_alert(&config, decode(fixture(r#""id-1""#)), None);
+    let result = safety::retrieve_safety_alert(
+        &config,
+        safety::RetrieveSafetyAlertParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("retrieve_safety_alert did not fail with SdkError::Http on 400");
     };
@@ -16614,8 +17977,14 @@ fn retrieve_safety_case_retrieve_safety_case_reaches_mock_and_decodes_response()
         return;
     };
     let _ = &config;
-    let actual = safety::retrieve_safety_case(&config, decode(fixture(r#""id-1""#)), None)
-        .expect("retrieve_safety_case request failed");
+    let actual = safety::retrieve_safety_case(
+        &config,
+        safety::RetrieveSafetyCaseParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    )
+    .expect("retrieve_safety_case request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","object":"safety.case","created_at":1,"entity_identifier":"entity_identifier","reason":"reason","notice":{"type":"warning"}}"#,
@@ -16637,7 +18006,13 @@ fn retrieve_safety_case_retrieve_safety_case_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = safety::retrieve_safety_case(&config, decode(fixture(r#""id-1""#)), None);
+    let result = safety::retrieve_safety_case(
+        &config,
+        safety::RetrieveSafetyCaseParams {
+            id: decode(fixture(r#""id-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("retrieve_safety_case did not fail with SdkError::Http on 400");
     };
@@ -16706,7 +18081,9 @@ fn retrieve_spend_limits_project_retrieve_spend_limits_project_reaches_mock_and_
     let _ = &config;
     let actual = spend_limits::retrieve_spend_limits_project(
         &config,
-        decode(fixture(r#""proj_123""#)),
+        spend_limits::RetrieveSpendLimitsProjectParams {
+            project_id: decode(fixture(r#""proj_123""#)),
+        },
         None,
     )
     .expect("retrieve_spend_limits_project request failed");
@@ -16733,7 +18110,9 @@ fn retrieve_spend_limits_project_retrieve_spend_limits_project_400_decodes_decla
     };
     let result = spend_limits::retrieve_spend_limits_project(
         &config,
-        decode(fixture(r#""proj_123""#)),
+        spend_limits::RetrieveSpendLimitsProjectParams {
+            project_id: decode(fixture(r#""proj_123""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -16756,8 +18135,14 @@ fn retrieve_user_retrieve_user_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = users::retrieve_user(&config, decode(fixture(r#""user-1""#)), None)
-        .expect("retrieve_user request failed");
+    let actual = users::retrieve_user(
+        &config,
+        users::RetrieveUserParams {
+            user_id: decode(fixture(r#""user-1""#)),
+        },
+        None,
+    )
+    .expect("retrieve_user request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"object":"organization.user","id":"id-1","name":"Example Name","email":"user@example.com","role":"role","added_at":1,"is_default":false,"created":1,"user":{"object":"user","id":"id-1","email":"user@example.com","name":"Example Name","picture":"picture","enabled":false,"banned":false,"banned_at":1},"is_service_account":false,"is_scale_tier_authorized_purchaser":false,"is_scim_managed":false,"api_key_last_used_at":1,"technical_level":"technical_level","developer_persona":"developer_persona","projects":{"object":"list","data":[{"id":"id-1","name":"Example Name","role":"role"}]}}"#,
@@ -16779,7 +18164,13 @@ fn retrieve_user_retrieve_user_403_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/403")),
         ..config
     };
-    let result = users::retrieve_user(&config, decode(fixture(r#""user-1""#)), None);
+    let result = users::retrieve_user(
+        &config,
+        users::RetrieveUserParams {
+            user_id: decode(fixture(r#""user-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("retrieve_user did not fail with SdkError::Http on 403");
     };
@@ -16802,8 +18193,10 @@ fn retrieve_user_role_retrieve_user_role_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = user_organization_role_assignments::retrieve_user_role(
         &config,
-        decode(fixture(r#""user-1""#)),
-        decode(fixture(r#""role-1""#)),
+        user_organization_role_assignments::RetrieveUserRoleParams {
+            user_id: decode(fixture(r#""user-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     )
     .expect("retrieve_user_role request failed");
@@ -16830,8 +18223,10 @@ fn retrieve_user_role_retrieve_user_role_400_decodes_declared_error() {
     };
     let result = user_organization_role_assignments::retrieve_user_role(
         &config,
-        decode(fixture(r#""user-1""#)),
-        decode(fixture(r#""role-1""#)),
+        user_organization_role_assignments::RetrieveUserRoleParams {
+            user_id: decode(fixture(r#""user-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -16854,8 +18249,14 @@ fn retrieve_vault_retrieve_vault_reaches_mock_and_decodes_response() {
         return;
     };
     let _ = &config;
-    let actual = vaults::retrieve_vault(&config, decode(fixture(r#""vault-1""#)), None)
-        .expect("retrieve_vault request failed");
+    let actual = vaults::retrieve_vault(
+        &config,
+        vaults::RetrieveVaultParams {
+            vault_id: decode(fixture(r#""vault-1""#)),
+        },
+        None,
+    )
+    .expect("retrieve_vault request failed");
     let actual = serde_json::to_value(actual).expect("serialize generated response");
     let expected = fixture(
         r#"{"id":"id-1","object":"vault","name":"Example Name","metadata":{"key":"key"},"created_at":1}"#,
@@ -16877,7 +18278,13 @@ fn retrieve_vault_retrieve_vault_400_decodes_declared_error() {
             .map(|base_url| format!("{base_url}/__mockStatus/400")),
         ..config
     };
-    let result = vaults::retrieve_vault(&config, decode(fixture(r#""vault-1""#)), None);
+    let result = vaults::retrieve_vault(
+        &config,
+        vaults::RetrieveVaultParams {
+            vault_id: decode(fixture(r#""vault-1""#)),
+        },
+        None,
+    );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
         panic!("retrieve_vault did not fail with SdkError::Http on 400");
     };
@@ -16900,8 +18307,10 @@ fn retrieve_vault_credential_retrieve_vault_credential_reaches_mock_and_decodes_
     let _ = &config;
     let actual = vaults::retrieve_vault_credential(
         &config,
-        decode(fixture(r#""vault-1""#)),
-        decode(fixture(r#""credential-1""#)),
+        vaults::RetrieveVaultCredentialParams {
+            vault_id: decode(fixture(r#""vault-1""#)),
+            credential_id: decode(fixture(r#""credential-1""#)),
+        },
         None,
     )
     .expect("retrieve_vault_credential request failed");
@@ -16928,8 +18337,10 @@ fn retrieve_vault_credential_retrieve_vault_credential_400_decodes_declared_erro
     };
     let result = vaults::retrieve_vault_credential(
         &config,
-        decode(fixture(r#""vault-1""#)),
-        decode(fixture(r#""credential-1""#)),
+        vaults::RetrieveVaultCredentialParams {
+            vault_id: decode(fixture(r#""vault-1""#)),
+            credential_id: decode(fixture(r#""credential-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -16955,8 +18366,10 @@ fn retrieve_vector_store_file_content_retrieve_vector_store_file_content_reaches
     let _ = &config;
     let actual = vector_stores::retrieve_vector_store_file_content(
         &config,
-        decode(fixture(r#""vs_abc123""#)),
-        decode(fixture(r#""file-abc123""#)),
+        vector_stores::RetrieveVectorStoreFileContentParams {
+            vector_store_id: decode(fixture(r#""vs_abc123""#)),
+            file_id: decode(fixture(r#""file-abc123""#)),
+        },
         None,
     )
     .expect("retrieve_vector_store_file_content request failed");
@@ -16984,8 +18397,10 @@ fn retrieve_vector_store_file_content_retrieve_vector_store_file_content_400_dec
     };
     let result = vector_stores::retrieve_vector_store_file_content(
         &config,
-        decode(fixture(r#""vs_abc123""#)),
-        decode(fixture(r#""file-abc123""#)),
+        vector_stores::RetrieveVectorStoreFileContentParams {
+            vector_store_id: decode(fixture(r#""vs_abc123""#)),
+            file_id: decode(fixture(r#""file-abc123""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -17010,8 +18425,10 @@ fn retrieve_video_content_retrieve_video_content_reaches_mock_and_decodes_respon
     let _ = &config;
     let actual = videos::retrieve_video_content(
         &config,
-        decode(fixture(r#""video_123""#)),
-        Some(decode(fixture(r#""video""#))),
+        videos::RetrieveVideoContentParams {
+            video_id: decode(fixture(r#""video_123""#)),
+            variant: Some(decode(fixture(r#""video""#))),
+        },
         None,
     )
     .expect("retrieve_video_content request failed");
@@ -17031,8 +18448,10 @@ fn retrieve_video_content_retrieve_video_content_400_decodes_declared_error() {
     };
     let result = videos::retrieve_video_content(
         &config,
-        decode(fixture(r#""video_123""#)),
-        Some(decode(fixture(r#""video""#))),
+        videos::RetrieveVideoContentParams {
+            video_id: decode(fixture(r#""video_123""#)),
+            variant: Some(decode(fixture(r#""video""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -17057,7 +18476,9 @@ fn retrieve_webhook_endpoint_retrieve_webhook_endpoint_reaches_mock_and_decodes_
     let _ = &config;
     let actual = webhook_endpoints::retrieve_webhook_endpoint(
         &config,
-        decode(fixture(r#""whe_123""#)),
+        webhook_endpoints::RetrieveWebhookEndpointParams {
+            webhook_endpoint_id: decode(fixture(r#""whe_123""#)),
+        },
         None,
     )
     .expect("retrieve_webhook_endpoint request failed");
@@ -17084,7 +18505,9 @@ fn retrieve_webhook_endpoint_retrieve_webhook_endpoint_400_decodes_declared_erro
     };
     let result = webhook_endpoints::retrieve_webhook_endpoint(
         &config,
-        decode(fixture(r#""whe_123""#)),
+        webhook_endpoints::RetrieveWebhookEndpointParams {
+            webhook_endpoint_id: decode(fixture(r#""whe_123""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -17109,10 +18532,12 @@ fn rotate_vault_credential_rotate_vault_credential_reaches_mock_and_decodes_resp
     let _ = &config;
     let actual = vaults::rotate_vault_credential(
         &config,
-        decode(fixture(r#""vault-1""#)),
-        decode(fixture(r#""credential-1""#)),
-        None,
-        Some(decode(fixture(r#"{}"#))),
+        vaults::RotateVaultCredentialParams2 {
+            vault_id: decode(fixture(r#""vault-1""#)),
+            credential_id: decode(fixture(r#""credential-1""#)),
+            auth: None,
+            metadata: Some(decode(fixture(r#"{}"#))),
+        },
         None,
     )
     .expect("rotate_vault_credential request failed");
@@ -17139,10 +18564,12 @@ fn rotate_vault_credential_rotate_vault_credential_400_decodes_declared_error() 
     };
     let result = vaults::rotate_vault_credential(
         &config,
-        decode(fixture(r#""vault-1""#)),
-        decode(fixture(r#""credential-1""#)),
-        None,
-        Some(decode(fixture(r#"{}"#))),
+        vaults::RotateVaultCredentialParams2 {
+            vault_id: decode(fixture(r#""vault-1""#)),
+            credential_id: decode(fixture(r#""credential-1""#)),
+            auth: None,
+            metadata: Some(decode(fixture(r#"{}"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -17168,8 +18595,10 @@ fn rotate_webhook_endpoint_signing_secret_rotate_webhook_endpoint_signing_secret
     let _ = &config;
     let actual = webhook_endpoints::rotate_webhook_endpoint_signing_secret(
         &config,
-        decode(fixture(r#""whe_123""#)),
-        Some(decode(fixture(r#"false"#))),
+        webhook_endpoints::RotateWebhookEndpointSigningSecretParams {
+            webhook_endpoint_id: decode(fixture(r#""whe_123""#)),
+            keep_old_secret_active_for_24_hours: Some(decode(fixture(r#"false"#))),
+        },
         None,
     )
     .expect("rotate_webhook_endpoint_signing_secret request failed");
@@ -17197,8 +18626,10 @@ fn rotate_webhook_endpoint_signing_secret_rotate_webhook_endpoint_signing_secret
     };
     let result = webhook_endpoints::rotate_webhook_endpoint_signing_secret(
         &config,
-        decode(fixture(r#""whe_123""#)),
-        Some(decode(fixture(r#"false"#))),
+        webhook_endpoints::RotateWebhookEndpointSigningSecretParams {
+            webhook_endpoint_id: decode(fixture(r#""whe_123""#)),
+            keep_old_secret_active_for_24_hours: Some(decode(fixture(r#"false"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -17223,9 +18654,11 @@ fn run_grader_run_grader_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = fine_tuning::run_grader(
         &config,
-        decode(fixture(r#"{"type":"string_check","name":"Example Name","input":"input","reference":"reference","operation":"eq"}"#)),
-        decode(fixture(r#""model_sample""#)),
-        Some(decode(fixture(r#"{}"#))),
+        fine_tuning::RunGraderParams {
+            grader: decode(fixture(r#"{"type":"string_check","name":"Example Name","input":"input","reference":"reference","operation":"eq"}"#)),
+            model_sample: decode(fixture(r#""model_sample""#)),
+            item: Some(decode(fixture(r#"{}"#))),
+        },
         None,
     )
     .expect("run_grader request failed");
@@ -17252,11 +18685,13 @@ fn run_grader_run_grader_400_decodes_declared_error() {
     };
     let result = fine_tuning::run_grader(
         &config,
-        decode(fixture(
-            r#"{"type":"string_check","name":"Example Name","input":"input","reference":"reference","operation":"eq"}"#,
-        )),
-        decode(fixture(r#""model_sample""#)),
-        Some(decode(fixture(r#"{}"#))),
+        fine_tuning::RunGraderParams {
+            grader: decode(fixture(
+                r#"{"type":"string_check","name":"Example Name","input":"input","reference":"reference","operation":"eq"}"#,
+            )),
+            model_sample: decode(fixture(r#""model_sample""#)),
+            item: Some(decode(fixture(r#"{}"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -17352,12 +18787,14 @@ fn submit_assistants_tool_outputs_to_run_submit_assistants_tool_outputs_to_run_r
     let _ = &config;
     let actual = assistants::submit_assistants_tool_outputs_to_run(
         &config,
-        decode(fixture(r#""thread-1""#)),
-        decode(fixture(r#""run-1""#)),
-        decode(fixture(
-            r#"[{"tool_call_id":"tool_call-1","output":"output"}]"#,
-        )),
-        Some(Some(decode(fixture(r#"false"#)))),
+        assistants::SubmitAssistantsToolOutputsToRunParams {
+            thread_id: decode(fixture(r#""thread-1""#)),
+            run_id: decode(fixture(r#""run-1""#)),
+            tool_outputs: decode(fixture(
+                r#"[{"tool_call_id":"tool_call-1","output":"output"}]"#,
+            )),
+            stream: Some(Some(decode(fixture(r#"false"#)))),
+        },
         None,
     )
     .expect("submit_assistants_tool_outputs_to_run request failed");
@@ -17380,12 +18817,14 @@ fn submit_assistants_tool_outputs_to_run_submit_assistants_tool_outputs_to_run_s
     let _ = &config;
     let mut events = assistants::submit_assistants_tool_outputs_to_run_stream(
         &config,
-        decode(fixture(r#""thread-1""#)),
-        decode(fixture(r#""run-1""#)),
-        decode(fixture(
-            r#"[{"tool_call_id":"tool_call-1","output":"output"}]"#,
-        )),
-        Some(decode(fixture(r#"false"#))),
+        assistants::SubmitAssistantsToolOutputsToRunStreamParams {
+            thread_id: decode(fixture(r#""thread-1""#)),
+            run_id: decode(fixture(r#""run-1""#)),
+            tool_outputs: decode(fixture(
+                r#"[{"tool_call_id":"tool_call-1","output":"output"}]"#,
+            )),
+            stream: Some(decode(fixture(r#"false"#))),
+        },
         None,
     )
     .expect("submit_assistants_tool_outputs_to_run_stream request failed");
@@ -17411,8 +18850,10 @@ fn test_webhook_endpoint_test_webhook_endpoint_reaches_mock_and_decodes_response
     let _ = &config;
     let actual = webhook_endpoints::test_webhook_endpoint(
         &config,
-        decode(fixture(r#""whe_123""#)),
-        decode(fixture(r#""batch.completed""#)),
+        webhook_endpoints::TestWebhookEndpointParams {
+            webhook_endpoint_id: decode(fixture(r#""whe_123""#)),
+            event_type: decode(fixture(r#""batch.completed""#)),
+        },
         None,
     )
     .expect("test_webhook_endpoint request failed");
@@ -17439,8 +18880,10 @@ fn test_webhook_endpoint_test_webhook_endpoint_400_decodes_declared_error() {
     };
     let result = webhook_endpoints::test_webhook_endpoint(
         &config,
-        decode(fixture(r#""whe_123""#)),
-        decode(fixture(r#""batch.completed""#)),
+        webhook_endpoints::TestWebhookEndpointParams {
+            webhook_endpoint_id: decode(fixture(r#""whe_123""#)),
+            event_type: decode(fixture(r#""batch.completed""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -17465,8 +18908,10 @@ fn unassign_group_role_unassign_group_role_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = group_organization_role_assignments::unassign_group_role(
         &config,
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""role-1""#)),
+        group_organization_role_assignments::UnassignGroupRoleParams {
+            group_id: decode(fixture(r#""group-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     )
     .expect("unassign_group_role request failed");
@@ -17491,8 +18936,10 @@ fn unassign_group_role_unassign_group_role_400_decodes_declared_error() {
     };
     let result = group_organization_role_assignments::unassign_group_role(
         &config,
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""role-1""#)),
+        group_organization_role_assignments::UnassignGroupRoleParams {
+            group_id: decode(fixture(r#""group-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -17517,9 +18964,11 @@ fn unassign_project_group_role_unassign_project_group_role_reaches_mock_and_deco
     let _ = &config;
     let actual = project_group_role_assignments::unassign_project_group_role(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""role-1""#)),
+        project_group_role_assignments::UnassignProjectGroupRoleParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            group_id: decode(fixture(r#""group-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     )
     .expect("unassign_project_group_role request failed");
@@ -17544,9 +18993,11 @@ fn unassign_project_group_role_unassign_project_group_role_400_decodes_declared_
     };
     let result = project_group_role_assignments::unassign_project_group_role(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""role-1""#)),
+        project_group_role_assignments::UnassignProjectGroupRoleParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            group_id: decode(fixture(r#""group-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -17571,9 +19022,11 @@ fn unassign_project_user_role_unassign_project_user_role_reaches_mock_and_decode
     let _ = &config;
     let actual = project_user_role_assignments::unassign_project_user_role(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""user-1""#)),
-        decode(fixture(r#""role-1""#)),
+        project_user_role_assignments::UnassignProjectUserRoleParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            user_id: decode(fixture(r#""user-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     )
     .expect("unassign_project_user_role request failed");
@@ -17598,9 +19051,11 @@ fn unassign_project_user_role_unassign_project_user_role_400_decodes_declared_er
     };
     let result = project_user_role_assignments::unassign_project_user_role(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""user-1""#)),
-        decode(fixture(r#""role-1""#)),
+        project_user_role_assignments::UnassignProjectUserRoleParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            user_id: decode(fixture(r#""user-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -17625,8 +19080,10 @@ fn unassign_user_role_unassign_user_role_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = user_organization_role_assignments::unassign_user_role(
         &config,
-        decode(fixture(r#""user-1""#)),
-        decode(fixture(r#""role-1""#)),
+        user_organization_role_assignments::UnassignUserRoleParams {
+            user_id: decode(fixture(r#""user-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     )
     .expect("unassign_user_role request failed");
@@ -17651,8 +19108,10 @@ fn unassign_user_role_unassign_user_role_400_decodes_declared_error() {
     };
     let result = user_organization_role_assignments::unassign_user_role(
         &config,
-        decode(fixture(r#""user-1""#)),
-        decode(fixture(r#""role-1""#)),
+        user_organization_role_assignments::UnassignUserRoleParams {
+            user_id: decode(fixture(r#""user-1""#)),
+            role_id: decode(fixture(r#""role-1""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -17849,12 +19308,14 @@ fn update_agent_session_update_agent_session_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = agents::update_agent_session(
         &config,
-        decode(fixture(r#""session-1""#)),
-        Some(Some(decode(fixture(r#"{"limit":1}"#)))),
-        Some(decode(fixture(
-            r#"{"model":"model","reasoning":{"effort":"none"},"service_tier":"auto"}"#,
-        ))),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        agents::UpdateAgentSessionParams2 {
+            session_id: decode(fixture(r#""session-1""#)),
+            spend_control: Some(Some(decode(fixture(r#"{"limit":1}"#)))),
+            agent: Some(decode(fixture(
+                r#"{"model":"model","reasoning":{"effort":"none"},"service_tier":"auto"}"#,
+            ))),
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     )
     .expect("update_agent_session request failed");
@@ -17881,12 +19342,14 @@ fn update_agent_session_update_agent_session_400_decodes_declared_error() {
     };
     let result = agents::update_agent_session(
         &config,
-        decode(fixture(r#""session-1""#)),
-        Some(Some(decode(fixture(r#"{"limit":1}"#)))),
-        Some(decode(fixture(
-            r#"{"model":"model","reasoning":{"effort":"none"},"service_tier":"auto"}"#,
-        ))),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        agents::UpdateAgentSessionParams2 {
+            session_id: decode(fixture(r#""session-1""#)),
+            spend_control: Some(Some(decode(fixture(r#"{"limit":1}"#)))),
+            agent: Some(decode(fixture(
+                r#"{"model":"model","reasoning":{"effort":"none"},"service_tier":"auto"}"#,
+            ))),
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -17911,8 +19374,10 @@ fn update_chat_completion_update_chat_completion_reaches_mock_and_decodes_respon
     let _ = &config;
     let actual = chat::update_chat_completion(
         &config,
-        decode(fixture(r#""completion-1""#)),
-        Some(decode(fixture(r#"{"key":"key"}"#))),
+        chat::UpdateChatCompletionParams {
+            completion_id: decode(fixture(r#""completion-1""#)),
+            metadata: Some(decode(fixture(r#"{"key":"key"}"#))),
+        },
         None,
     )
     .expect("update_chat_completion request failed");
@@ -17939,8 +19404,10 @@ fn update_chat_completion_update_chat_completion_400_decodes_declared_error() {
     };
     let result = chat::update_chat_completion(
         &config,
-        decode(fixture(r#""completion-1""#)),
-        Some(decode(fixture(r#"{"key":"key"}"#))),
+        chat::UpdateChatCompletionParams {
+            completion_id: decode(fixture(r#""completion-1""#)),
+            metadata: Some(decode(fixture(r#"{"key":"key"}"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -17965,8 +19432,10 @@ fn update_conversation_update_conversation_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = conversations::update_conversation(
         &config,
-        decode(fixture(r#""conv_123""#)),
-        Some(decode(fixture(r#"{"key":"key"}"#))),
+        conversations::UpdateConversationParams {
+            conversation_id: decode(fixture(r#""conv_123""#)),
+            metadata: Some(decode(fixture(r#"{"key":"key"}"#))),
+        },
         None,
     )
     .expect("update_conversation request failed");
@@ -17992,8 +19461,10 @@ fn update_conversation_update_conversation_400_decodes_declared_error() {
     };
     let result = conversations::update_conversation(
         &config,
-        decode(fixture(r#""conv_123""#)),
-        Some(decode(fixture(r#"{"key":"key"}"#))),
+        conversations::UpdateConversationParams {
+            conversation_id: decode(fixture(r#""conv_123""#)),
+            metadata: Some(decode(fixture(r#"{"key":"key"}"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -18018,9 +19489,11 @@ fn update_eval_update_eval_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = evals::update_eval(
         &config,
-        decode(fixture(r#""eval-1""#)),
-        Some(decode(fixture(r#""Example Name""#))),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        evals::UpdateEvalParams {
+            eval_id: decode(fixture(r#""eval-1""#)),
+            name: Some(decode(fixture(r#""Example Name""#))),
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     )
     .expect("update_eval request failed");
@@ -18047,9 +19520,11 @@ fn update_eval_update_eval_400_decodes_declared_error() {
     };
     let result = evals::update_eval(
         &config,
-        decode(fixture(r#""eval-1""#)),
-        Some(decode(fixture(r#""Example Name""#))),
-        Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        evals::UpdateEvalParams {
+            eval_id: decode(fixture(r#""eval-1""#)),
+            name: Some(decode(fixture(r#""Example Name""#))),
+            metadata: Some(Some(decode(fixture(r#"{"key":"key"}"#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -18074,8 +19549,10 @@ fn update_group_update_group_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = groups::update_group(
         &config,
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""Example Name""#)),
+        groups::UpdateGroupParams {
+            group_id: decode(fixture(r#""group-1""#)),
+            name: decode(fixture(r#""Example Name""#)),
+        },
         None,
     )
     .expect("update_group request failed");
@@ -18101,8 +19578,10 @@ fn update_group_update_group_400_decodes_declared_error() {
     };
     let result = groups::update_group(
         &config,
-        decode(fixture(r#""group-1""#)),
-        decode(fixture(r#""Example Name""#)),
+        groups::UpdateGroupParams {
+            group_id: decode(fixture(r#""group-1""#)),
+            name: decode(fixture(r#""Example Name""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -18128,7 +19607,9 @@ fn update_organization_data_retention_update_organization_data_retention_reaches
     let _ = &config;
     let actual = data_retention::update_organization_data_retention(
         &config,
-        decode(fixture(r#""zero_data_retention""#)),
+        data_retention::UpdateOrganizationDataRetentionParams {
+            retention_type: decode(fixture(r#""zero_data_retention""#)),
+        },
         None,
     )
     .expect("update_organization_data_retention request failed");
@@ -18155,7 +19636,9 @@ fn update_organization_data_retention_update_organization_data_retention_400_dec
     };
     let result = data_retention::update_organization_data_retention(
         &config,
-        decode(fixture(r#""zero_data_retention""#)),
+        data_retention::UpdateOrganizationDataRetentionParams {
+            retention_type: decode(fixture(r#""zero_data_retention""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -18249,10 +19732,12 @@ fn update_project_api_key_update_project_api_key_reaches_mock_and_decodes_respon
     let _ = &config;
     let actual = projects::update_project_api_key(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""api_key-1""#)),
-        None,
-        Some(decode(fixture(r#"["api.all.read"]"#))),
+        projects::UpdateProjectApiKeyParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            api_key_id: decode(fixture(r#""api_key-1""#)),
+            expires_in_seconds: None,
+            scopes: Some(decode(fixture(r#"["api.all.read"]"#))),
+        },
         None,
     )
     .expect("update_project_api_key request failed");
@@ -18279,10 +19764,12 @@ fn update_project_api_key_update_project_api_key_400_decodes_declared_error() {
     };
     let result = projects::update_project_api_key(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""api_key-1""#)),
-        None,
-        Some(decode(fixture(r#"["api.all.read"]"#))),
+        projects::UpdateProjectApiKeyParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            api_key_id: decode(fixture(r#""api_key-1""#)),
+            expires_in_seconds: None,
+            scopes: Some(decode(fixture(r#"["api.all.read"]"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -18307,8 +19794,10 @@ fn update_project_data_retention_update_project_data_retention_reaches_mock_and_
     let _ = &config;
     let actual = data_retention::update_project_data_retention(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""organization_default""#)),
+        data_retention::UpdateProjectDataRetentionParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            retention_type: decode(fixture(r#""organization_default""#)),
+        },
         None,
     )
     .expect("update_project_data_retention request failed");
@@ -18333,8 +19822,10 @@ fn update_project_data_retention_update_project_data_retention_400_decodes_decla
     };
     let result = data_retention::update_project_data_retention(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""organization_default""#)),
+        data_retention::UpdateProjectDataRetentionParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            retention_type: decode(fixture(r#""organization_default""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -18428,9 +19919,11 @@ fn update_project_model_permissions_update_project_model_permissions_reaches_moc
     let _ = &config;
     let actual = projects::update_project_model_permissions(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""allow_list""#)),
-        decode(fixture(r#"["model_ids"]"#)),
+        projects::UpdateProjectModelPermissionsParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            mode: decode(fixture(r#""allow_list""#)),
+            model_ids: decode(fixture(r#"["model_ids"]"#)),
+        },
         None,
     )
     .expect("update_project_model_permissions request failed");
@@ -18457,9 +19950,11 @@ fn update_project_model_permissions_update_project_model_permissions_400_decodes
     };
     let result = projects::update_project_model_permissions(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""allow_list""#)),
-        decode(fixture(r#"["model_ids"]"#)),
+        projects::UpdateProjectModelPermissionsParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            mode: decode(fixture(r#""allow_list""#)),
+            model_ids: decode(fixture(r#"["model_ids"]"#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -18555,10 +20050,12 @@ fn update_project_service_account_update_project_service_account_reaches_mock_an
     let _ = &config;
     let actual = projects::update_project_service_account(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""service_account-1""#)),
-        Some(decode(fixture(r#""Example Name""#))),
-        Some(decode(fixture(r#""member""#))),
+        projects::UpdateProjectServiceAccountParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            service_account_id: decode(fixture(r#""service_account-1""#)),
+            name: Some(decode(fixture(r#""Example Name""#))),
+            role: Some(decode(fixture(r#""member""#))),
+        },
         None,
     )
     .expect("update_project_service_account request failed");
@@ -18585,10 +20082,12 @@ fn update_project_service_account_update_project_service_account_400_decodes_dec
     };
     let result = projects::update_project_service_account(
         &config,
-        decode(fixture(r#""project-1""#)),
-        decode(fixture(r#""service_account-1""#)),
-        Some(decode(fixture(r#""Example Name""#))),
-        Some(decode(fixture(r#""member""#))),
+        projects::UpdateProjectServiceAccountParams {
+            project_id: decode(fixture(r#""project-1""#)),
+            service_account_id: decode(fixture(r#""service_account-1""#)),
+            name: Some(decode(fixture(r#""Example Name""#))),
+            role: Some(decode(fixture(r#""member""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -18676,6 +20175,68 @@ fn update_project_spend_alert_update_project_spend_alert_400_decodes_declared_er
 }
 
 #[test]
+fn update_project_spend_limit_update_project_spend_limit_reaches_mock_and_decodes_response() {
+    let Some(config) = configured_client() else {
+        return;
+    };
+    let _ = &config;
+    let actual = spend_limits::update_project_spend_limit(
+        &config,
+        spend_limits::UpdateProjectSpendLimitParams {
+            project_id: decode(fixture(r#""proj_123""#)),
+            threshold_amount: decode(fixture(r#"1"#)),
+            currency: decode(fixture(r#""USD""#)),
+            interval: decode(fixture(r#""month""#)),
+        },
+        None,
+    )
+    .expect("update_project_spend_limit request failed");
+    let actual = serde_json::to_value(actual).expect("serialize generated response");
+    let expected = fixture(
+        r#"{"object":"project.spend_limit","threshold_amount":1,"currency":"USD","interval":"month","enforcement":{"status":"active"}}"#,
+    );
+    assert!(
+        representative(&actual, &expected),
+        "update_project_spend_limit decoded {actual}, expected representative {expected}"
+    );
+}
+
+#[test]
+fn update_project_spend_limit_update_project_spend_limit_400_decodes_declared_error() {
+    let Some(config) = configured_client() else {
+        return;
+    };
+    let config = ClientConfig {
+        base_url: config
+            .base_url
+            .map(|base_url| format!("{base_url}/__mockStatus/400")),
+        ..config
+    };
+    let result = spend_limits::update_project_spend_limit(
+        &config,
+        spend_limits::UpdateProjectSpendLimitParams {
+            project_id: decode(fixture(r#""proj_123""#)),
+            threshold_amount: decode(fixture(r#"1"#)),
+            currency: decode(fixture(r#""USD""#)),
+            interval: decode(fixture(r#""month""#)),
+        },
+        None,
+    );
+    let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
+        panic!("update_project_spend_limit did not fail with SdkError::Http on 400");
+    };
+    assert_eq!(error.status_code, 400);
+    let actual = serde_json::to_value(&error.data).expect("serialize declared error body");
+    let expected = fixture(
+        r#"{"error":{"code":"code","message":"example text","param":"param","type":"type","misalignment":{"review_target":"a","error_type":"error_type","detailed_explanation":"detailed_explanation","steer":{"message":"example text"}}}}"#,
+    );
+    assert!(
+        representative(&actual, &expected),
+        "update_project_spend_limit decoded error body {actual}, expected representative {expected}"
+    );
+}
+
+#[test]
 fn update_role_update_role_reaches_mock_and_decodes_response() {
     let Some(config) = configured_client() else {
         return;
@@ -18683,10 +20244,12 @@ fn update_role_update_role_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = roles::update_role(
         &config,
-        decode(fixture(r#""role-1""#)),
-        Some(Some(decode(fixture(r#"["permissions"]"#)))),
-        Some(Some(decode(fixture(r#""example text""#)))),
-        Some(Some(decode(fixture(r#""Example Name""#)))),
+        roles::UpdateRoleParams {
+            role_id: decode(fixture(r#""role-1""#)),
+            permissions: Some(Some(decode(fixture(r#"["permissions"]"#)))),
+            description: Some(Some(decode(fixture(r#""example text""#)))),
+            role_name: Some(Some(decode(fixture(r#""Example Name""#)))),
+        },
         None,
     )
     .expect("update_role request failed");
@@ -18713,10 +20276,12 @@ fn update_role_update_role_400_decodes_declared_error() {
     };
     let result = roles::update_role(
         &config,
-        decode(fixture(r#""role-1""#)),
-        Some(Some(decode(fixture(r#"["permissions"]"#)))),
-        Some(Some(decode(fixture(r#""example text""#)))),
-        Some(Some(decode(fixture(r#""Example Name""#)))),
+        roles::UpdateRoleParams {
+            role_id: decode(fixture(r#""role-1""#)),
+            permissions: Some(Some(decode(fixture(r#"["permissions"]"#)))),
+            description: Some(Some(decode(fixture(r#""example text""#)))),
+            role_name: Some(Some(decode(fixture(r#""Example Name""#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -18805,8 +20370,10 @@ fn update_skill_default_version_update_skill_default_version_reaches_mock_and_de
     let _ = &config;
     let actual = skills::update_skill_default_version(
         &config,
-        decode(fixture(r#""skill_123""#)),
-        decode(fixture(r#""default_version""#)),
+        skills::UpdateSkillDefaultVersionParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+            default_version: decode(fixture(r#""default_version""#)),
+        },
         None,
     )
     .expect("update_skill_default_version request failed");
@@ -18833,8 +20400,10 @@ fn update_skill_default_version_update_skill_default_version_400_decodes_declare
     };
     let result = skills::update_skill_default_version(
         &config,
-        decode(fixture(r#""skill_123""#)),
-        decode(fixture(r#""default_version""#)),
+        skills::UpdateSkillDefaultVersionParams {
+            skill_id: decode(fixture(r#""skill_123""#)),
+            default_version: decode(fixture(r#""default_version""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -18860,9 +20429,11 @@ fn update_spend_limits_organization_update_spend_limits_organization_reaches_moc
     let _ = &config;
     let actual = spend_limits::update_spend_limits_organization(
         &config,
-        decode(fixture(r#"1"#)),
-        decode(fixture(r#""USD""#)),
-        decode(fixture(r#""month""#)),
+        spend_limits::UpdateSpendLimitsOrganizationParams {
+            threshold_amount: decode(fixture(r#"1"#)),
+            currency: decode(fixture(r#""USD""#)),
+            interval: decode(fixture(r#""month""#)),
+        },
         None,
     )
     .expect("update_spend_limits_organization request failed");
@@ -18889,9 +20460,11 @@ fn update_spend_limits_organization_update_spend_limits_organization_400_decodes
     };
     let result = spend_limits::update_spend_limits_organization(
         &config,
-        decode(fixture(r#"1"#)),
-        decode(fixture(r#""USD""#)),
-        decode(fixture(r#""month""#)),
+        spend_limits::UpdateSpendLimitsOrganizationParams {
+            threshold_amount: decode(fixture(r#"1"#)),
+            currency: decode(fixture(r#""USD""#)),
+            interval: decode(fixture(r#""month""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -18909,64 +20482,6 @@ fn update_spend_limits_organization_update_spend_limits_organization_400_decodes
 }
 
 #[test]
-fn update_spend_limits_project_update_spend_limits_project_reaches_mock_and_decodes_response() {
-    let Some(config) = configured_client() else {
-        return;
-    };
-    let _ = &config;
-    let actual = spend_limits::update_spend_limits_project(
-        &config,
-        decode(fixture(r#""proj_123""#)),
-        decode(fixture(r#"1"#)),
-        decode(fixture(r#""USD""#)),
-        decode(fixture(r#""month""#)),
-        None,
-    )
-    .expect("update_spend_limits_project request failed");
-    let actual = serde_json::to_value(actual).expect("serialize generated response");
-    let expected = fixture(
-        r#"{"object":"project.spend_limit","threshold_amount":1,"currency":"USD","interval":"month","enforcement":{"status":"active"}}"#,
-    );
-    assert!(
-        representative(&actual, &expected),
-        "update_spend_limits_project decoded {actual}, expected representative {expected}"
-    );
-}
-
-#[test]
-fn update_spend_limits_project_update_spend_limits_project_400_decodes_declared_error() {
-    let Some(config) = configured_client() else {
-        return;
-    };
-    let config = ClientConfig {
-        base_url: config
-            .base_url
-            .map(|base_url| format!("{base_url}/__mockStatus/400")),
-        ..config
-    };
-    let result = spend_limits::update_spend_limits_project(
-        &config,
-        decode(fixture(r#""proj_123""#)),
-        decode(fixture(r#"1"#)),
-        decode(fixture(r#""USD""#)),
-        decode(fixture(r#""month""#)),
-        None,
-    );
-    let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
-        panic!("update_spend_limits_project did not fail with SdkError::Http on 400");
-    };
-    assert_eq!(error.status_code, 400);
-    let actual = serde_json::to_value(&error.data).expect("serialize declared error body");
-    let expected = fixture(
-        r#"{"error":{"code":"code","message":"example text","param":"param","type":"type","misalignment":{"review_target":"a","error_type":"error_type","detailed_explanation":"detailed_explanation","steer":{"message":"example text"}}}}"#,
-    );
-    assert!(
-        representative(&actual, &expected),
-        "update_spend_limits_project decoded error body {actual}, expected representative {expected}"
-    );
-}
-
-#[test]
 fn update_vault_update_vault_reaches_mock_and_decodes_response() {
     let Some(config) = configured_client() else {
         return;
@@ -18974,9 +20489,11 @@ fn update_vault_update_vault_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = vaults::update_vault(
         &config,
-        decode(fixture(r#""vault-1""#)),
-        Some(decode(fixture(r#"{"key":"key"}"#))),
-        Some(Some(decode(fixture(r#""Example Name""#)))),
+        vaults::UpdateVaultParams2 {
+            vault_id: decode(fixture(r#""vault-1""#)),
+            metadata: Some(decode(fixture(r#"{"key":"key"}"#))),
+            name: Some(Some(decode(fixture(r#""Example Name""#)))),
+        },
         None,
     )
     .expect("update_vault request failed");
@@ -19003,9 +20520,11 @@ fn update_vault_update_vault_400_decodes_declared_error() {
     };
     let result = vaults::update_vault(
         &config,
-        decode(fixture(r#""vault-1""#)),
-        Some(decode(fixture(r#"{"key":"key"}"#))),
-        Some(Some(decode(fixture(r#""Example Name""#)))),
+        vaults::UpdateVaultParams2 {
+            vault_id: decode(fixture(r#""vault-1""#)),
+            metadata: Some(decode(fixture(r#"{"key":"key"}"#))),
+            name: Some(Some(decode(fixture(r#""Example Name""#)))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -19031,9 +20550,11 @@ fn update_vector_store_file_attributes_update_vector_store_file_attributes_reach
     let _ = &config;
     let actual = vector_stores::update_vector_store_file_attributes(
         &config,
-        decode(fixture(r#""vs_abc123""#)),
-        decode(fixture(r#""file-abc123""#)),
-        Some(decode(fixture(r#"{"key":"key"}"#))),
+        vector_stores::UpdateVectorStoreFileAttributesParams {
+            vector_store_id: decode(fixture(r#""vs_abc123""#)),
+            file_id: decode(fixture(r#""file-abc123""#)),
+            attributes: Some(decode(fixture(r#"{"key":"key"}"#))),
+        },
         None,
     )
     .expect("update_vector_store_file_attributes request failed");
@@ -19061,9 +20582,11 @@ fn update_vector_store_file_attributes_update_vector_store_file_attributes_400_d
     };
     let result = vector_stores::update_vector_store_file_attributes(
         &config,
-        decode(fixture(r#""vs_abc123""#)),
-        decode(fixture(r#""file-abc123""#)),
-        Some(decode(fixture(r#"{"key":"key"}"#))),
+        vector_stores::UpdateVectorStoreFileAttributesParams {
+            vector_store_id: decode(fixture(r#""vs_abc123""#)),
+            file_id: decode(fixture(r#""file-abc123""#)),
+            attributes: Some(decode(fixture(r#"{"key":"key"}"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -19088,8 +20611,10 @@ fn update_voice_consent_update_voice_consent_reaches_mock_and_decodes_response()
     let _ = &config;
     let actual = audio::update_voice_consent(
         &config,
-        decode(fixture(r#""consent-1""#)),
-        decode(fixture(r#""Example Name""#)),
+        audio::UpdateVoiceConsentParams {
+            consent_id: decode(fixture(r#""consent-1""#)),
+            name: decode(fixture(r#""Example Name""#)),
+        },
         None,
     )
     .expect("update_voice_consent request failed");
@@ -19116,8 +20641,10 @@ fn update_voice_consent_update_voice_consent_400_decodes_declared_error() {
     };
     let result = audio::update_voice_consent(
         &config,
-        decode(fixture(r#""consent-1""#)),
-        decode(fixture(r#""Example Name""#)),
+        audio::UpdateVoiceConsentParams {
+            consent_id: decode(fixture(r#""consent-1""#)),
+            name: decode(fixture(r#""Example Name""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -19142,10 +20669,12 @@ fn update_webhook_endpoint_update_webhook_endpoint_reaches_mock_and_decodes_resp
     let _ = &config;
     let actual = webhook_endpoints::update_webhook_endpoint(
         &config,
-        decode(fixture(r#""whe_123""#)),
-        Some(decode(fixture(r#""Example Name""#))),
-        Some(decode(fixture(r#""https://""#))),
-        Some(decode(fixture(r#"["batch.completed"]"#))),
+        webhook_endpoints::UpdateWebhookEndpointParams {
+            webhook_endpoint_id: decode(fixture(r#""whe_123""#)),
+            name: Some(decode(fixture(r#""Example Name""#))),
+            url: Some(decode(fixture(r#""https://""#))),
+            event_types: Some(decode(fixture(r#"["batch.completed"]"#))),
+        },
         None,
     )
     .expect("update_webhook_endpoint request failed");
@@ -19172,10 +20701,12 @@ fn update_webhook_endpoint_update_webhook_endpoint_400_decodes_declared_error() 
     };
     let result = webhook_endpoints::update_webhook_endpoint(
         &config,
-        decode(fixture(r#""whe_123""#)),
-        Some(decode(fixture(r#""Example Name""#))),
-        Some(decode(fixture(r#""https://""#))),
-        Some(decode(fixture(r#"["batch.completed"]"#))),
+        webhook_endpoints::UpdateWebhookEndpointParams {
+            webhook_endpoint_id: decode(fixture(r#""whe_123""#)),
+            name: Some(decode(fixture(r#""Example Name""#))),
+            url: Some(decode(fixture(r#""https://""#))),
+            event_types: Some(decode(fixture(r#"["batch.completed"]"#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -19200,8 +20731,10 @@ fn upload_certificate_upload_certificate_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = certificates::upload_certificate(
         &config,
-        decode(fixture(r#""certificate""#)),
-        Some(decode(fixture(r#""Example Name""#))),
+        certificates::UploadCertificateParams {
+            certificate: decode(fixture(r#""certificate""#)),
+            name: Some(decode(fixture(r#""Example Name""#))),
+        },
         None,
     )
     .expect("upload_certificate request failed");
@@ -19228,8 +20761,10 @@ fn upload_certificate_upload_certificate_400_decodes_declared_error() {
     };
     let result = certificates::upload_certificate(
         &config,
-        decode(fixture(r#""certificate""#)),
-        Some(decode(fixture(r#""Example Name""#))),
+        certificates::UploadCertificateParams {
+            certificate: decode(fixture(r#""certificate""#)),
+            name: Some(decode(fixture(r#""Example Name""#))),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -20063,7 +21598,9 @@ fn validate_external_storage_validate_external_storage_reaches_mock_and_decodes_
     let _ = &config;
     let actual = external_storage::validate_external_storage(
         &config,
-        decode(fixture(r#""extstorage_123""#)),
+        external_storage::ValidateExternalStorageParams {
+            external_storage_id: decode(fixture(r#""extstorage_123""#)),
+        },
         None,
     )
     .expect("validate_external_storage request failed");
@@ -20090,7 +21627,9 @@ fn validate_external_storage_validate_external_storage_400_decodes_declared_erro
     };
     let result = external_storage::validate_external_storage(
         &config,
-        decode(fixture(r#""extstorage_123""#)),
+        external_storage::ValidateExternalStorageParams {
+            external_storage_id: decode(fixture(r#""extstorage_123""#)),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {
@@ -20115,7 +21654,9 @@ fn validate_grader_validate_grader_reaches_mock_and_decodes_response() {
     let _ = &config;
     let actual = fine_tuning::validate_grader(
         &config,
-        decode(fixture(r#"{"type":"string_check","name":"Example Name","input":"input","reference":"reference","operation":"eq"}"#)),
+        fine_tuning::ValidateGraderParams {
+            grader: decode(fixture(r#"{"type":"string_check","name":"Example Name","input":"input","reference":"reference","operation":"eq"}"#)),
+        },
         None,
     )
     .expect("validate_grader request failed");
@@ -20142,9 +21683,11 @@ fn validate_grader_validate_grader_400_decodes_declared_error() {
     };
     let result = fine_tuning::validate_grader(
         &config,
-        decode(fixture(
-            r#"{"type":"string_check","name":"Example Name","input":"input","reference":"reference","operation":"eq"}"#,
-        )),
+        fine_tuning::ValidateGraderParams {
+            grader: decode(fixture(
+                r#"{"type":"string_check","name":"Example Name","input":"input","reference":"reference","operation":"eq"}"#,
+            )),
+        },
         None,
     );
     let Err(::octridev_openai::errors::SdkError::Http(error)) = result else {

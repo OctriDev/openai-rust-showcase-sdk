@@ -11,6 +11,12 @@ use crate::types::{
 };
 use crate::validation::{validate_length, validate_pattern, validate_range, LengthOpts, RangeOpts};
 
+#[derive(Debug, Clone)]
+pub struct CreateLiveParams {
+    pub session: LiveMediaSessionCreateParams,
+    pub transport: LiveSessionCreateRequestTransportRequest,
+}
+
 /// Create a Live WebRTC session or place an outbound SIP call. Start with the [Live prompting guide](https://developers.openai.com/api/docs/guides/live-prompting) for session configuration and [Telephony and SIP](https://developers.openai.com/api/docs/guides/voice-sip?api=live#place-an-outbound-call) for trunk setup and call monitoring. Set transport.type to `webrtc` and supply an SDP offer, or set it to `sip` and supply an E.164 destination and trunk credentials. Outbound SIP calling must be enabled for your organization. Ringing is limited to 3 minutes and connected calls to 2 hours; these limits are not configurable in the request. Returns `201 Created` after session initialization. WebRTC responses include an SDP answer. SIP responses do not wait for the callee to answer. Attach a sideband connection using session.id to monitor SIP call progress. Each SIP request creates a new call. If a request times out or the connection fails, retry with caution: the original request may have succeeded, and a retry can place another call.
 ///
 /// # Arguments
@@ -20,10 +26,10 @@ use crate::validation::{validate_length, validate_pattern, validate_range, Lengt
 ///   destination and per-call trunk credentials.
 pub fn create_live(
     config: &ClientConfig,
-    session: LiveMediaSessionCreateParams,
-    transport: LiveSessionCreateRequestTransportRequest,
+    params: CreateLiveParams,
     options: Option<&RequestOptions>,
 ) -> Result<LiveSessionCreateResponse, SdkError> {
+    let CreateLiveParams { session, transport } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "session".to_string(),
@@ -67,6 +73,12 @@ pub fn create_live(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct AcceptLiveSessionParams {
+    pub session_id: String,
+    pub session: LiveCallAcceptSession,
+}
+
 /// Accept an incoming SIP call. Supply session with type live, the model, and startup configuration. Before accepting calls, follow the [Live prompting guide](https://developers.openai.com/api/docs/guides/live-prompting) to write frontend conversation instructions and a separate backend prompt. SIP media format is negotiated; omit audio.format.
 ///
 /// # Arguments
@@ -78,10 +90,13 @@ pub fn create_live(
 ///   answers the incoming SIP call.
 pub fn accept_live_session(
     config: &ClientConfig,
-    session_id: String,
-    session: LiveCallAcceptSession,
+    params: AcceptLiveSessionParams,
     options: Option<&RequestOptions>,
 ) -> Result<serde_json::Value, SdkError> {
+    let AcceptLiveSessionParams {
+        session_id,
+        session,
+    } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "session".to_string(),
@@ -119,6 +134,13 @@ pub fn accept_live_session(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ForkLiveSessionParams {
+    pub session_id: String,
+    pub transport: LiveWebRTCTransport,
+    pub session: Option<LiveMediaSessionForkParams>,
+}
+
 /// Fork a stored Live session onto a new WebRTC connection.
 ///
 /// # Arguments
@@ -131,11 +153,14 @@ pub fn accept_live_session(
 ///   settings.
 pub fn fork_live_session(
     config: &ClientConfig,
-    session_id: String,
-    transport: LiveWebRTCTransport,
-    session: Option<LiveMediaSessionForkParams>,
+    params: ForkLiveSessionParams,
     options: Option<&RequestOptions>,
 ) -> Result<LiveCreateResponse, SdkError> {
+    let ForkLiveSessionParams {
+        session_id,
+        transport,
+        session,
+    } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "transport".to_string(),
@@ -183,6 +208,11 @@ pub fn fork_live_session(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct HangupLiveSessionParams {
+    pub session_id: String,
+}
+
 /// Ends a SIP call associated with a Live session by submitting a hangup request. Use the opaque `session_id` returned when the session was created or supplied in an incoming-call webhook, preserving its prefix and value unchanged. A 200 response confirms that the hangup request was accepted.
 ///
 /// End a SIP call identified by session_id.
@@ -194,9 +224,10 @@ pub fn fork_live_session(
 ///   its prefix.
 pub fn hangup_live_session(
     config: &ClientConfig,
-    session_id: String,
+    params: HangupLiveSessionParams,
     options: Option<&RequestOptions>,
 ) -> Result<serde_json::Value, SdkError> {
+    let HangupLiveSessionParams { session_id } = params;
     Ok(sdk_request::<serde_json::Value>(
         "POST",
         &format!(
@@ -215,6 +246,12 @@ pub fn hangup_live_session(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ReferLiveSessionParams {
+    pub session_id: String,
+    pub target_uri: TargetUri,
+}
+
 /// Transfer a SIP call to another destination. Supply a nonblank target_uri for the SIP Refer-To header.
 ///
 /// # Arguments
@@ -226,10 +263,13 @@ pub fn hangup_live_session(
 ///   tel:\+14155550123 or sip:agent@example.com.
 pub fn refer_live_session(
     config: &ClientConfig,
-    session_id: String,
-    target_uri: TargetUri,
+    params: ReferLiveSessionParams,
     options: Option<&RequestOptions>,
 ) -> Result<serde_json::Value, SdkError> {
+    let ReferLiveSessionParams {
+        session_id,
+        target_uri,
+    } = params;
     validate_length(
         "target_uri",
         &target_uri,
@@ -271,6 +311,12 @@ pub fn refer_live_session(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RejectLiveSessionParams {
+    pub session_id: String,
+    pub status_code: i64,
+}
+
 /// Reject an incoming SIP call. Send a required SIP rejection status_code between 300 and 699.
 ///
 /// # Arguments
@@ -282,10 +328,13 @@ pub fn refer_live_session(
 ///   required.
 pub fn reject_live_session(
     config: &ClientConfig,
-    session_id: String,
-    status_code: i64,
+    params: RejectLiveSessionParams,
     options: Option<&RequestOptions>,
 ) -> Result<serde_json::Value, SdkError> {
+    let RejectLiveSessionParams {
+        session_id,
+        status_code,
+    } = params;
     validate_range(
         "status_code",
         status_code as f64,
@@ -331,6 +380,11 @@ pub fn reject_live_session(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct DownloadLiveRecordingParams {
+    pub session_id: String,
+}
+
 /// Downloads the stored audio recording for a Live session. Use the `session_id` returned when the session started with storage enabled. The recording is a stereo WAV file, with input audio in the left channel and output audio in the right channel.
 ///
 /// Get Live session content
@@ -341,9 +395,10 @@ pub fn reject_live_session(
 ///   session ID returned when the session started with storage enabled.
 pub fn download_live_recording(
     config: &ClientConfig,
-    session_id: String,
+    params: DownloadLiveRecordingParams,
     options: Option<&RequestOptions>,
 ) -> Result<Vec<u8>, SdkError> {
+    let DownloadLiveRecordingParams { session_id } = params;
     validate_pattern("session_id", &session_id, "^live_[A-Za-z0-9_-]{1,128}$")?;
 
     Ok(sdk_request::<Vec<u8>>(

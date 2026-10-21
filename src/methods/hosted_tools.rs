@@ -6,6 +6,11 @@ use crate::client::{sdk_request, RequestOptions, RequestOpts};
 use crate::errors::{SdkError, SdkNetworkError};
 use crate::types::{HostedToolPermissionUpdate, ProjectHostedToolPermissions};
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveProjectHostedToolPermissionsParams {
+    pub project_id: String,
+}
+
 /// Retrieves the hosted tool permission settings for a project. Use `project_id` to identify the project whose permissions you want to inspect. The response includes an enabled state for each hosted tool.
 ///
 /// Returns hosted tool permissions for a project.
@@ -15,9 +20,10 @@ use crate::types::{HostedToolPermissionUpdate, ProjectHostedToolPermissions};
 /// * `project_id` - The ID of the project.
 pub fn retrieve_project_hosted_tool_permissions(
     config: &ClientConfig,
-    project_id: String,
+    params: RetrieveProjectHostedToolPermissionsParams,
     options: Option<&RequestOptions>,
 ) -> Result<ProjectHostedToolPermissions, SdkError> {
+    let RetrieveProjectHostedToolPermissionsParams { project_id } = params;
     Ok(sdk_request::<ProjectHostedToolPermissions>(
         "GET",
         &format!(

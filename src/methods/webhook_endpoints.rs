@@ -13,6 +13,12 @@ use crate::validation::{
     validate_items, validate_length, validate_pattern, validate_range, LengthOpts, RangeOpts,
 };
 
+#[derive(Debug, Clone, Default)]
+pub struct ListWebhookEndpointsParams {
+    pub limit: Option<i64>,
+    pub after: Option<Option<String>>,
+}
+
 /// Returns webhook endpoints for the authenticated project in newest-first order.
 ///
 /// # Arguments
@@ -21,10 +27,10 @@ use crate::validation::{
 /// * `after` - ID of the last webhook endpoint from the previous page.
 pub fn list_webhook_endpoints(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<Option<String>>,
+    params: ListWebhookEndpointsParams,
     options: Option<&RequestOptions>,
 ) -> Result<WebhookEndpointListResource, SdkError> {
+    let ListWebhookEndpointsParams { limit, after } = params;
     if let Some(ref limit_v) = limit {
         validate_range(
             "limit",
@@ -69,14 +75,22 @@ pub fn list_webhook_endpoints(
 /// * `after` - ID of the last webhook endpoint from the previous page.
 pub fn list_webhook_endpoints_paginated(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<Option<String>>,
+    params: ListWebhookEndpointsParams,
     options: Option<&RequestOptions>,
     mut yield_fn: impl FnMut(&WebhookEndpointBody) -> bool,
 ) -> Result<(), SdkError> {
+    let ListWebhookEndpointsParams { limit, after } = params;
+
     let mut _cursor: Option<Option<String>> = after;
     loop {
-        let _page = list_webhook_endpoints(config, limit, _cursor, options)?;
+        let _page = list_webhook_endpoints(
+            config,
+            ListWebhookEndpointsParams {
+                limit,
+                after: _cursor,
+            },
+            options,
+        )?;
         let _items: Vec<_> = _page.data.iter().collect();
         if _items.is_empty() {
             return Ok(());
@@ -105,14 +119,22 @@ pub struct ListWebhookEndpointsPage<'a> {
 
 pub fn list_webhook_endpoints_pages(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<Option<String>>,
+    params: ListWebhookEndpointsParams,
     options: Option<&RequestOptions>,
     mut yield_page: impl FnMut(ListWebhookEndpointsPage<'_>) -> bool,
 ) -> Result<(), SdkError> {
+    let ListWebhookEndpointsParams { limit, after } = params;
+
     let mut _cursor: Option<Option<String>> = after;
     loop {
-        let _page = list_webhook_endpoints(config, limit, _cursor, options)?;
+        let _page = list_webhook_endpoints(
+            config,
+            ListWebhookEndpointsParams {
+                limit,
+                after: _cursor,
+            },
+            options,
+        )?;
         let _items: Vec<_> = _page.data.iter().collect();
         if _items.is_empty() {
             return Ok(());
@@ -136,6 +158,13 @@ pub fn list_webhook_endpoints_pages(
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct CreateWebhookEndpointParams {
+    pub name: String,
+    pub url: String,
+    pub event_types: Vec<ProjectEventTypeEnum>,
+}
+
 /// Creates a webhook endpoint for the authenticated project.
 ///
 /// # Arguments
@@ -145,11 +174,14 @@ pub fn list_webhook_endpoints_pages(
 /// * `event_types` - The event types that trigger deliveries to this endpoint.
 pub fn create_webhook_endpoint(
     config: &ClientConfig,
-    name: String,
-    url: String,
-    event_types: Vec<ProjectEventTypeEnum>,
+    params: CreateWebhookEndpointParams,
     options: Option<&RequestOptions>,
 ) -> Result<WebhookEndpointWithSecretResource, SdkError> {
+    let CreateWebhookEndpointParams {
+        name,
+        url,
+        event_types,
+    } = params;
     validate_length(
         "name",
         &name,
@@ -222,6 +254,11 @@ pub fn create_webhook_endpoint(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveWebhookEndpointParams {
+    pub webhook_endpoint_id: String,
+}
+
 /// Retrieves a webhook endpoint for the authenticated project.
 ///
 /// # Arguments
@@ -229,9 +266,12 @@ pub fn create_webhook_endpoint(
 /// * `webhook_endpoint_id` - The ID of the webhook endpoint to retrieve.
 pub fn retrieve_webhook_endpoint(
     config: &ClientConfig,
-    webhook_endpoint_id: String,
+    params: RetrieveWebhookEndpointParams,
     options: Option<&RequestOptions>,
 ) -> Result<WebhookEndpointBody, SdkError> {
+    let RetrieveWebhookEndpointParams {
+        webhook_endpoint_id,
+    } = params;
     Ok(sdk_request::<WebhookEndpointBody>(
         "GET",
         &format!(
@@ -250,6 +290,14 @@ pub fn retrieve_webhook_endpoint(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct UpdateWebhookEndpointParams {
+    pub webhook_endpoint_id: String,
+    pub name: Option<String>,
+    pub url: Option<String>,
+    pub event_types: Option<Vec<ProjectEventTypeEnum>>,
+}
+
 /// Updates a webhook endpoint for the authenticated project.
 ///
 /// # Arguments
@@ -261,12 +309,15 @@ pub fn retrieve_webhook_endpoint(
 ///   deliveries.
 pub fn update_webhook_endpoint(
     config: &ClientConfig,
-    webhook_endpoint_id: String,
-    name: Option<String>,
-    url: Option<String>,
-    event_types: Option<Vec<ProjectEventTypeEnum>>,
+    params: UpdateWebhookEndpointParams,
     options: Option<&RequestOptions>,
 ) -> Result<WebhookEndpointBody, SdkError> {
+    let UpdateWebhookEndpointParams {
+        webhook_endpoint_id,
+        name,
+        url,
+        event_types,
+    } = params;
     if let Some(ref name_v) = name {
         validate_length(
             "name",
@@ -354,6 +405,11 @@ pub fn update_webhook_endpoint(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct DeleteWebhookEndpointParams {
+    pub webhook_endpoint_id: String,
+}
+
 /// Deletes a webhook endpoint for the authenticated project.
 ///
 /// # Arguments
@@ -361,9 +417,12 @@ pub fn update_webhook_endpoint(
 /// * `webhook_endpoint_id` - The ID of the webhook endpoint to delete.
 pub fn delete_webhook_endpoint(
     config: &ClientConfig,
-    webhook_endpoint_id: String,
+    params: DeleteWebhookEndpointParams,
     options: Option<&RequestOptions>,
 ) -> Result<DeletedWebhookEndpointResource, SdkError> {
+    let DeleteWebhookEndpointParams {
+        webhook_endpoint_id,
+    } = params;
     Ok(sdk_request::<DeletedWebhookEndpointResource>(
         "DELETE",
         &format!(
@@ -382,6 +441,12 @@ pub fn delete_webhook_endpoint(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RotateWebhookEndpointSigningSecretParams {
+    pub webhook_endpoint_id: String,
+    pub keep_old_secret_active_for_24_hours: Option<bool>,
+}
+
 /// Rotates the signing secret for a webhook endpoint in the authenticated project.
 ///
 /// # Arguments
@@ -393,10 +458,13 @@ pub fn delete_webhook_endpoint(
 ///   invalidates the previous secret immediately.
 pub fn rotate_webhook_endpoint_signing_secret(
     config: &ClientConfig,
-    webhook_endpoint_id: String,
-    keep_old_secret_active_for_24_hours: Option<bool>,
+    params: RotateWebhookEndpointSigningSecretParams,
     options: Option<&RequestOptions>,
 ) -> Result<WebhookEndpointWithSecretResource, SdkError> {
+    let RotateWebhookEndpointSigningSecretParams {
+        webhook_endpoint_id,
+        keep_old_secret_active_for_24_hours,
+    } = params;
     let mut __body_map = serde_json::Map::new();
     if let Some(ref value) = keep_old_secret_active_for_24_hours {
         __body_map.insert(
@@ -430,6 +498,12 @@ pub fn rotate_webhook_endpoint_signing_secret(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct TestWebhookEndpointParams {
+    pub webhook_endpoint_id: String,
+    pub event_type: ProjectEventTypeEnum,
+}
+
 /// Sends a sample event to a webhook endpoint for the authenticated project.
 ///
 /// # Arguments
@@ -438,10 +512,13 @@ pub fn rotate_webhook_endpoint_signing_secret(
 /// * `event_type` - The event type to send as a sample delivery.
 pub fn test_webhook_endpoint(
     config: &ClientConfig,
-    webhook_endpoint_id: String,
-    event_type: ProjectEventTypeEnum,
+    params: TestWebhookEndpointParams,
     options: Option<&RequestOptions>,
 ) -> Result<WebhookEndpointTestResultResource, SdkError> {
+    let TestWebhookEndpointParams {
+        webhook_endpoint_id,
+        event_type,
+    } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "event_type".to_string(),

@@ -10,6 +10,14 @@ use crate::types::{
 };
 use crate::validation::{validate_range, RangeOpts};
 
+#[derive(Debug, Clone, Default)]
+pub struct ListExternalStorageParams {
+    pub project_id: Option<Option<String>>,
+    pub after: Option<Option<String>>,
+    pub order: Option<ExternalStorageOrder>,
+    pub limit: Option<i64>,
+}
+
 /// Lists the organization's customer-managed external storage configurations. Use `project_id` to scope the results to a project, and `after` and `limit` to navigate the list. Set `order` to control the sort direction.
 ///
 /// List the organization's customer-managed external storage configurations.
@@ -19,12 +27,15 @@ use crate::validation::{validate_range, RangeOpts};
 /// * `after` - Return external storage configurations after this ID.
 pub fn list_external_storage(
     config: &ClientConfig,
-    project_id: Option<Option<String>>,
-    after: Option<Option<String>>,
-    order: Option<ExternalStorageOrder>,
-    limit: Option<i64>,
+    params: ListExternalStorageParams,
     options: Option<&RequestOptions>,
 ) -> Result<ExternalStorageListResource, SdkError> {
+    let ListExternalStorageParams {
+        project_id,
+        after,
+        order,
+        limit,
+    } = params;
     if let Some(ref limit_v) = limit {
         validate_range(
             "limit",
@@ -80,21 +91,27 @@ pub fn list_external_storage(
 /// * `after` - Return external storage configurations after this ID.
 pub fn list_external_storage_paginated(
     config: &ClientConfig,
-    project_id: Option<Option<String>>,
-    after: Option<Option<String>>,
-    order: Option<ExternalStorageOrder>,
-    limit: Option<i64>,
+    params: ListExternalStorageParams,
     options: Option<&RequestOptions>,
     mut yield_fn: impl FnMut(&ExternalStorageResponse) -> bool,
 ) -> Result<(), SdkError> {
+    let ListExternalStorageParams {
+        project_id,
+        after,
+        order,
+        limit,
+    } = params;
+
     let mut _cursor: Option<Option<String>> = after;
     loop {
         let _page = list_external_storage(
             config,
-            project_id.clone(),
-            _cursor,
-            order.clone(),
-            limit,
+            ListExternalStorageParams {
+                project_id: project_id.clone(),
+                after: _cursor,
+                order: order.clone(),
+                limit,
+            },
             options,
         )?;
         let _items: Vec<_> = _page.data.iter().collect();
@@ -125,21 +142,27 @@ pub struct ListExternalStoragePage<'a> {
 
 pub fn list_external_storage_pages(
     config: &ClientConfig,
-    project_id: Option<Option<String>>,
-    after: Option<Option<String>>,
-    order: Option<ExternalStorageOrder>,
-    limit: Option<i64>,
+    params: ListExternalStorageParams,
     options: Option<&RequestOptions>,
     mut yield_page: impl FnMut(ListExternalStoragePage<'_>) -> bool,
 ) -> Result<(), SdkError> {
+    let ListExternalStorageParams {
+        project_id,
+        after,
+        order,
+        limit,
+    } = params;
+
     let mut _cursor: Option<Option<String>> = after;
     loop {
         let _page = list_external_storage(
             config,
-            project_id.clone(),
-            _cursor,
-            order.clone(),
-            limit,
+            ListExternalStorageParams {
+                project_id: project_id.clone(),
+                after: _cursor,
+                order: order.clone(),
+                limit,
+            },
             options,
         )?;
         let _items: Vec<_> = _page.data.iter().collect();
@@ -165,6 +188,12 @@ pub fn list_external_storage_pages(
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct CreateExternalStorageParams {
+    pub project_id: String,
+    pub provider: CreateExternalStorageBodyProvider,
+}
+
 /// Creates a customer-managed external storage configuration for a project. Supply `project_id` and a `provider` object containing the configuration fields required by the selected storage provider. The response includes the configuration's identifier, geography, and status.
 ///
 /// Register one customer-managed external storage configuration.
@@ -176,10 +205,13 @@ pub fn list_external_storage_pages(
 /// * `provider` - Required API value serialized in the `provider` wire field.
 pub fn create_external_storage(
     config: &ClientConfig,
-    project_id: String,
-    provider: CreateExternalStorageBodyProvider,
+    params: CreateExternalStorageParams,
     options: Option<&RequestOptions>,
 ) -> Result<ExternalStorageResponse, SdkError> {
+    let CreateExternalStorageParams {
+        project_id,
+        provider,
+    } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "project_id".to_string(),
@@ -222,14 +254,22 @@ pub fn create_external_storage(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveExternalStorageParams {
+    pub external_storage_id: String,
+}
+
 /// Retrieves one customer-managed external storage configuration. Use `external_storage_id` to identify the configuration you want to inspect.
 ///
 /// Get one customer-managed external storage configuration.
 pub fn retrieve_external_storage(
     config: &ClientConfig,
-    external_storage_id: String,
+    params: RetrieveExternalStorageParams,
     options: Option<&RequestOptions>,
 ) -> Result<ExternalStorageResponse, SdkError> {
+    let RetrieveExternalStorageParams {
+        external_storage_id,
+    } = params;
     Ok(sdk_request::<ExternalStorageResponse>(
         "GET",
         &format!(
@@ -252,14 +292,22 @@ pub fn retrieve_external_storage(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct DeleteExternalStorageParams {
+    pub external_storage_id: String,
+}
+
 /// Deletes a customer-managed external storage configuration. Use `external_storage_id` to identify the configuration to disconnect. Deleting a project's last configuration restores organization-default retention if customer-managed retention was active; cloud storage is unchanged.
 ///
 /// Disconnect a customer-managed external storage configuration. Removing the project's last configuration restores organization-default retention if customer-managed retention was active. Repeating a deletion also completes any interrupted retention update. Cloud storage is unchanged.
 pub fn delete_external_storage(
     config: &ClientConfig,
-    external_storage_id: String,
+    params: DeleteExternalStorageParams,
     options: Option<&RequestOptions>,
 ) -> Result<ExternalStorageDeletedResource, SdkError> {
+    let DeleteExternalStorageParams {
+        external_storage_id,
+    } = params;
     Ok(sdk_request::<ExternalStorageDeletedResource>(
         "DELETE",
         &format!(
@@ -282,14 +330,22 @@ pub fn delete_external_storage(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ValidateExternalStorageParams {
+    pub external_storage_id: String,
+}
+
 /// Validates a customer-managed external storage configuration. Use `external_storage_id` to select the configuration whose provider setup you want to validate. The response returns the configuration and its status.
 ///
 /// Validate one customer-managed external storage configuration.
 pub fn validate_external_storage(
     config: &ClientConfig,
-    external_storage_id: String,
+    params: ValidateExternalStorageParams,
     options: Option<&RequestOptions>,
 ) -> Result<ExternalStorageResponse, SdkError> {
+    let ValidateExternalStorageParams {
+        external_storage_id,
+    } = params;
     Ok(sdk_request::<ExternalStorageResponse>(
         "POST",
         &format!(

@@ -27,7 +27,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ..Default::default()
     };
     let client = OpenAI::new(config);
-    let result = client.chat.get_completion("completion-1".to_string(), None)?;
+    let result = client.chat.get_completion(octridev_openai::methods::chat::GetChatCompletionParams { completion_id: "completion-1".to_string() }, None)?;
     println!("{result:#?}");
     Ok(())
 }

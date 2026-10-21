@@ -56,6 +56,14 @@ impl std::fmt::Display for ListUserRoleAssignmentsEnum {
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ListUserRoleAssignmentsParams {
+    pub user_id: String,
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub order: Option<ListUserRoleAssignmentsEnum>,
+}
+
 /// Lists the organization roles assigned to a user within the organization.
 ///
 /// # Arguments
@@ -68,12 +76,15 @@ impl std::fmt::Display for ListUserRoleAssignmentsEnum {
 /// * `order` - Sort order for the returned organization roles.
 pub fn list_user_role_assignments(
     config: &ClientConfig,
-    user_id: String,
-    limit: Option<i64>,
-    after: Option<String>,
-    order: Option<ListUserRoleAssignmentsEnum>,
+    params: ListUserRoleAssignmentsParams,
     options: Option<&RequestOptions>,
 ) -> Result<RoleListResource, SdkError> {
+    let ListUserRoleAssignmentsParams {
+        user_id,
+        limit,
+        after,
+        order,
+    } = params;
     if let Some(ref limit_v) = limit {
         validate_range(
             "limit",
@@ -133,21 +144,27 @@ pub fn list_user_role_assignments(
 /// * `order` - Sort order for the returned organization roles.
 pub fn list_user_role_assignments_paginated(
     config: &ClientConfig,
-    user_id: String,
-    limit: Option<i64>,
-    after: Option<String>,
-    order: Option<ListUserRoleAssignmentsEnum>,
+    params: ListUserRoleAssignmentsParams,
     options: Option<&RequestOptions>,
     mut yield_fn: impl FnMut(&AssignedRoleDetails) -> bool,
 ) -> Result<(), SdkError> {
+    let ListUserRoleAssignmentsParams {
+        user_id,
+        limit,
+        after,
+        order,
+    } = params;
+
     let mut _cursor: Option<String> = after;
     loop {
         let _page = list_user_role_assignments(
             config,
-            user_id.clone(),
-            limit,
-            _cursor,
-            order.clone(),
+            ListUserRoleAssignmentsParams {
+                user_id: user_id.clone(),
+                limit,
+                after: _cursor,
+                order: order.clone(),
+            },
             options,
         )?;
         let _items: Vec<_> = _page.data.iter().collect();
@@ -178,21 +195,27 @@ pub struct ListUserRoleAssignmentsPage<'a> {
 
 pub fn list_user_role_assignments_pages(
     config: &ClientConfig,
-    user_id: String,
-    limit: Option<i64>,
-    after: Option<String>,
-    order: Option<ListUserRoleAssignmentsEnum>,
+    params: ListUserRoleAssignmentsParams,
     options: Option<&RequestOptions>,
     mut yield_page: impl FnMut(ListUserRoleAssignmentsPage<'_>) -> bool,
 ) -> Result<(), SdkError> {
+    let ListUserRoleAssignmentsParams {
+        user_id,
+        limit,
+        after,
+        order,
+    } = params;
+
     let mut _cursor: Option<String> = after;
     loop {
         let _page = list_user_role_assignments(
             config,
-            user_id.clone(),
-            limit,
-            _cursor,
-            order.clone(),
+            ListUserRoleAssignmentsParams {
+                user_id: user_id.clone(),
+                limit,
+                after: _cursor,
+                order: order.clone(),
+            },
             options,
         )?;
         let _items: Vec<_> = _page.data.iter().collect();
@@ -218,6 +241,12 @@ pub fn list_user_role_assignments_pages(
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct AssignUserRoleParams {
+    pub user_id: String,
+    pub role_id: String,
+}
+
 /// Assigns an organization role to a user within the organization.
 ///
 /// # Arguments
@@ -226,10 +255,10 @@ pub fn list_user_role_assignments_pages(
 /// * `role_id` - Identifier of the role to assign.
 pub fn assign_user_role(
     config: &ClientConfig,
-    user_id: String,
-    role_id: String,
+    params: AssignUserRoleParams,
     options: Option<&RequestOptions>,
 ) -> Result<UserRoleAssignment, SdkError> {
+    let AssignUserRoleParams { user_id, role_id } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "role_id".to_string(),
@@ -266,6 +295,12 @@ pub fn assign_user_role(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveUserRoleParams {
+    pub user_id: String,
+    pub role_id: String,
+}
+
 /// Retrieves an organization role assigned to a user.
 ///
 /// # Arguments
@@ -274,10 +309,10 @@ pub fn assign_user_role(
 /// * `role_id` - The ID of the organization role to retrieve for the user.
 pub fn retrieve_user_role(
     config: &ClientConfig,
-    user_id: String,
-    role_id: String,
+    params: RetrieveUserRoleParams,
     options: Option<&RequestOptions>,
 ) -> Result<AssignedRoleDetails, SdkError> {
+    let RetrieveUserRoleParams { user_id, role_id } = params;
     Ok(sdk_request::<AssignedRoleDetails>(
         "GET",
         &format!(
@@ -302,6 +337,12 @@ pub fn retrieve_user_role(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct UnassignUserRoleParams {
+    pub user_id: String,
+    pub role_id: String,
+}
+
 /// Unassigns an organization role from a user within the organization.
 ///
 /// # Arguments
@@ -310,10 +351,10 @@ pub fn retrieve_user_role(
 /// * `role_id` - The ID of the organization role to remove from the user.
 pub fn unassign_user_role(
     config: &ClientConfig,
-    user_id: String,
-    role_id: String,
+    params: UnassignUserRoleParams,
     options: Option<&RequestOptions>,
 ) -> Result<DeletedRoleAssignmentResource, SdkError> {
+    let UnassignUserRoleParams { user_id, role_id } = params;
     Ok(sdk_request::<DeletedRoleAssignmentResource>(
         "DELETE",
         &format!(

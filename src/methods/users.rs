@@ -6,6 +6,13 @@ use crate::client::{sdk_request, RequestOptions, RequestOpts};
 use crate::errors::{SdkError, SdkNetworkError};
 use crate::types::{User, UserDeleteResponse, UserListResponse};
 
+#[derive(Debug, Clone, Default)]
+pub struct ListUsersParams {
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub emails: Option<Vec<String>>,
+}
+
 /// Lists users in the organization. Use `emails` to filter the list by email address and `limit` and `after` to control the page of results. The response includes pagination fields to help you retrieve additional users.
 ///
 /// Lists all of the users in the organization.
@@ -21,11 +28,14 @@ use crate::types::{User, UserDeleteResponse, UserListResponse};
 /// * `emails` - Filter by the email address of users.
 pub fn list_users(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
-    emails: Option<Vec<String>>,
+    params: ListUsersParams,
     options: Option<&RequestOptions>,
 ) -> Result<UserListResponse, SdkError> {
+    let ListUsersParams {
+        limit,
+        after,
+        emails,
+    } = params;
     let mut __query: Vec<(&str, String)> = Vec::with_capacity(3);
     if let Some(ref v) = limit {
         __query.push(("limit", crate::client::query_value(v)));
@@ -74,15 +84,27 @@ pub fn list_users(
 /// * `emails` - Filter by the email address of users.
 pub fn list_users_paginated(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
-    emails: Option<Vec<String>>,
+    params: ListUsersParams,
     options: Option<&RequestOptions>,
     mut yield_fn: impl FnMut(&User) -> bool,
 ) -> Result<(), SdkError> {
+    let ListUsersParams {
+        limit,
+        after,
+        emails,
+    } = params;
+
     let mut _cursor: Option<String> = after;
     loop {
-        let _page = list_users(config, limit, _cursor, emails.clone(), options)?;
+        let _page = list_users(
+            config,
+            ListUsersParams {
+                limit,
+                after: _cursor,
+                emails: emails.clone(),
+            },
+            options,
+        )?;
         let _items: Vec<_> = _page.data.iter().collect();
         if _items.is_empty() {
             return Ok(());
@@ -111,15 +133,27 @@ pub struct ListUsersPage<'a> {
 
 pub fn list_users_pages(
     config: &ClientConfig,
-    limit: Option<i64>,
-    after: Option<String>,
-    emails: Option<Vec<String>>,
+    params: ListUsersParams,
     options: Option<&RequestOptions>,
     mut yield_page: impl FnMut(ListUsersPage<'_>) -> bool,
 ) -> Result<(), SdkError> {
+    let ListUsersParams {
+        limit,
+        after,
+        emails,
+    } = params;
+
     let mut _cursor: Option<String> = after;
     loop {
-        let _page = list_users(config, limit, _cursor, emails.clone(), options)?;
+        let _page = list_users(
+            config,
+            ListUsersParams {
+                limit,
+                after: _cursor,
+                emails: emails.clone(),
+            },
+            options,
+        )?;
         let _items: Vec<_> = _page.data.iter().collect();
         if _items.is_empty() {
             return Ok(());
@@ -143,6 +177,11 @@ pub fn list_users_pages(
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveUserParams {
+    pub user_id: String,
+}
+
 /// Retrieves a user from the organization by their identifier. Use this operation to view the user's organization role, account details, and associated user metadata.
 ///
 /// Retrieves a user by their identifier.
@@ -152,9 +191,10 @@ pub fn list_users_pages(
 /// * `user_id` - The ID of the user.
 pub fn retrieve_user(
     config: &ClientConfig,
-    user_id: String,
+    params: RetrieveUserParams,
     options: Option<&RequestOptions>,
 ) -> Result<User, SdkError> {
+    let RetrieveUserParams { user_id } = params;
     Ok(sdk_request::<User>(
         "GET",
         &format!(
@@ -280,6 +320,11 @@ pub fn modify_user(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct DeleteUserParams {
+    pub user_id: String,
+}
+
 /// Deletes a user from the organization. Use this operation to remove a user who is no longer part of the organization. The response confirms deletion and includes the user's ID.
 ///
 /// Deletes a user from the organization.
@@ -289,9 +334,10 @@ pub fn modify_user(
 /// * `user_id` - The ID of the user.
 pub fn delete_user(
     config: &ClientConfig,
-    user_id: String,
+    params: DeleteUserParams,
     options: Option<&RequestOptions>,
 ) -> Result<UserDeleteResponse, SdkError> {
+    let DeleteUserParams { user_id } = params;
     Ok(sdk_request::<UserDeleteResponse>(
         "DELETE",
         &format!(

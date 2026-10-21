@@ -7,6 +7,11 @@ use crate::errors::SdkError;
 use crate::types::{SafetyAlertResource, SafetyCaseResource};
 use crate::validation::{validate_length, LengthOpts};
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveSafetyCaseParams {
+    pub id: String,
+}
+
 /// Retrieves a safety case by its identifier. Use `id` to specify the safety case you want to inspect; it can contain at most 128 characters.
 ///
 /// Get a safety case by ID.
@@ -16,9 +21,10 @@ use crate::validation::{validate_length, LengthOpts};
 /// * `id` - Safety case ID
 pub fn retrieve_safety_case(
     config: &ClientConfig,
-    id: String,
+    params: RetrieveSafetyCaseParams,
     options: Option<&RequestOptions>,
 ) -> Result<SafetyCaseResource, SdkError> {
+    let RetrieveSafetyCaseParams { id } = params;
     validate_length(
         "id",
         &id,
@@ -49,6 +55,11 @@ pub fn retrieve_safety_case(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveSafetyAlertParams {
+    pub id: String,
+}
+
 /// Get a safety alert belonging to the authenticated API project.
 ///
 /// # Arguments
@@ -56,9 +67,10 @@ pub fn retrieve_safety_case(
 /// * `id` - Project safety alert ID
 pub fn retrieve_safety_alert(
     config: &ClientConfig,
-    id: String,
+    params: RetrieveSafetyAlertParams,
     options: Option<&RequestOptions>,
 ) -> Result<SafetyAlertResource, SdkError> {
+    let RetrieveSafetyAlertParams { id } = params;
     validate_length(
         "id",
         &id,

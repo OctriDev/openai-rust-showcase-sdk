@@ -56,6 +56,14 @@ impl std::fmt::Display for ListGroupUsersEnum {
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct ListGroupUsersParams {
+    pub group_id: String,
+    pub limit: Option<i64>,
+    pub after: Option<String>,
+    pub order: Option<ListGroupUsersEnum>,
+}
+
 /// Lists the users assigned to a group. Use `after` to continue from the last user's identifier in a previous response, and use `limit` and `order` to control the page size and sort order. The response indicates whether more users are available and provides the cursor for the next page.
 ///
 /// Lists the users assigned to a group.
@@ -70,12 +78,15 @@ impl std::fmt::Display for ListGroupUsersEnum {
 /// * `order` - Specifies the sort order of users in the list.
 pub fn list_group_users(
     config: &ClientConfig,
-    group_id: String,
-    limit: Option<i64>,
-    after: Option<String>,
-    order: Option<ListGroupUsersEnum>,
+    params: ListGroupUsersParams,
     options: Option<&RequestOptions>,
 ) -> Result<UserListResource, SdkError> {
+    let ListGroupUsersParams {
+        group_id,
+        limit,
+        after,
+        order,
+    } = params;
     if let Some(ref limit_v) = limit {
         validate_range(
             "limit",
@@ -138,21 +149,27 @@ pub fn list_group_users(
 /// * `order` - Specifies the sort order of users in the list.
 pub fn list_group_users_paginated(
     config: &ClientConfig,
-    group_id: String,
-    limit: Option<i64>,
-    after: Option<String>,
-    order: Option<ListGroupUsersEnum>,
+    params: ListGroupUsersParams,
     options: Option<&RequestOptions>,
     mut yield_fn: impl FnMut(&GroupUser) -> bool,
 ) -> Result<(), SdkError> {
+    let ListGroupUsersParams {
+        group_id,
+        limit,
+        after,
+        order,
+    } = params;
+
     let mut _cursor: Option<String> = after;
     loop {
         let _page = list_group_users(
             config,
-            group_id.clone(),
-            limit,
-            _cursor,
-            order.clone(),
+            ListGroupUsersParams {
+                group_id: group_id.clone(),
+                limit,
+                after: _cursor,
+                order: order.clone(),
+            },
             options,
         )?;
         let _items: Vec<_> = _page.data.iter().collect();
@@ -183,21 +200,27 @@ pub struct ListGroupUsersPage<'a> {
 
 pub fn list_group_users_pages(
     config: &ClientConfig,
-    group_id: String,
-    limit: Option<i64>,
-    after: Option<String>,
-    order: Option<ListGroupUsersEnum>,
+    params: ListGroupUsersParams,
     options: Option<&RequestOptions>,
     mut yield_page: impl FnMut(ListGroupUsersPage<'_>) -> bool,
 ) -> Result<(), SdkError> {
+    let ListGroupUsersParams {
+        group_id,
+        limit,
+        after,
+        order,
+    } = params;
+
     let mut _cursor: Option<String> = after;
     loop {
         let _page = list_group_users(
             config,
-            group_id.clone(),
-            limit,
-            _cursor,
-            order.clone(),
+            ListGroupUsersParams {
+                group_id: group_id.clone(),
+                limit,
+                after: _cursor,
+                order: order.clone(),
+            },
             options,
         )?;
         let _items: Vec<_> = _page.data.iter().collect();
@@ -223,6 +246,12 @@ pub fn list_group_users_pages(
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct AddGroupUserParams {
+    pub group_id: String,
+    pub user_id: String,
+}
+
 /// Adds a user to a group in the organization. Supply the user's identifier in `user_id` to specify the membership to create. The response confirms the added user and the group they were added to.
 ///
 /// Adds a user to a group.
@@ -233,10 +262,10 @@ pub fn list_group_users_pages(
 /// * `user_id` - Identifier of the user to add to the group.
 pub fn add_group_user(
     config: &ClientConfig,
-    group_id: String,
-    user_id: String,
+    params: AddGroupUserParams,
     options: Option<&RequestOptions>,
 ) -> Result<GroupUserAssignment, SdkError> {
+    let AddGroupUserParams { group_id, user_id } = params;
     let mut __body_map = serde_json::Map::new();
     __body_map.insert(
         "user_id".to_string(),
@@ -274,6 +303,12 @@ pub fn add_group_user(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RetrieveGroupUserParams {
+    pub group_id: String,
+    pub user_id: String,
+}
+
 /// Retrieves a user's membership details for a group. Provide both `group_id` and `user_id` to identify the membership to inspect. The response includes the user's name, email, profile picture, account type, and service-account status.
 ///
 /// Retrieves a user in a group.
@@ -284,10 +319,10 @@ pub fn add_group_user(
 /// * `user_id` - The ID of the user to retrieve from the group.
 pub fn retrieve_group_user(
     config: &ClientConfig,
-    group_id: String,
-    user_id: String,
+    params: RetrieveGroupUserParams,
     options: Option<&RequestOptions>,
 ) -> Result<GroupMemberUser, SdkError> {
+    let RetrieveGroupUserParams { group_id, user_id } = params;
     Ok(sdk_request::<GroupMemberUser>(
         "GET",
         &format!(
@@ -312,6 +347,12 @@ pub fn retrieve_group_user(
     .data)
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct RemoveGroupUserParams {
+    pub group_id: String,
+    pub user_id: String,
+}
+
 /// Removes a user's membership from a group. Supply `group_id` and `user_id` to identify the group membership to remove. The response confirms whether the membership was deleted.
 ///
 /// Removes a user from a group.
@@ -322,10 +363,10 @@ pub fn retrieve_group_user(
 /// * `user_id` - The ID of the user to remove from the group.
 pub fn remove_group_user(
     config: &ClientConfig,
-    group_id: String,
-    user_id: String,
+    params: RemoveGroupUserParams,
     options: Option<&RequestOptions>,
 ) -> Result<GroupUserDeletedResource, SdkError> {
+    let RemoveGroupUserParams { group_id, user_id } = params;
     Ok(sdk_request::<GroupUserDeletedResource>(
         "DELETE",
         &format!(
